@@ -11,12 +11,11 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\MMOpingLoadtest.glb" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\MMOpingLoadtest.glb">
+    <Content Include="Content\**\*.glb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -31,9 +30,13 @@
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.1983-develop" />
     <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
+    <ProjectReference Include="..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
   </ItemGroup>
 </Project>

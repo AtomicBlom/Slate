@@ -1,7 +1,10 @@
 ﻿using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoScene.Graphics;
+using MonoScene.Graphics.Pipeline;
 using SharpGLTF.Schema2;
 using PrimitiveType = Microsoft.Xna.Framework.Graphics.PrimitiveType;
 
@@ -19,6 +22,9 @@ namespace Client
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private ModelRoot _test;
+        private MeshCollection _meshCollection;
+
+        private PBREnvironment _LightsAndFog = PBREnvironment.CreateDefault();
 
         public RudeEngineGame()
         {
@@ -52,7 +58,21 @@ namespace Client
             vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 6, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertices);
 
-            _test = ModelRoot.ReadGLB(File.OpenRead(@".\Assets\MMOpingLoadTest.glb"));
+            var gltfFactory = new GltfModelFactory(this.GraphicsDevice);
+            var pbrFactory = new PBRMeshFactory(this.GraphicsDevice);
+
+            var modelPath = ModelRoot.Load(Path.Combine($"Content", "MaleElf.glb"));
+            var contentMeshes = gltfFactory.ReadMeshContent(modelPath.LogicalMeshes.Take(1));
+
+            _meshCollection = pbrFactory.CreateMeshCollection(contentMeshes.Materials, contentMeshes.Meshes);
+        }
+
+        protected override void UnloadContent()
+        {
+            base.UnloadContent();
+
+            _meshCollection?.Dispose();
+            _meshCollection = null!;
         }
 
         protected override void Update(GameTime gameTime)
@@ -69,24 +89,36 @@ namespace Client
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+
+            var camPos = Vector3.Zero;
+            var modelPosition = new Vector3(100f, 0, 0);
+
+            var camX = Matrix.CreateWorld(Vector3.Zero, modelPosition - camPos, Vector3.UnitY);
+            var modelX = Matrix.CreateRotationY(0.25f * (float)gameTime.TotalGameTime.TotalSeconds) * Matrix.CreateTranslation(modelPosition);
+
+            var dc = new ModelDrawingContext(this.GraphicsDevice);
+            dc.NearPlane = 0.1f;
+            dc.SetCamera(camX);
+            dc.DrawMesh(_LightsAndFog, _meshCollection[0], modelX);
+
             // TODO: Add your drawing code here
-            basicEffect.World = world;
-            basicEffect.View = view;
-            basicEffect.Projection = projection;
-            basicEffect.VertexColorEnabled = true;
+            //basicEffect.World = world;
+            //basicEffect.View = view;
+            //basicEffect.Projection = projection;
+            //basicEffect.VertexColorEnabled = true;
 
-            GraphicsDevice.SetVertexBuffer(vertexBuffer);
+            //GraphicsDevice.SetVertexBuffer(vertexBuffer);
 
-            RasterizerState rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = rasterizerState;
+            //RasterizerState rasterizerState = new RasterizerState();
+            //rasterizerState.CullMode = CullMode.None;
+            //GraphicsDevice.RasterizerState = rasterizerState;
 
-            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
-            }
-            
+            //foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            //{
+            //    pass.Apply();
+            //    GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
+            //}
+
             base.Draw(gameTime);
         }
     }
