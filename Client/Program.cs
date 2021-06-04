@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StopMMOping
+namespace Client
 {
     public static class Program
     {

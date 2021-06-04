@@ -1,0 +1,14 @@
+{
+  "Components": [
+    {
+      "Application": "GameWarden/GameWarden.exe"
+    },
+    {
+      "Application": "Genealogist/Genealogist.exe"
+    },
+    {
+      "Application": "Nanny/Nanny.exe",
+      "LaunchOnStart": false
+    }
+  ]
+}

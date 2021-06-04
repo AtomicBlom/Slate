@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Overseer": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "OVERSEER_APP_ROOT": "$(ProjectDir)../Components/",
+        "OVERSEER_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

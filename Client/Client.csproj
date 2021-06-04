@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,8 +11,14 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\MMOpingLoadtest.glb" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\MMOpingLoadtest.glb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
@@ -27,5 +33,7 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+    <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
   </ItemGroup>
 </Project>
