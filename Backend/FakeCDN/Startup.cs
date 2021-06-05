@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 
 namespace FakeCDN
 {
@@ -44,9 +45,11 @@ namespace FakeCDN
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                    fullPath
+                    fullPath,
+                    ExclusionFilters.None
                     ),
-                RequestPath = "/GameFiles"
+                RequestPath = "/GameFiles",
+                ServeUnknownFileTypes = true
             });
             
             app.UseRouting();
@@ -56,6 +59,7 @@ namespace FakeCDN
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

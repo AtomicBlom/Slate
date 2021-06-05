@@ -4,6 +4,7 @@
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using IdentityServer4.Test;
 
 namespace Genealogist
 {
@@ -12,7 +13,11 @@ namespace Genealogist
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             { 
-                new IdentityResources.OpenId()
+                new IdentityResources.OpenId() {UserClaims = new List<string>()
+                {
+                    "name"
+
+                }}
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -26,7 +31,7 @@ namespace Genealogist
             { 
                 new Client {
                     ClientId = "Launcher",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     ClientSecrets = {
                         new Secret("secret".Sha256())
@@ -35,5 +40,25 @@ namespace Genealogist
                     AllowedScopes = { "account" }
                 }
             };
+
+        public static List<TestUser> GetUsers()
+        {
+            return new List<TestUser>
+            {
+                new TestUser
+                {
+                    SubjectId = "1",
+                    Username = "atomicblom",
+                    Password = "password"
+                },
+                new TestUser
+                {
+                    SubjectId = "2",
+                    Username = "rosethethorn",
+                    Password = "password"
+                }
+            };
+        }
+
     }
 }

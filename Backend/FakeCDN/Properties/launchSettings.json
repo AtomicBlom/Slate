@@ -10,7 +10,6 @@
   "profiles": {
     "FakeCDN": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "Manifest",
       "environmentVariables": {
         "FAKECDN_CONTENTDIR": "$(ProjectDir)..\\..\\bin\\$(Configuration)\\Frontend\\GameClient",

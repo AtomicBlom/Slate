@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -69,6 +72,36 @@ namespace Client
             //var contentMeshes = gltfFactory.ReadMeshContent(modelPath.LogicalMeshes.Take(1));
 
             //_meshCollection = pbrFactory.CreateMeshCollection(contentMeshes.Materials, contentMeshes.Meshes);
+
+            Task.Run(() => Login());
+
+        }
+
+        private async Task Login()
+        {
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
+            if (disco.IsError)
+            {
+                Console.WriteLine(disco.Error);
+                return;
+            }
+
+            var result = await client.RequestPasswordTokenAsync(new PasswordTokenRequest()
+            {
+                Address = disco.TokenEndpoint,
+
+                ClientId = "Launcher",
+                ClientSecret = "secret",
+                Scope = "account",
+
+                UserName = "atomicblom",
+                Password = "password",
+
+            });
+            
+            Console.WriteLine(result.Json);
+            Console.WriteLine("\n\n");
         }
 
         protected override void UnloadContent()

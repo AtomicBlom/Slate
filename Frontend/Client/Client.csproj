@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
+		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PublishReadyToRun>false</PublishReadyToRun>
@@ -38,6 +38,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="EmptyKeysUI_MonoGame" Version="3.3.0" />
+		<PackageReference Include="IdentityModel" Version="5.1.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.1983-develop" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
