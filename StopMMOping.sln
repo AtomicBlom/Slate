@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genealogist", "Genealogist\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nanny", "Nanny\Nanny.csproj", "{7C07E52D-1F49-4047-BECD-57A48AC69763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameWarden", "GameWarden\GameWarden.csproj", "{61146906-7C08-4453-84BD-5C90657C14A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameWarden", "GameWarden\GameWarden.csproj", "{61146906-7C08-4453-84BD-5C90657C14A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{39BDD10F-27A6-412C-829B-1A4765724547}"
 EndProject
@@ -37,6 +37,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Effects.Classic", "Dependencies\MonoScene\src\MonoScene.Runtime.Effects.Classic\MonoScene.Runtime.Effects.Classic.csproj", "{4138B9D6-7752-4D69-B02F-EFBE62DF772A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Scene3D", "Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj", "{6EBCDF70-67E1-4D24-BF04-F804E37F0684}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.UI", "Client.UI\Client.UI.csproj", "{C766159F-86EE-4FD0-B750-F6F2C6069FCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +94,10 @@ Global
 		{6EBCDF70-67E1-4D24-BF04-F804E37F0684}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EBCDF70-67E1-4D24-BF04-F804E37F0684}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EBCDF70-67E1-4D24-BF04-F804E37F0684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C766159F-86EE-4FD0-B750-F6F2C6069FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C766159F-86EE-4FD0-B750-F6F2C6069FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C766159F-86EE-4FD0-B750-F6F2C6069FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C766159F-86EE-4FD0-B750-F6F2C6069FCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,6 +116,7 @@ Global
 		{8853ED25-278B-4AF6-AFFE-2A0F97345E50} = {7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}
 		{4138B9D6-7752-4D69-B02F-EFBE62DF772A} = {7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}
 		{6EBCDF70-67E1-4D24-BF04-F804E37F0684} = {7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}
+		{C766159F-86EE-4FD0-B750-F6F2C6069FCB} = {39BDD10F-27A6-412C-829B-1A4765724547}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {768F9C24-7FBD-4C9D-A779-A04B44622C3A}

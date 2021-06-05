@@ -11,13 +11,18 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Icon.ico" />
+	  <None Remove="Content\**\*.glb" />
+	  <None Remove="Content\**\*.gltf" />
+	  <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\**\*.glb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+	  <Content Include="Content\**\*.gltf">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
@@ -30,6 +35,7 @@
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EmptyKeysUI_MonoGame" Version="3.3.0" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.1983-develop" />
     <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
