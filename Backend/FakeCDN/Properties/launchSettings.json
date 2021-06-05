@@ -1,0 +1,31 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:27286",
+      "sslPort": 44340
+    }
+  },
+  "profiles": {
+    "FakeCDN": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "Manifest",
+      "environmentVariables": {
+        "FAKECDN_CONTENTDIR": "$(ProjectDir)..\\..\\bin\\$(Configuration)\\Frontend\\GameClient",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "hotReloadProfile": "aspnetcore",
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

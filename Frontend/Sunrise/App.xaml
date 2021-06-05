@@ -1,0 +1,112 @@
+﻿<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SunriseLauncher"
+             x:Class="SunriseLauncher.App">
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Resources>
+      <LinearGradientBrush x:Key="GradientHighlight" StartPoint="0%,50%" EndPoint="66%,50%" Opacity=".25" >
+        <GradientStop Color="Transparent" Offset="0.0" />
+        <GradientStop Color="White" Offset="0.5" />
+        <GradientStop Color="Transparent" Offset="1.0" />
+      </LinearGradientBrush>
+      <SolidColorBrush x:Key="TransparentBrush" Color="Transparent"/>
+    </Application.Resources>
+  
+    <Application.Styles>
+        <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
+        <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
+
+      <!-- List Box Item -->
+      <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
+      </Style>
+      <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource GradientHighlight}"/>
+      </Style>
+      <Style Selector="ListBoxItem:selected:focus /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource GradientHighlight}"/>
+      </Style>
+      <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource GradientHighlight}"/>
+      </Style>
+      <Style Selector="ListBoxItem:selected:focus:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource GradientHighlight}"/>
+      </Style>
+
+      <!-- ScrollViewer -->
+      <Style Selector="ScrollViewer.Server">
+        <Style.Resources>
+          <SolidColorBrush x:Key="ThemeControlMidBrush" Color="Transparent" />
+          <SolidColorBrush x:Key="ThemeForegroundLowBrush" Color="#14466e" />
+          <SolidColorBrush x:Key="ThemeControlMidHighBrush" Color="#14466e" />
+          <SolidColorBrush x:Key="ThemeControlHighBrush" Color="#CC119EDA" />
+          <SolidColorBrush x:Key="ThemeControlVeryHighBrush" Color="#CC119EDA" />
+        </Style.Resources>
+      </Style>
+      
+      <!-- Image Button Style -->
+      <Style Selector="Button.Image">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+      </Style>
+      <Style Selector="Button.Image:pressed  /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Opacity" Value=".6"/>
+      </Style>
+
+      <!-- Server List Style -->
+      <Style Selector="ListBox.Server">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+      </Style>
+
+      <!-- Progress Bar Style -->
+      <Style Selector="ProgressBar.Files">
+        <Setter Property="Background" Value="DimGray" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="MinHeight" Value="4"/>
+      </Style>
+
+      <!-- Text Label -->
+      <Style Selector="TextBlock.Label">
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="FontFamily" Value="Corbel,Trebuchet MS,Arial"/>
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+
+      <!-- Text Field -->
+      <Style Selector="TextBox.Field">
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="Height" Value="26"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+
+      <!-- Button Field -->
+      <Style Selector="Button.Field">
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="Height" Value="26" />
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+
+      <!-- Combo Box Field -->
+      <Style Selector="ComboBox.Field">
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="Height" Value="26" />
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+
+    </Application.Styles>
+</Application>

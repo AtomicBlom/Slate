@@ -1,0 +1,20 @@
+{
+  "Components": {
+    "ComponentRootPath": "../Components/",
+    "Definitions": [
+      {
+        "Application": "GameWarden/GameWarden.exe"
+      },
+      {
+        "Application": "Genealogist/Genealogist.exe"
+      },
+      {
+        "Application": "FakeCDN/FakeCDN.exe"
+      },
+      {
+        "Application": "Nanny/Nanny.exe",
+        "LaunchOnStart": false
+      }
+    ]
+  }
+}
