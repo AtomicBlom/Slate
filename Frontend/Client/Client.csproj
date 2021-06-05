@@ -7,14 +7,20 @@
 		<TieredCompilation>false</TieredCompilation>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Frontend\GameClient</OutputPath>
+		<UISourceDir>$(ProjectDir)..\Client.UI\UI\Views</UISourceDir>
+		<UIDir>$(ProjectDir)UI\Views</UIDir>
+		<UIContentDir>$(ProjectDir)Content</UIContentDir>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Remove="NewFolder\**" />
+		<EmbeddedResource Remove="NewFolder\**" />
 		<None Remove="Content\**\*.glb" />
 		<None Remove="Content\**\*.gltf" />
+		<None Remove="NewFolder\**" />
 		<None Remove="Icon.ico" />
 		<None Remove="Icon.bmp" />
 	</ItemGroup>
@@ -48,4 +54,14 @@
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="UI\Content\" />
+	  <Folder Include="UI\Views\" />
+	</ItemGroup>
+
+	<Target Name="ConvertXAML" BeforeTargets="BeforeBuild">
+		<Message Text="Converting XAML" Importance="high" />
+
+		<Exec Command="&quot;..\..\Dependencies\UI_Generator\ekUiGen\bin\$(ConfigurationName)\net5.0-windows\ekuigen&quot; --ignore-assets --rm=MonoGame --generate-bindings -i=&quot;$(UISourceDir)&quot; -o=&quot;$(UIDir)&quot; -oa=&quot;$(UIContentDir)&quot; -da:Client.UI" />
+	</Target>
 </Project>

@@ -1,0 +1,1 @@
+#error 'Cannot create unknown type '{clr-namespace:Client.UI.Views;assembly=Client.UI}LoginControl'.' Line number '1' and line position '524'.

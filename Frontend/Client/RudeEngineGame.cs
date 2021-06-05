@@ -3,6 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using EmptyKeys.UserInterface;
+using EmptyKeys.UserInterface.Debug;
+using EmptyKeys.UserInterface.Generated;
+using EmptyKeys.UserInterface.Media;
+using EmptyKeys.UserInterface.Media.Effects;
 using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,11 +31,13 @@ namespace Client
         //private GraphicsDeviceManager _graphics;
         //private SpriteBatch _spriteBatch;
         //private ModelRoot _test;
-        private MeshCollection _meshCollection;
+        //private MeshCollection _meshCollection;
 
         private PBREnvironment _LightsAndFog = PBREnvironment.CreateDefault();
         private DeviceModelCollection _testModel;
         private ModelInstance[] _test = new ModelInstance[5 * 5];
+        private GameUI _gameUI;
+        private DebugViewModel _debugUI;
 
         public RudeEngineGame()
         {
@@ -60,9 +67,24 @@ namespace Client
             //vertices[3] = new VertexPositionColor(new Vector3(100f, 0, 0), Color.White);
             //vertices[4] = new VertexPositionColor(new Vector3(100f, 0, 100f), Color.Gray);
             //vertices[5] = new VertexPositionColor(new Vector3(0, 0, 100f), Color.White);
-            
+
             //vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 6, BufferUsage.WriteOnly);
             //vertexBuffer.SetData(vertices);
+
+            this.IsMouseVisible = true;
+
+            SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_10_Regular");
+            FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
+            Viewport viewport = GraphicsDevice.Viewport;
+            _gameUI = new GameUI(viewport.Width, viewport.Height);
+            //viewModel = new BasicUIViewModel();
+            //_gameUI.DataContext = viewModel;
+            _debugUI = new DebugViewModel(_gameUI);
+
+            FontManager.Instance.LoadFonts(Content);
+            ImageManager.Instance.LoadImages(Content);
+            SoundManager.Instance.LoadSounds(Content);
+            EffectManager.Instance.LoadEffects(Content);
 
             var gltfFactory = new GltfModelFactory(this.GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
@@ -116,6 +138,10 @@ namespace Client
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            _debugUI.Update();
+            _gameUI.UpdateInput(gameTime.ElapsedGameTime.TotalMilliseconds);
+            _gameUI.UpdateLayout(gameTime.ElapsedGameTime.TotalMilliseconds);
 
             for (int z = 0; z < 5; ++z)
             {
@@ -172,6 +198,9 @@ namespace Client
             //    pass.Apply();
             //    GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
             //}
+
+            _gameUI.Draw(gameTime.ElapsedGameTime.TotalMilliseconds);
+            _debugUI.Draw();
 
             base.Draw(gameTime);
         }
