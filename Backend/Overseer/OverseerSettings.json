@@ -1,6 +1,6 @@
 {
   "Components": {
-    "ComponentRootPath": "../Components/",
+    "ComponentRootPath": "../Backend/",
     "Definitions": [
       {
         "Application": "GameWarden/GameWarden.exe"

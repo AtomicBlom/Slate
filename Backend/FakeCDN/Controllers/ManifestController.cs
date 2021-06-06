@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -30,7 +31,11 @@ namespace FakeCDN.Controllers
         {
             _configuration = configuration;
             _logger = logger;
-            _contentDir = Path.GetFullPath(configuration["FAKECDN_CONTENTDIR"]);
+            var applicationLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            //FIXME: Consider if GameFiles is absolute
+            var fullPath = Path.GetFullPath(Path.Combine(applicationLocation, configuration["GameFiles"]));
+            _contentDir = Path.GetFullPath(fullPath);
             _fsw = new FileSystemWatcher(_contentDir);
             _fsw.IncludeSubdirectories = true;
             _fsw.Created += (sender, args) => ResetManifest();

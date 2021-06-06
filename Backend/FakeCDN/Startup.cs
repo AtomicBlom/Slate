@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 
@@ -40,7 +41,11 @@ namespace FakeCDN
             }
 
             app.UseHttpsRedirection();
-            var fullPath = Path.GetFullPath(Configuration["FAKECDN_CONTENTDIR"]);
+
+            var applicationLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            //FIXME: Consider if GameFiles is absolute
+            var fullPath = Path.GetFullPath(Path.Combine(applicationLocation, Configuration["GameFiles"]));
             Console.WriteLine(fullPath);
             app.UseStaticFiles(new StaticFileOptions
             {

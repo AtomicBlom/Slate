@@ -64,6 +64,7 @@ namespace Overseer
             var fileName = Path.GetFullPath(Path.Combine(_componentSection.ComponentRootPath, definition.Application));
             var startInfo = new ProcessStartInfo(fileName)
             {
+                WorkingDirectory = Path.GetDirectoryName(fileName),
                 UseShellExecute = true
             };
 

@@ -17,10 +17,11 @@ namespace Genealogist
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
+                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Verbose)
+                .MinimumLevel.Override("System", LogEventLevel.Verbose)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Verbose)
+                .WriteTo.Seq("http://localhost:5341")
                 .Enrich.FromLogContext()
                 // uncomment to write to Azure diagnostics stream
                 //.WriteTo.File(
@@ -41,12 +42,15 @@ namespace Genealogist
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Host terminated unexpectedly.");
+                Console.ReadLine();
                 return 1;
             }
             finally
             {
                 Log.CloseAndFlush();
             }
+
+            
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

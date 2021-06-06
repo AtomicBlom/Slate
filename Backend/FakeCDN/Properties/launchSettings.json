@@ -10,14 +10,14 @@
   "profiles": {
     "FakeCDN": {
       "commandName": "Project",
+      "workingDirectory": "$(TargetDir)",
       "launchUrl": "Manifest",
       "environmentVariables": {
-        "FAKECDN_CONTENTDIR": "$(ProjectDir)..\\..\\bin\\$(Configuration)\\Frontend\\GameClient",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "hotReloadProfile": "aspnetcore",
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "applicationUrl": "https://localhost:5003;http://localhost:5002"
     },
     "IIS Express": {
       "commandName": "IISExpress",
