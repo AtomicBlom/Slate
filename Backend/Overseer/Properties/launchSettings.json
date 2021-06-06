@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Overseer": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "OVERSEER_APP_ROOT": "$(ProjectDir)..\\..\\bin\\$(Configuration)\\Backend",
+        "OVERSEER_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

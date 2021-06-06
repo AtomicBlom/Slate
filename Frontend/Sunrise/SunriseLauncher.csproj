@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<ApplicationIcon>sunrise.ico</ApplicationIcon>
+		<AssemblyName>Sunrise</AssemblyName>
+		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+		<RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Frontend\Launcher</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Update="**\*.xaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<AvaloniaResource Include="**\*.xaml">
+			<SubType>Designer</SubType>
+		</AvaloniaResource>
+		<AvaloniaResource Include="Assets\*" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Fonts\Mont.ttf" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="0.9.0" />
+		<PackageReference Include="Avalonia.Desktop" Version="0.9.0" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0" />
+	</ItemGroup>
+</Project>

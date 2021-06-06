@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Nullable>Enable</Nullable>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Backend\Genealogist</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="IdentityServer4" Version="4.0.0" />
+
+		<PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+
+		<PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+	</ItemGroup>
+</Project>
