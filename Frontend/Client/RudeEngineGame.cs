@@ -26,7 +26,8 @@ namespace Client
         //Matrix world = Matrix.CreateTranslation(0, 0, 0);
         //Matrix view = Matrix.CreateLookAt(new Vector3(25, 25, 25), new Vector3(50, 0, 50), new Vector3(0, 0, 1));
         //Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.01f, 100f);
-
+        private int nativeScreenWidth;
+        private int nativeScreenHeight;
 
         //private GraphicsDeviceManager _graphics;
         //private SpriteBatch _spriteBatch;
@@ -38,12 +39,45 @@ namespace Client
         private ModelInstance[] _test = new ModelInstance[5 * 5];
         private GameUI _gameUI;
         private DebugViewModel _debugUI;
+        private GraphicsDeviceManager graphics;
 
         public RudeEngineGame()
         {
-            var _ = new GraphicsDeviceManager(this);
+            graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1366;
+            graphics.PreferredBackBufferHeight = 768;
+            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            graphics.DeviceCreated += graphics_DeviceCreated;
+            Window.ClientSizeChanged += Window_ClientSizeChanged;
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+        }
+
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            if (_gameUI != null)
+            {
+                Viewport viewPort = GraphicsDevice.Viewport;
+                _gameUI.Resize(viewPort.Width, viewPort.Height);
+            }
+        }
+
+        void graphics_DeviceCreated(object sender, EventArgs e)
+        {
+            Engine engine = new MonoGameEngine(GraphicsDevice, nativeScreenWidth, nativeScreenHeight);
+        }
+
+        private void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+        {
+            nativeScreenWidth = graphics.PreferredBackBufferWidth;
+            nativeScreenHeight = graphics.PreferredBackBufferHeight;
+
+            graphics.PreferMultiSampling = true;
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.SynchronizeWithVerticalRetrace = true;
+            graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
+            e.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 8;
         }
 
         protected override void Initialize()
@@ -73,7 +107,7 @@ namespace Client
 
             this.IsMouseVisible = true;
 
-            SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_10_Regular");
+            SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
             Viewport viewport = GraphicsDevice.Viewport;
             _gameUI = new GameUI(viewport.Width, viewport.Height);

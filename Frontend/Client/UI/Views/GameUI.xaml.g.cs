@@ -29,7 +29,7 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private Grid e_0;
         
-        private TextBlock e_1;
+        private LoginControl e_1;
         
         public GameUI() : 
                 base() {
@@ -49,20 +49,15 @@ namespace EmptyKeys.UserInterface.Generated {
         }
         
         private void InitializeComponent() {
+            this.Background = new SolidColorBrush(new ColorW(255, 255, 255, 0));
             // e_0 element
             this.e_0 = new Grid();
             this.Content = this.e_0;
             this.e_0.Name = "e_0";
             // e_1 element
-            this.e_1 = new TextBlock();
+            this.e_1 = new LoginControl();
             this.e_0.Children.Add(this.e_1);
             this.e_1.Name = "e_1";
-            this.e_1.HorizontalAlignment = HorizontalAlignment.Center;
-            this.e_1.VerticalAlignment = VerticalAlignment.Center;
-            this.e_1.Text = "Hello World";
-            this.e_1.FontSize = 20F;
-            this.e_1.FontStyle = FontStyle.Bold;
-            FontManager.Instance.AddFont("Segoe UI", 20F, FontStyle.Bold, "Segoe_UI_15_Bold");
         }
     }
 }
