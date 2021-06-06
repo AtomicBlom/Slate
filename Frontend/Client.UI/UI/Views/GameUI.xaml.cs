@@ -13,12 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using EmptyKeys.UserInterface.Designer;
+
 namespace Client.UI.Views
 {
     /// <summary>
     /// Interaction logic for GameUI.xaml
     /// </summary>
-    public partial class GameUI
+    public partial class GameUI : UIRoot
     {
         public GameUI()
         {

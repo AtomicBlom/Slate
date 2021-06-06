@@ -58,10 +58,4 @@
 	  <Folder Include="UI\Content\" />
 	  <Folder Include="UI\Views\" />
 	</ItemGroup>
-
-	<Target Name="ConvertXAML" BeforeTargets="BeforeBuild">
-		<Message Text="Converting XAML" Importance="high" />
-
-		<Exec Command="&quot;..\..\Dependencies\UI_Generator\ekUiGen\bin\$(ConfigurationName)\net5.0-windows\ekuigen&quot; --ignore-assets --rm=MonoGame --generate-bindings -i=&quot;$(UISourceDir)&quot; -o=&quot;$(UIDir)&quot; -oa=&quot;$(UIContentDir)&quot; -da:Client.UI" />
-	</Target>
 </Project>

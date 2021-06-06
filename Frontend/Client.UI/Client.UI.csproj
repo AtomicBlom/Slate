@@ -1,18 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <RootNamespace>Client</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>Client</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Dependencies\UI_Generator\EmptyKeys.UserInterface.Designer\EmptyKeys.UserInterface.Designer.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference
+			Include="..\..\Dependencies\UI_Generator\EmptyKeys.UserInterface.Designer\EmptyKeys.UserInterface.Designer.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UI\Content\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="UI\Content\" />
+	</ItemGroup>
+
+	<PropertyGroup> <!-- EKUIGEN -->
+		<PathToClientProject>$(ProjectDir)../Client/</PathToClientProject>
+
+		<UISourceDir>$(ProjectDir)UI/Views</UISourceDir>
+		<ClientUIDestinationDir>$(PathToClientProject)UI/Views</ClientUIDestinationDir>
+		<ClientContentDir>$(PathToClientProject)Content</ClientContentDir>
+	</PropertyGroup>
+
+	<Target Name="ConvertXAML" BeforeTargets="BeforeBuild">
+		<Message Text="Converting XAML" Importance="high" />
+
+		<Exec
+			Command="&quot;..\..\Dependencies\UI_Generator\ekUiGen\bin\$(ConfigurationName)\net5.0-windows\ekuigen.exe&quot; --rm=MonoGame --generate-bindings -i=&quot;$(UISourceDir)&quot; -o=&quot;$(ClientUIDestinationDir)&quot; -oa=&quot;$(ClientContentDir)&quot; -da:Client.UI" />
+	</Target>
 
 </Project>

@@ -13,3 +13,10 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Segoe_UI_15_Bold.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Segoe_UI_15_Bold.spritefont
+

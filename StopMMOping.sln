@@ -44,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeCDN", "Backend\FakeCDN\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Frontend\Client\Client.csproj", "{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}"
 	ProjectSection(ProjectDependencies) = postProject
-		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}
+		{CF40B351-77F1-43BB-B24E-C9C8D44D92AC} = {CF40B351-77F1-43BB-B24E-C9C8D44D92AC}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmptyKeys", "EmptyKeys", "{D8183253-E3D1-470D-80B7-5EA9E0129DB4}"
@@ -56,6 +56,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Generator", "Dependencies\UI_Generator\UIGenerator\EmptyKeys.UserInterface.Generator.csproj", "{F0F78B47-FADA-4EE0-9D94-FCD94F555166}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.UI", "Frontend\Client.UI\Client.UI.csproj", "{CF40B351-77F1-43BB-B24E-C9C8D44D92AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

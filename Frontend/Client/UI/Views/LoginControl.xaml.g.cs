@@ -48,6 +48,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0.Children.Add(this.e_1);
             this.e_1.Name = "e_1";
             this.e_1.Text = "User Control Test";
+            this.e_1.FontFamily = new FontFamily("Segoe UI");
         }
     }
 }
