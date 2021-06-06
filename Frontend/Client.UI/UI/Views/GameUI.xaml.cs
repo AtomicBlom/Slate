@@ -24,7 +24,6 @@ namespace Client.UI.Views
     {
         public GameUI()
         {
-            InitializeComponent();
         }
     }
 }
