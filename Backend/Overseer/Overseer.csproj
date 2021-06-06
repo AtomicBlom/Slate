@@ -6,6 +6,7 @@
 		<Nullable>Enable</Nullable>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Overseer</OutputPath>
+		<ApplicationIcon>clock_hour_watch_time_icon_186976.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>

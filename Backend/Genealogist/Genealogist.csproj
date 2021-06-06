@@ -5,6 +5,7 @@
 		<Nullable>Enable</Nullable>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Backend\Genealogist</OutputPath>
+		<ApplicationIcon>book_open_book_read_icon_186989.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>

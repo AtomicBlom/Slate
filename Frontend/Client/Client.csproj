@@ -43,6 +43,7 @@
 		<TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="CommandLineParser" Version="2.8.0" />
 		<PackageReference Include="EmptyKeysUI_MonoGame" Version="3.3.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />

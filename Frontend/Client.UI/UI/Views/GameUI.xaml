@@ -8,6 +8,9 @@
              Background="Transparent"
              d:DesignHeight="640" d:DesignWidth="800">
     <Grid>
-        <views:LoginControl />
+        <views:LoginControl DataContext="{Binding LoginViewModel}"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            />
     </Grid>
 </ek:UIRoot>

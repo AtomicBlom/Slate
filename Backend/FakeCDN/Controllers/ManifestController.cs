@@ -83,7 +83,7 @@ namespace FakeCDN.Controllers
             {
                 new()
                 {
-                    Args = "--AccessToken {AccessToken} --Host localhost",
+                    Args = "--AuthServer https://localhost:8001 --GameServer localhost --StablePort 4000 --UnstablePort 4001",
                     LaunchPath = "Client.exe",
                     Name = "Local development"
                 }
@@ -121,7 +121,7 @@ namespace FakeCDN.Controllers
                 Files = new List<ManifestFile>()
             };
             ApplyMetadata(manifest);
-            var setting = _configuration["ASPNETCORE_URLS"].Split(";");
+            var setting = _configuration["Urls"].Split(";");
 
             foreach (var file in Directory.GetFiles(_contentDir, "*.*", SearchOption.AllDirectories).Select(f => new FileInfo(f)))
             {

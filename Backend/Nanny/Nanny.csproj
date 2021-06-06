@@ -6,6 +6,7 @@
 		<Nullable>Enable</Nullable>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Backend\Nanny</OutputPath>
+		<ApplicationIcon>star_favourite_icon_186991.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>

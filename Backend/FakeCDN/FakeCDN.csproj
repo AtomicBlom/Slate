@@ -5,6 +5,7 @@
 	  <Nullable>Enable</Nullable>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	  <OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Backend\FakeCDN</OutputPath>
+	  <ApplicationIcon>diving_goggles_swim_snorkel_diving_icon_186982.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>

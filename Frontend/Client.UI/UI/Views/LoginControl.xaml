@@ -7,7 +7,8 @@
              
              xmlns:local="clr-namespace:Client.UI.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="#80FFFFFF">
     <UserControl.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI" />
@@ -29,12 +30,42 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="Username" FontFamily="Segoe UI" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8"/>
-        <TextBlock Grid.Row="2" Grid.Column="1" Text="Password" FontFamily="Segoe UI"  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8"/>
-        <TextBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" MinWidth="200" Margin="8" />
-        <ek:PasswordBox Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="200" Margin="8" />
-        <Button Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="1" Padding="8" MinWidth="120">
-            Log in
-        </Button>
+        <TextBlock Grid.Row="1" 
+                   Grid.Column="1" 
+                   Text="Username" 
+                   FontFamily="Segoe UI" 
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Bottom" 
+                   Margin="8"/>
+        <TextBlock Grid.Row="2" 
+                   Grid.Column="1" 
+                   Text="Password" 
+                   FontFamily="Segoe UI"  
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Top" 
+                   Margin="8"/>
+        <TextBox Grid.Row="1" 
+                 Grid.Column="2" 
+                 HorizontalAlignment="Left" 
+                 VerticalAlignment="Bottom" 
+                 MinWidth="200" 
+                 Margin="8"
+                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+        <ek:PasswordBox Grid.Row="2" 
+                        Grid.Column="2" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Top" 
+                        MinWidth="200" 
+                        Margin="8"
+                        Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"/>
+        <Button Grid.Row="3" 
+                Grid.ColumnSpan="2" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Top" 
+                Grid.Column="1" 
+                Padding="8" 
+                MinWidth="120"
+                Content="Log in"
+                Command="{Binding LoginCommand}"/>
     </Grid>
 </UserControl>
