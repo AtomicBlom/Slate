@@ -1,4 +1,5 @@
-﻿namespace Overseer.Configuration
+﻿#nullable disable // JSON + nullable sucks...
+namespace Overseer.Configuration
 {
     internal class ComponentSection
     {

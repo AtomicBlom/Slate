@@ -42,7 +42,8 @@ namespace FakeCDN
 
             app.UseHttpsRedirection();
 
-            var applicationLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var applicationLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+                                      throw new Exception("Could not determine running application location");
 
             //FIXME: Consider if GameFiles is absolute
             var fullPath = Path.GetFullPath(Path.Combine(applicationLocation, Configuration["GameFiles"]));

@@ -1,21 +1,27 @@
-﻿using GameWarden;
+﻿using System;
+using GameWarden;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
-Host.CreateDefaultBuilder(args)
-    .ConfigureHostConfiguration((configHost) =>
+WebHost.CreateDefaultBuilder(args)
+    .ConfigureKestrel(options =>
     {
-        configHost
-            .AddJsonFile("GameWardenSettings.json")
-            .AddEnvironmentVariables("GAMEWARDEN_")
-            .AddCommandLine(args);
+        var configuration = options.ApplicationServices.GetService<IConfiguration>() ??
+                            throw new Exception("Configuration was not available");
+        
+        if (!int.TryParse(configuration["port"], out var port))
+        {
+            port = 4000;
+        }
+        
+        options.ListenAnyIP(port, listenOptions =>
+        {
+            listenOptions.Protocols = HttpProtocols.Http2;
+        });
     })
-    .ConfigureServices((hostContext, services) =>
-    {
-        services
-            .AddLogging()
-            .AddHostedService<PlayerManager>();
-    })
+    .UseStartup<Startup>()
     .Build()
     .Run();

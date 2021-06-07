@@ -1,0 +1,15 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Game.CoreNetworking";
+
+service Auth {
+	rpc Authorize(AuthorizeRequest) returns (AuthorizeReply) {}
+}
+
+message AuthorizeRequest {
+	string AuthToken = 1;
+}
+
+message AuthorizeReply {
+	bool WasSuccessful = 1;
+	string ErrorMessage = 2;
+}

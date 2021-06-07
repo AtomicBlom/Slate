@@ -13,31 +13,32 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
+using Networking;
 
 namespace Client
 {
-    public class RudeEngineGame : Game
+    public class RudeEngineGame : Microsoft.Xna.Framework.Game
     {
         private readonly Options _options;
         
-        private int nativeScreenWidth;
-        private int nativeScreenHeight;
+        private int _nativeScreenWidth;
+        private int _nativeScreenHeight;
 
-        private PBREnvironment _LightsAndFog = PBREnvironment.CreateDefault();
+        private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
         private DeviceModelCollection _testModel;
-        private ModelInstance[] _test = new ModelInstance[5 * 5];
-        private GameUI _gameUI;
-        private DebugViewModel _debugUI;
-        private GraphicsDeviceManager graphics;
+        private readonly ModelInstance[] _test = new ModelInstance[5 * 5];
+        private GameUI _gameUi;
+        private DebugViewModel _debugUi;
+        private readonly GraphicsDeviceManager _graphics;
 
         public RudeEngineGame(Options options)
         {
             _options = options;
-            graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1366;
-            graphics.PreferredBackBufferHeight = 768;
-            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            graphics.DeviceCreated += graphics_DeviceCreated;
+            _graphics = new GraphicsDeviceManager(this);
+            _graphics.PreferredBackBufferWidth = 1366;
+            _graphics.PreferredBackBufferHeight = 768;
+            _graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            _graphics.DeviceCreated += graphics_DeviceCreated;
             Window.ClientSizeChanged += Window_ClientSizeChanged;
 
             Content.RootDirectory = "Content";
@@ -46,27 +47,27 @@ namespace Client
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-            if (_gameUI != null)
+            if (_gameUi != null)
             {
                 Viewport viewPort = GraphicsDevice.Viewport;
-                _gameUI.Resize(viewPort.Width, viewPort.Height);
+                _gameUi.Resize(viewPort.Width, viewPort.Height);
             }
         }
 
         void graphics_DeviceCreated(object sender, EventArgs e)
         {
-            Engine engine = new MonoGameEngine(GraphicsDevice, nativeScreenWidth, nativeScreenHeight);
+            Engine engine = new MonoGameEngine(GraphicsDevice, _nativeScreenWidth, _nativeScreenHeight);
         }
 
         private void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
-            nativeScreenWidth = graphics.PreferredBackBufferWidth;
-            nativeScreenHeight = graphics.PreferredBackBufferHeight;
+            _nativeScreenWidth = _graphics.PreferredBackBufferWidth;
+            _nativeScreenHeight = _graphics.PreferredBackBufferHeight;
 
-            graphics.PreferMultiSampling = true;
-            graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            graphics.SynchronizeWithVerticalRetrace = true;
-            graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
+            _graphics.PreferMultiSampling = true;
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            _graphics.SynchronizeWithVerticalRetrace = true;
+            _graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
             e.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 8;
         }
 
@@ -77,16 +78,16 @@ namespace Client
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
             Viewport viewport = GraphicsDevice.Viewport;
-            _gameUI = new GameUI(viewport.Width, viewport.Height);
+            _gameUi = new GameUI(viewport.Width, viewport.Height);
             var loginViewModel = new LoginViewModel(_options.AuthServer);
             loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
-            _gameUI.DataContext = new GameUIViewModel()
+            _gameUi.DataContext = new GameUIViewModel
             {
                 LoginViewModel = loginViewModel
             };
             Task.Run(loginViewModel.OnNavigatedTo);
             
-            _debugUI = new DebugViewModel(_gameUI);
+            _debugUi = new DebugViewModel(_gameUi);
 
             FontManager.Instance.LoadFonts(Content);
             ImageManager.Instance.LoadImages(Content);
@@ -97,9 +98,12 @@ namespace Client
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
         }
 
-        private void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
+        private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
-            _gameUI.Visibility = Visibility.Collapsed;
+            _gameUi.Visibility = Visibility.Collapsed;
+            GameConnection gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
+            var connectionResult = await gameConnection.Connect(e.AccessToken);
+
         }
 
         protected override void UnloadContent()
@@ -115,9 +119,9 @@ namespace Client
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _debugUI.Update();
-            _gameUI.UpdateInput(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _gameUI.UpdateLayout(gameTime.ElapsedGameTime.TotalMilliseconds);
+            _debugUi.Update();
+            _gameUi.UpdateInput(gameTime.ElapsedGameTime.TotalMilliseconds);
+            _gameUi.UpdateLayout(gameTime.ElapsedGameTime.TotalMilliseconds);
 
             for (int z = 0; z < 5; ++z)
             {
@@ -135,8 +139,7 @@ namespace Client
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-
+            
             var camPos = new Vector3(0, 25, 0);
             var modelPosition = new Vector3(50f, 0, 50f);
 
@@ -149,11 +152,11 @@ namespace Client
             
             dc.SetCamera(camX);
             
-            dc.DrawSceneInstances(_LightsAndFog,
+            dc.DrawSceneInstances(_lightsAndFog,
                 _test);
 
-            _gameUI.Draw(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _debugUI.Draw();
+            _gameUi.Draw(gameTime.ElapsedGameTime.TotalMilliseconds);
+            _debugUi.Draw();
 
             base.Draw(gameTime);
         }

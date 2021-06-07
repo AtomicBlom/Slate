@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,8 +32,8 @@ namespace FakeCDN.Controllers
         {
             _configuration = configuration;
             _logger = logger;
-            var applicationLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
+            var applicationLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+                                      throw new Exception("Could not determine the running application location");
             //FIXME: Consider if GameFiles is absolute
             var fullPath = Path.GetFullPath(Path.Combine(applicationLocation, configuration["GameFiles"]));
             _contentDir = Path.GetFullPath(fullPath);
@@ -83,7 +84,7 @@ namespace FakeCDN.Controllers
             {
                 new()
                 {
-                    Args = "--AuthServer https://localhost:8001 --GameServer localhost --StablePort 4000 --UnstablePort 4001",
+                    Args = "--AuthServer https://localhost:8001 --GameServer localhost --Port 4000",
                     LaunchPath = "Client.exe",
                     Name = "Local development"
                 }
@@ -104,6 +105,7 @@ namespace FakeCDN.Controllers
                 {
                     ResetManifest();
                 }
+                Debug.Assert(_generateManifestTask is not null);
             }
 
             var manifestFile = await _generateManifestTask;
