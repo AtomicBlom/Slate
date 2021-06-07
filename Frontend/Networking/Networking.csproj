@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Game.CoreNetworking\Game.CoreNetworking.csproj" />
+    <ProjectReference Include="..\..\Shared\Game.CoreNetworking\Game.CoreNetworking.csproj" />
   </ItemGroup>
 
 </Project>

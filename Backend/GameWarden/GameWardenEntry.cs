@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using GameWarden;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+if (args.Any(a => a.Contains("--attachDebugger"))) Debugger.Break();
 
 WebHost.CreateDefaultBuilder(args)
     .ConfigureKestrel(options =>

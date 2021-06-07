@@ -6,7 +6,7 @@ service Auth {
 }
 
 message AuthorizeRequest {
-	string AuthToken = 1;
+	
 }
 
 message AuthorizeReply {

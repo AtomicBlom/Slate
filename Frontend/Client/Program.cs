@@ -16,7 +16,7 @@ namespace Client
                 {
                     options = o;
                 })
-                .WithNotParsed((errors) =>
+                .WithNotParsed(errors =>
                 {
                     foreach (var error in errors)
                     {
@@ -29,8 +29,9 @@ namespace Client
 
             Debug.Assert(options != null);
 
-            using (var game = new RudeEngineGame(options))
-                game.Run();
+            using var game = new RudeEngineGame(options);
+
+            game.Run();
         }
     }
 }

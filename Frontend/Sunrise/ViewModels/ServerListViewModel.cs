@@ -141,7 +141,7 @@ namespace SunriseLauncher.ViewModels
             }
         }
 
-        public async void CancelUpdate()
+        public void CancelUpdate()
         {
             if (SelectedItem == null)
                 return;

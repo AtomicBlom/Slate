@@ -45,7 +45,7 @@ namespace Client
             IsMouseVisible = true;
         }
 
-        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
             if (_gameUi != null)
             {
@@ -54,12 +54,12 @@ namespace Client
             }
         }
 
-        void graphics_DeviceCreated(object sender, EventArgs e)
+        void graphics_DeviceCreated(object? sender, EventArgs e)
         {
             Engine engine = new MonoGameEngine(GraphicsDevice, _nativeScreenWidth, _nativeScreenHeight);
         }
 
-        private void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+        private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
         {
             _nativeScreenWidth = _graphics.PreferredBackBufferWidth;
             _nativeScreenHeight = _graphics.PreferredBackBufferHeight;
@@ -79,7 +79,11 @@ namespace Client
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
             Viewport viewport = GraphicsDevice.Viewport;
             _gameUi = new GameUI(viewport.Width, viewport.Height);
-            var loginViewModel = new LoginViewModel(_options.AuthServer);
+            var loginViewModel = new LoginViewModel(_options.AuthServer)
+            {
+                Username = "atomicblom",
+                Password = "password"
+            };
             loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
             _gameUi.DataContext = new GameUIViewModel
             {
@@ -101,7 +105,7 @@ namespace Client
         private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
             _gameUi.Visibility = Visibility.Collapsed;
-            GameConnection gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
+            var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
             var connectionResult = await gameConnection.Connect(e.AccessToken);
 
         }
@@ -111,7 +115,7 @@ namespace Client
             base.UnloadContent();
 
             _testModel?.Dispose();
-            _testModel = null;
+            _testModel = null!;
         }
 
         protected override void Update(GameTime gameTime)

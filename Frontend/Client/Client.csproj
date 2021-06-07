@@ -54,7 +54,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
-		<ProjectReference Include="..\..\Networking\Networking.csproj" />
+		<ProjectReference Include="..\Networking\Networking.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="UI\Content\" />
