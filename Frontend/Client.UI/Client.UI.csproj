@@ -15,19 +15,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Client.UI.Common\Client.UI.Common.csproj" />
 		<ProjectReference Include="..\..\Dependencies\UI_Generator\EmptyKeys.UserInterface.Designer\EmptyKeys.UserInterface.Designer.csproj" />
 	</ItemGroup>
 
-	<PropertyGroup> <!-- EKUIGEN -->
-		<PathToClientProject>$(ProjectDir)../Client/</PathToClientProject>
-
-		<UISourceDir>$(ProjectDir)UI/Views</UISourceDir>
-		<ClientUIDestinationDir>$(PathToClientProject)UI/Views</ClientUIDestinationDir>
-		<ClientContentDir>$(PathToClientProject)Content</ClientContentDir>
-	</PropertyGroup>
-
 	<Target Name="ConvertXAML" BeforeTargets="AfterBuild">
-		<Exec Command="&quot;..\..\Dependencies\UI_Generator\ekUiGen\bin\$(ConfigurationName)\net5.0-windows\ekuigen.exe&quot; --rm=MonoGame --generate-bindings -i=&quot;$(UISourceDir)&quot; -o=&quot;$(ClientUIDestinationDir)&quot; -oa=&quot;$(ClientContentDir)&quot; -bd=&quot;$(TargetDir)\&quot; -da:Client.UI" />
+		<Exec WorkingDirectory="$(TargetDir)" Command="&quot;$(ProjectDir)..\..\Dependencies\UI_Generator\ekUiGen\bin\$(ConfigurationName)\net5.0-windows\ekuigen.exe&quot; --rm=MonoGame --generate-bindings -i=&quot;$(ProjectDir)UI/Views&quot; -o=&quot;$(ProjectDir)../Client/UI/Views&quot; -oa=&quot;$(ProjectDir)../Client/Content&quot; -bd=&quot;$(TargetDir)\&quot; -da:Client.UI -ns:Client.UI.Views" />
 	</Target>
 
 </Project>

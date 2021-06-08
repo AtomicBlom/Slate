@@ -4,7 +4,7 @@ using ProtoBuf.Grpc;
 
 namespace GameWarden.Services
 {
-    public class Auth : IAuth
+    public class AuthorizationService : IAuthorizationService
     {
         public ValueTask<AuthorizeReply> AuthorizeAsync(AuthorizeRequest value, CallContext context = default)
         {

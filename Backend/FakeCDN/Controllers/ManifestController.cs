@@ -84,7 +84,7 @@ namespace FakeCDN.Controllers
             {
                 new()
                 {
-                    Args = "--AuthServer https://localhost:8001 --GameServer localhost --Port 4000",
+                    Args = "--AuthServer https://localhost:8001 --GameServer localhost --GameServerPort 4000",
                     LaunchPath = "Client.exe",
                     Name = "Local development"
                 }

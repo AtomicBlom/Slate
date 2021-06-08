@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Client.UI.ViewModels;
+using Client.UI.Views;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Debug;
 using EmptyKeys.UserInterface.Generated;
+using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Media;
 using EmptyKeys.UserInterface.Media.Effects;
 using IdentityModel.Client;
@@ -14,6 +17,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Networking;
+using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 
 namespace Client
 {
@@ -79,16 +83,19 @@ namespace Client
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
             Viewport viewport = GraphicsDevice.Viewport;
             _gameUi = new GameUI(viewport.Width, viewport.Height);
+
             var loginViewModel = new LoginViewModel(_options.AuthServer)
             {
                 Username = "atomicblom",
                 Password = "password"
             };
+
+            _gameUi.CurrentScreen.Children.Add(
+                new LoginScreen()
+                {
+                    DataContext = loginViewModel
+                });
             loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
-            _gameUi.DataContext = new GameUIViewModel
-            {
-                LoginViewModel = loginViewModel
-            };
             Task.Run(loginViewModel.OnNavigatedTo);
             
             _debugUi = new DebugViewModel(_gameUi);
@@ -104,10 +111,37 @@ namespace Client
 
         private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
-            _gameUi.Visibility = Visibility.Collapsed;
+            //_gameUi.Visibility = Visibility.Collapsed;
             var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
             var connectionResult = await gameConnection.Connect(e.AccessToken);
 
+            if (connectionResult.WasSuccessful)
+            {
+                var existingScreen = _gameUi.CurrentScreen.Children.FirstOrDefault();
+                if (existingScreen != null)
+                {
+                    existingScreen.Visibility = Visibility.Collapsed; // Animate off?
+                }
+
+                _gameUi.CurrentScreen.Children.Remove(existingScreen);
+                var characterListViewModel = new CharacterListViewModel(gameConnection)
+                {
+                    PlayAsCharacterCommand = new RelayCommand(OnCharacterSelected)
+                };
+                _gameUi.CurrentScreen.Children.Add(
+                    new CharacterListScreen()
+                    {
+                        DataContext = characterListViewModel
+                    });
+
+                await Task.Run(characterListViewModel.OnNavigatedTo);
+            }
+
+        }
+
+        private void OnCharacterSelected(object obj)
+        {
+            
         }
 
         protected override void UnloadContent()

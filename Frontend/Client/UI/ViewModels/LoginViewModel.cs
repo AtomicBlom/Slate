@@ -82,7 +82,7 @@ namespace Client.UI.ViewModels
 
                     ClientId = "Launcher",
                     ClientSecret = "secret",
-                    Scope = "account",
+                    Scope = "account offline_access",
 
                     UserName = Username,
                     Password = Password,

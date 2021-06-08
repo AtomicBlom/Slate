@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -8,6 +8,11 @@
 
 	<ItemGroup>
 		<AdditionalFiles Include="**/*.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Account.proto" />
+	  <None Remove="UUID.proto" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -52,12 +52,12 @@
 		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\Client.UI.Common\Client.UI.Common.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
 		<ProjectReference Include="..\Networking\Networking.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="UI\Content\" />
-	  <Folder Include="UI\Views\" />
 	</ItemGroup>
 </Project>

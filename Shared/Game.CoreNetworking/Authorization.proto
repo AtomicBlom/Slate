@@ -1,13 +1,11 @@
 ﻿syntax = "proto3";
 option csharp_namespace = "Game.CoreNetworking";
 
-service Auth {
+service AuthorizationService {
 	rpc Authorize(AuthorizeRequest) returns (AuthorizeReply) {}
 }
 
-message AuthorizeRequest {
-	
-}
+message AuthorizeRequest { }
 
 message AuthorizeReply {
 	bool WasSuccessful = 1;

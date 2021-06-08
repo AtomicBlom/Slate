@@ -24,17 +24,19 @@ namespace GameWarden
             services.AddCodeFirstGrpcReflection();
 
             services.AddAuthorization();
-            services.AddSingleton<IAuth, Auth>();
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = "https://localhost:8001";
 
-                    options.TokenValidationParameters = new TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
                     };
                 });
+
+            services.AddSingleton<IAuthorizationService, AuthorizationService>();
+            services.AddSingleton<IAccountService, AccountService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
@@ -46,7 +48,8 @@ namespace GameWarden
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<Auth>();
+                endpoints.MapGrpcService<AuthorizationService>();
+                endpoints.MapGrpcService<AccountService>();
             });
         }
     }

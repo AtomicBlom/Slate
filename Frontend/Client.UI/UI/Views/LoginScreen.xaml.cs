@@ -18,9 +18,9 @@ namespace Client.UI.Views
     /// <summary>
     /// Interaction logic for LoginControl.xaml
     /// </summary>
-    public partial class LoginControl : UserControl
+    public partial class LoginScreen
     {
-        public LoginControl()
+        public LoginScreen()
         {
             InitializeComponent();
         }

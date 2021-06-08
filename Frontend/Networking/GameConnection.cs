@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Game.CoreNetworking;
@@ -30,10 +32,18 @@ namespace Networking
                 }
             });
             
-            var auth = _channel.CreateGrpcService<IAuth>();
+            var auth = _channel.CreateGrpcService<IAuthorizationService>();
             var response = await auth.AuthorizeAsync(new AuthorizeRequest());
 
             return (response.WasSuccessful, response.ErrorMessage);
+        }
+
+        public async Task<IReadOnlyList<Character>> GetCharacters()
+        {
+            if (_channel is null) throw new Exception("Channel not ready yet!");
+            var account = _channel.CreateGrpcService<IAccountService>();
+            var response = await account.GetCharactersAsync(new GetCharactersRequest());
+            return response.Characters;
         }
     }
 }

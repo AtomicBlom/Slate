@@ -4,6 +4,7 @@
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Security.Claims;
 using IdentityServer4.Test;
 
 namespace Genealogist
@@ -13,11 +14,8 @@ namespace Genealogist
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             { 
-                new IdentityResources.OpenId() {UserClaims = new List<string>()
-                {
-                    "name"
-
-                }}
+                new IdentityResources.OpenId() { UserClaims = {"username"}},
+                new IdentityResources.Profile(),
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -32,12 +30,17 @@ namespace Genealogist
                 new Client {
                     ClientId = "Launcher",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-
+                    AllowOfflineAccess = true,
                     ClientSecrets = {
                         new Secret("secret".Sha256())
                     },
-
-                    AllowedScopes = { "account" }
+                    RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                    AllowedScopes = { "account", "offline_access" }
+                },
+                new Client
+                {
+                    ClientId = "GameWarden",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
                 }
             };
 
@@ -49,13 +52,21 @@ namespace Genealogist
                 {
                     SubjectId = "1",
                     Username = "atomicblom",
-                    Password = "password"
+                    Password = "password",
+                    Claims = new[]
+                    {
+                        new Claim("username", "AtomicBlom")
+                    }
                 },
                 new TestUser
                 {
                     SubjectId = "2",
                     Username = "rosethethorn",
-                    Password = "password"
+                    Password = "password",
+                    Claims = new[]
+                    {
+                        new Claim("username", "rosethethorn")
+                    }
                 }
             };
         }

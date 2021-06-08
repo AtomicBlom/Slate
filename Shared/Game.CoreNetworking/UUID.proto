@@ -1,0 +1,7 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Game.CoreNetworking";
+
+message UUID {
+	fixed64 a = 1;
+	fixed64 b = 2;
+}
