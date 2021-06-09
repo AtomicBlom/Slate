@@ -12,7 +12,11 @@
 
 	<ItemGroup>
 	  <None Remove="Account.proto" />
+	  <None Remove="Game.proto" />
+	  <None Remove="GameClientUpdates.proto" />
+	  <None Remove="GameServerUpdates.proto" />
 	  <None Remove="UUID.proto" />
+	  <None Remove="Vector.proto" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:Client.UI.Converters"
              xmlns:ek="clr-namespace:EmptyKeys.UserInterface.Designer;assembly=EmptyKeys.UserInterface.Designer"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
-             xmlns:networking="clr-namespace:Networking;assembly=Client.UI.Common"
+             xmlns:model="clr-namespace:Client.UI.Common.Model;assembly=Client.UI.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -19,7 +19,7 @@
         <ItemsControl Grid.Column="0"
                       ItemsSource="{Binding Characters}">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="networking:GameCharacter">
+                <DataTemplate DataType="model:GameCharacter">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
                         <TextBlock Text="{Binding Name}" />
                         <TextBlock Text="{Binding IdAsString}" />

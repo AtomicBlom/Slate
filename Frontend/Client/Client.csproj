@@ -6,10 +6,7 @@
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Frontend\GameClient</OutputPath>
-		<UISourceDir>$(ProjectDir)..\Client.UI\UI\Views</UISourceDir>
-		<UIDir>$(ProjectDir)UI\Views</UIDir>
-		<UIContentDir>$(ProjectDir)Content</UIContentDir>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -52,10 +49,11 @@
 		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Client.UI.Common\Client.UI.Common.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
+		<ProjectReference Include="..\Client.UI.Common\Client.UI.Common.csproj" />
 		<ProjectReference Include="..\Networking\Networking.csproj" />
+		<ProjectReference Include="..\..\Tools\NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="UI\Content\" />

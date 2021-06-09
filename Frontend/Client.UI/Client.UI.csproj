@@ -15,8 +15,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Client.UI.Common\Client.UI.Common.csproj" />
 		<ProjectReference Include="..\..\Dependencies\UI_Generator\EmptyKeys.UserInterface.Designer\EmptyKeys.UserInterface.Designer.csproj" />
+		<ProjectReference Include="..\Client.UI.Common\Client.UI.Common.csproj" />
 	</ItemGroup>
 
 	<Target Name="ConvertXAML" BeforeTargets="AfterBuild">

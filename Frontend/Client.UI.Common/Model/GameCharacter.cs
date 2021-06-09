@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Networking
+namespace Client.UI.Common.Model
 {
     public record GameCharacter(Guid Id, string Name)
     {

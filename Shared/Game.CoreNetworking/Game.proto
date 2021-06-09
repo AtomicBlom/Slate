@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Game.CoreNetworking";
+import "GameClientUpdates.proto";
+import "GameServerUpdates.proto";
+
+service GameService {
+	rpc Subscribe(GameClientUpdate) returns (stream GameServerUpdate);
+}

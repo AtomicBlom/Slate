@@ -1,32 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Client.Annotations;
+using BinaryVibrance.INPCSourceGenerator;
 using EmptyKeys.UserInterface.Input;
 using IdentityModel.Client;
 
 namespace Client.UI.ViewModels
 {
-    public class LoginViewModel : INotifyPropertyChanged
+    public partial class LoginViewModel
     {
         private readonly Uri _authServer;
         private readonly HttpClient _client;
         private DiscoveryDocumentResponse? _disco;
         private string _username = string.Empty;
         private string _password = string.Empty;
+
+        [ImplementNotifyPropertyChanged]
         private string _errorMessage = string.Empty;
+        [ImplementNotifyPropertyChanged]
         private ICommand _loginCommand;
 
         public event EventHandler<TokenResponse>? LoggedIn;
-
-        public ICommand LoginCommand
-        {
-            get => _loginCommand;
-            set => SetField(ref _loginCommand, value);
-        }
 
         public string Username
         {
@@ -52,16 +46,10 @@ namespace Client.UI.ViewModels
             }
         }
 
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set => SetField(ref _errorMessage, value);
-        }
-
         public LoginViewModel(Uri authServer)
         {
             _authServer = authServer;
-            LoginCommand = new RelayCommand(OnLogin, CanLogin);
+            _loginCommand = new RelayCommand(OnLogin, CanLogin);
             _client = new HttpClient();
         }
 
@@ -130,21 +118,6 @@ namespace Client.UI.ViewModels
             }
 
             return null;
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void RaisePropertyChanged(string? propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        [NotifyPropertyChangedInvocator]
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName]
-            string? propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            RaisePropertyChanged(propertyName);
-            return true;
         }
     }
 }

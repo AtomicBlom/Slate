@@ -1,0 +1,28 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Game.CoreNetworking";
+import "UUID.proto";
+import "Vector.proto";
+
+message CharacterMoved {
+	UUID Id = 1;
+	Vector3 Position = 2;
+	Vector3 Velocity = 3;
+}
+
+message CharacterAdded {
+	UUID Id = 1;
+	Vector3 Position = 2;
+	string Name = 3;
+}
+
+message CharacterRemoved {
+	UUID Id = 1;
+}
+
+message GameServerUpdate {
+	oneof Message {
+		CharacterAdded CharacterAdded = 1;
+		CharacterRemoved CharacterRemoved = 2;
+		CharacterMoved CharacterMoved = 3;
+	}
+}

@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Game.CoreNetworking";
+
+import "UUID.proto";
+import "Vector.proto";
+
+message ClientRequestMove {
+	Vector3 Location = 1;
+	Vector3 Velocity = 2;
+}
+
+message GameClientUpdate {
+	oneof Message {
+		ClientRequestMove ClientRequestMove = 1;
+	}
+}
