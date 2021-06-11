@@ -5,6 +5,7 @@
 
 # Repository-specific
 Frontend/Client/UI/Views/*.g.cs
+.claudiaideconfig
 
 # User-specific files
 *.rsuser

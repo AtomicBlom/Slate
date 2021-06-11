@@ -3,53 +3,53 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31320.298
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Pipeline.GLTF", "Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj", "{81A8913B-7199-42F5-960F-2BCBC5868CC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Pipeline.GLTF", "..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj", "{81A8913B-7199-42F5-960F-2BCBC5868CC3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoScene", "MonoScene", "{7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Model3D", "Dependencies\MonoScene\src\MonoScene.Runtime.Model3D\MonoScene.Runtime.Model3D.csproj", "{194077FC-29B2-436E-AF02-F1985334A1F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Model3D", "..\Dependencies\MonoScene\src\MonoScene.Runtime.Model3D\MonoScene.Runtime.Model3D.csproj", "{194077FC-29B2-436E-AF02-F1985334A1F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Pipeline", "Dependencies\MonoScene\src\MonoScene.Pipeline\MonoScene.Pipeline.csproj", "{3725F10D-C1A8-464C-BEB2-AE6AF4FA1383}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Pipeline", "..\Dependencies\MonoScene\src\MonoScene.Pipeline\MonoScene.Pipeline.csproj", "{3725F10D-C1A8-464C-BEB2-AE6AF4FA1383}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Content", "Dependencies\MonoScene\src\MonoScene.Runtime.Content\MonoScene.Runtime.Content.csproj", "{549CBDF1-C0FB-403F-9176-AFF129ED504F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Content", "..\Dependencies\MonoScene\src\MonoScene.Runtime.Content\MonoScene.Runtime.Content.csproj", "{549CBDF1-C0FB-403F-9176-AFF129ED504F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Effects.PBR", "Dependencies\MonoScene\src\MonoScene.Runtime.Effects.PBR\MonoScene.Runtime.Effects.PBR.csproj", "{8853ED25-278B-4AF6-AFFE-2A0F97345E50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Effects.PBR", "..\Dependencies\MonoScene\src\MonoScene.Runtime.Effects.PBR\MonoScene.Runtime.Effects.PBR.csproj", "{8853ED25-278B-4AF6-AFFE-2A0F97345E50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Effects.Classic", "Dependencies\MonoScene\src\MonoScene.Runtime.Effects.Classic\MonoScene.Runtime.Effects.Classic.csproj", "{4138B9D6-7752-4D69-B02F-EFBE62DF772A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Effects.Classic", "..\Dependencies\MonoScene\src\MonoScene.Runtime.Effects.Classic\MonoScene.Runtime.Effects.Classic.csproj", "{4138B9D6-7752-4D69-B02F-EFBE62DF772A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Scene3D", "Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj", "{6EBCDF70-67E1-4D24-BF04-F804E37F0684}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Scene3D", "..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj", "{6EBCDF70-67E1-4D24-BF04-F804E37F0684}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunriseLauncher", "Frontend\Sunrise\SunriseLauncher.csproj", "{1055CF76-6DBB-468A-91A3-6EB0EA4839EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunriseLauncher", "Sunrise\SunriseLauncher.csproj", "{1055CF76-6DBB-468A-91A3-6EB0EA4839EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Frontend\Client\Client.csproj", "{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}"
-	ProjectSection(ProjectDependencies) = postProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}"
+	ProjectSection(Project..\Dependencies) = postProject
 		{CF40B351-77F1-43BB-B24E-C9C8D44D92AC} = {CF40B351-77F1-43BB-B24E-C9C8D44D92AC}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmptyKeys", "EmptyKeys", "{D8183253-E3D1-470D-80B7-5EA9E0129DB4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ekUiGen", "Dependencies\UI_Generator\ekUiGen\ekUiGen.csproj", "{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ekUiGen", "..\Dependencies\UI_Generator\ekUiGen\ekUiGen.csproj", "{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Designer", "Dependencies\UI_Generator\EmptyKeys.UserInterface.Designer\EmptyKeys.UserInterface.Designer.csproj", "{1AFC50BD-017E-4D20-B912-2A05C96F38F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Designer", "..\Dependencies\UI_Generator\EmptyKeys.UserInterface.Designer\EmptyKeys.UserInterface.Designer.csproj", "{1AFC50BD-017E-4D20-B912-2A05C96F38F9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Generator", "Dependencies\UI_Generator\UIGenerator\EmptyKeys.UserInterface.Generator.csproj", "{F0F78B47-FADA-4EE0-9D94-FCD94F555166}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Generator", "..\Dependencies\UI_Generator\UIGenerator\EmptyKeys.UserInterface.Generator.csproj", "{F0F78B47-FADA-4EE0-9D94-FCD94F555166}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.UI", "Frontend\Client.UI\Client.UI.csproj", "{CF40B351-77F1-43BB-B24E-C9C8D44D92AC}"
-	ProjectSection(ProjectDependencies) = postProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.UI", "Client.UI\Client.UI.csproj", "{CF40B351-77F1-43BB-B24E-C9C8D44D92AC}"
+	ProjectSection(Project..\Dependencies) = postProject
 		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networking", "Frontend\Networking\Networking.csproj", "{E6899054-DEB7-4093-867D-9FE10F39134D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networking", "Networking\Networking.csproj", "{E6899054-DEB7-4093-867D-9FE10F39134D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{E94A7E73-7D87-4FB6-A818-B014CD127704}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.CoreNetworking", "Shared\Game.CoreNetworking\Game.CoreNetworking.csproj", "{895417B0-27A3-4344-BD6B-D1BBB2A7A2D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.CoreNetworking", "..\Shared\Game.CoreNetworking\Game.CoreNetworking.csproj", "{895417B0-27A3-4344-BD6B-D1BBB2A7A2D9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.UI.Common", "Frontend\Client.UI.Common\Client.UI.Common.csproj", "{C8DFDAF6-D9BF-455A-B88A-2FFCDB64E696}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.UI.Common", "Client.UI.Common\Client.UI.Common.csproj", "{C8DFDAF6-D9BF-455A-B88A-2FFCDB64E696}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{9403E16B-0BB3-4D80-80E9-4C35CE483B80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryVibrance.INPCSourceGenerator", "Tools\NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj", "{6B84871F-F241-421C-838F-0C9FE10FD382}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryVibrance.INPCSourceGenerator", "..\Tools\NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj", "{6B84871F-F241-421C-838F-0C9FE10FD382}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
