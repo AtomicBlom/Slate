@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Overseer.Configuration;
+using RabbitMQ.Client;
 
 namespace Overseer
 {
@@ -33,6 +35,21 @@ namespace Overseer
         {
             _lifetime.ApplicationStarted.Register(OnStarted);
             _lifetime.ApplicationStopping.Register(OnStopping);
+
+            var factory = new ConnectionFactory() { HostName = "localhost", VirtualHost = "management" };
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            channel.QueueDeclare("q.test", autoDelete: false);
+            
+            for (int i = 0; i < 10000; ++i)
+            {
+                string message = $"Hello world {i}";
+                var body = Encoding.UTF8.GetBytes(message);
+
+                channel.BasicPublish(exchange: "", routingKey: "hello", basicProperties: null, body: body);
+            }
+
             return Task.CompletedTask;
         }
 

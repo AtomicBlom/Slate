@@ -17,7 +17,6 @@ namespace Client.UI.ViewModels
         [ImplementNotifyPropertyChanged] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
         [ImplementNotifyPropertyChanged] private ICommand? _playAsCharacterCommand = null;
 
-
         public CharacterListViewModel(GameConnection gameConnection)
         {
             _gameConnection = gameConnection;
