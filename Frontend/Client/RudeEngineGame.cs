@@ -6,7 +6,6 @@ using Client.UI.ViewModels;
 using Client.UI.Views;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Debug;
-using EmptyKeys.UserInterface.Generated;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Media;
 using EmptyKeys.UserInterface.Media.Effects;
@@ -105,7 +104,7 @@ namespace Client
             SoundManager.Instance.LoadSounds(Content);
             EffectManager.Instance.LoadEffects(Content);
 
-            var gltfFactory = new GltfModelFactory(this.GraphicsDevice);
+            var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
         }
 
