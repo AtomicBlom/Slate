@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 
-namespace Genealogist.Stores
+namespace Slate.Genealogist.Stores
 {
     public class MigrateDatabase : IMigrateDatabase
     {

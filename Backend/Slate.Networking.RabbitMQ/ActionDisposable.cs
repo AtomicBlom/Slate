@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Game.Networking.Internal.Client.RabbitMQ
+namespace Slate.Networking.RabbitMQ
 {
     internal class ActionDisposable : IDisposable
     {

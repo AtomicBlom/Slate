@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Client.UI.Converters
+namespace Client.Converters
 {
     public class GuidToStringConverter : IValueConverter
     {

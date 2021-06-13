@@ -3,7 +3,7 @@
 //  This file was generated, please do not modify.
 //  
 // -----------------------------------------------------------
-namespace Client.UI.Views.LoginScreen_Bindings {
+namespace Slate.Client.UI.Views.LoginScreen_Bindings {
     using System;
     using System.CodeDom.Compiler;
     using System.Collections.ObjectModel;

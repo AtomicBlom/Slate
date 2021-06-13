@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Client.UI.Common.Model
+namespace Slate.Client.UI.Common.Model
 {
     public record GameCharacter(Guid Id, string Name)
     {

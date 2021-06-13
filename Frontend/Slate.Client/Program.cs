@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using CommandLine;
 
-namespace Client
+namespace Slate.Client
 {
     public static class Program
     {

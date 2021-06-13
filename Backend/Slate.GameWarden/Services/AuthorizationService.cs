@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Game.Networking.External.Protocol;
 using ProtoBuf.Grpc;
+using Slate.Networking.External.Protocol;
 
-namespace GameWarden.Services
+namespace Slate.GameWarden.Services
 {
     public class AuthorizationService : IAuthorizationService
     {

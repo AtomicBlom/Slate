@@ -1,4 +1,4 @@
-﻿namespace Client.UI.Views
+﻿namespace Slate.Client.UI.Views
 {
     /// <summary>
     /// Interaction logic for CharacterList.xaml

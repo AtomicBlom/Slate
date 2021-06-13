@@ -1,8 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using SunriseLauncher.Models;
-using SunriseLauncher.ViewModels;
 
 namespace SunriseLauncher.Views
 {

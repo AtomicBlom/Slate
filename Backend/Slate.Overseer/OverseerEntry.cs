@@ -1,9 +1,9 @@
-﻿using Game.Networking.Internal.Client.RabbitMQ;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Overseer;
+using Slate.Networking.RabbitMQ;
+using Slate.Overseer;
 
 Host.CreateDefaultBuilder(args)
     .ConfigureHostConfiguration((configHost) =>

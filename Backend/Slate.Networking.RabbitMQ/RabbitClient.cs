@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Game.Networking.Internal.Protocol;
 using ProtoBuf;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Slate.Networking.Internal.Protocol;
 
-namespace Game.Networking.Internal.Client.RabbitMQ
+namespace Slate.Networking.RabbitMQ
 {
     public interface IRabbitClient
     {

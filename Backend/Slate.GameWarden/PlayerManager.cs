@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace GameWarden
+namespace Slate.GameWarden
 {
     public class PlayerManager : IHostedService
     {

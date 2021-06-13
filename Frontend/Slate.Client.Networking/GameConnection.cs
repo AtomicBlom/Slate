@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Game.Networking.External.Protocol;
 using Grpc.Net.Client;
-using ProtoBuf.Grpc;
 using ProtoBuf.Grpc.Client;
+using Slate.Networking.External.Protocol;
 
-namespace Networking
+namespace Slate.Client.Networking
 {
     public class GameConnection
     {

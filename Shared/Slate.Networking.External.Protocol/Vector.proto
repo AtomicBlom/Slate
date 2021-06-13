@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Game.Networking.External.Protocol";
+option csharp_namespace = "Slate.Networking.External.Protocol";
 
 message Vector3 {
 	float X = 1;

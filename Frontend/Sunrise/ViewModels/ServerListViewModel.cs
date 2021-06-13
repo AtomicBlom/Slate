@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using SunriseLauncher.Models;
 using SunriseLauncher.Views;
 using ReactiveUI;
 using SunriseLauncher.Services;
-using System.Threading.Tasks;
-using Avalonia.Controls.ApplicationLifetimes;
 
 namespace SunriseLauncher.ViewModels
 {

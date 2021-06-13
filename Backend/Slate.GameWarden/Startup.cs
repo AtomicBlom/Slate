@@ -1,6 +1,4 @@
 ﻿using System.IO.Compression;
-using Game.Networking.External.Protocol;
-using GameWarden.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using ProtoBuf.Grpc.Configuration;
 using ProtoBuf.Grpc.Server;
+using Slate.GameWarden.Services;
+using Slate.Networking.External.Protocol;
 
-namespace GameWarden
+namespace Slate.GameWarden
 {
     public class Startup
     {

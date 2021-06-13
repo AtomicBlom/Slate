@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nanny;
+using Slate.Snowglobe;
 
 Host.CreateDefaultBuilder(args)
     .ConfigureHostConfiguration((configHost) =>

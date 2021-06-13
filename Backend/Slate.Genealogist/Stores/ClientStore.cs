@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Genealogist.Stores;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using MongoDB.Driver;
 
-namespace Overseer.Stores
+namespace Slate.Genealogist.Stores
 {
     public class MongoClientStore : IClientStore
     {

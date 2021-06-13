@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EmptyKeys.UserInterface.Data;
 
-namespace Client.UI.Converters
+namespace Slate.Client.UI.Converters
 {
     public class GuidToStringConverter : IValueConverter
     {

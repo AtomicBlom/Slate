@@ -3,8 +3,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using SunriseLauncher.ViewModels;
 using SunriseLauncher.Views;
-using SunriseLauncher.Services;
-using System.Threading.Tasks;
 
 namespace SunriseLauncher
 {

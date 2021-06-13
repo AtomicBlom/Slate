@@ -2,8 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Client.UI.ViewModels;
-using Client.UI.Views;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Debug;
 using EmptyKeys.UserInterface.Input;
@@ -15,10 +13,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
-using Networking;
+using Slate.Client.Networking;
+using Slate.Client.UI.ViewModels;
+using Slate.Client.UI.Views;
+using GameUI = Slate.Client.UI.Views.GameUI;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 
-namespace Client
+namespace Slate.Client
 {
     public class RudeEngineGame : Microsoft.Xna.Framework.Game
     {

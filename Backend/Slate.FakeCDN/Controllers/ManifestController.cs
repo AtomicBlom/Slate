@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SunriseLauncher.Models;
+using Slate.FakeCDN.Models;
 
-namespace FakeCDN.Controllers
+namespace Slate.FakeCDN.Controllers
 {
     [Route("[controller]")]
     [ApiController]

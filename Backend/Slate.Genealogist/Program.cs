@@ -8,9 +8,9 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
-using Genealogist;
-using Genealogist.Stores;
 using Microsoft.Extensions.DependencyInjection;
+using Slate.Genealogist;
+using Slate.Genealogist.Stores;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()

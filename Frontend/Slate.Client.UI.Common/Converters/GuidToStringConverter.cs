@@ -2,7 +2,7 @@
 using System.Globalization;
 using EmptyKeys.UserInterface.Data;
 
-namespace Client.UI.Converters
+namespace Slate.Client.UI.Common.Converters
 {
     public class GuidToStringConverter : IValueConverter
     {

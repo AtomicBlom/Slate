@@ -6,14 +6,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Game.Networking.Internal.Client.RabbitMQ;
-using Game.Networking.Internal.Protocol;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Overseer.Configuration;
+using Slate.Networking.Internal.Protocol;
+using Slate.Networking.RabbitMQ;
+using Slate.Overseer.Configuration;
 
-namespace Overseer
+namespace Slate.Overseer
 {
     internal class ApplicationLauncher : IHostedService
     {

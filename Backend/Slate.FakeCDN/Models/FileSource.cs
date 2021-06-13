@@ -2,7 +2,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace SunriseLauncher.Models
+namespace Slate.FakeCDN.Models
 {
     public class FileSource
     {

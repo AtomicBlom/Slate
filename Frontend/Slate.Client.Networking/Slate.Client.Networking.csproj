@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Game.Networking.External\Slate.Networking.External.csproj" />
+    <ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
   </ItemGroup>
 
 </Project>

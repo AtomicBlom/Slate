@@ -3,7 +3,7 @@
 //  This file was generated, please do not modify.
 //  
 // -----------------------------------------------------------
-namespace Client.UI.Views.CharacterListScreen_Bindings {
+namespace Slate.Client.UI.Views.CharacterListScreen_Bindings {
     using System;
     using System.CodeDom.Compiler;
     using System.Collections.ObjectModel;

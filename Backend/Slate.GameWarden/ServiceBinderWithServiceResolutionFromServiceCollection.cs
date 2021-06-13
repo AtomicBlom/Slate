@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using ProtoBuf.Grpc.Configuration;
 
-namespace GameWarden
+namespace Slate.GameWarden
 {
     internal class ServiceBinderWithServiceResolutionFromServiceCollection : ServiceBinder
     {

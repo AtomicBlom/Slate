@@ -3,7 +3,7 @@
 //  This file was generated, please do not modify.
 //  
 // -----------------------------------------------------------
-namespace Client.UI.Views {
+namespace Slate.Client.UI.Views {
     using System;
     using System.CodeDom.Compiler;
     using System.Collections.ObjectModel;
@@ -140,16 +140,11 @@ namespace Client.UI.Views {
         }
         
         private static void InitializeElementResources(UIElement elem) {
-            // Resource - [System.Windows.Controls.Button] Style
-            Style r_0_s = new Style(typeof(Button));
-            Setter r_0_s_S_0 = new Setter(Button.BackgroundProperty, new SolidColorBrush(new ColorW(0, 128, 0, 255)));
-            r_0_s.Setters.Add(r_0_s_S_0);
-            elem.Resources.Add(typeof(Button), r_0_s);
             // Resource - [System.Windows.Controls.TextBlock] Style
-            Style r_1_s = new Style(typeof(TextBlock));
-            Setter r_1_s_S_0 = new Setter(TextBlock.FontFamilyProperty, new FontFamily("Segoe UI"));
-            r_1_s.Setters.Add(r_1_s_S_0);
-            elem.Resources.Add(typeof(TextBlock), r_1_s);
+            Style r_0_s = new Style(typeof(TextBlock));
+            Setter r_0_s_S_0 = new Setter(TextBlock.FontFamilyProperty, new FontFamily("Segoe UI"));
+            r_0_s.Setters.Add(r_0_s_S_0);
+            elem.Resources.Add(typeof(TextBlock), r_0_s);
         }
     }
 }

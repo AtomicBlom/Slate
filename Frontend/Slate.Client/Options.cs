@@ -1,7 +1,7 @@
 ﻿using System;
 using CommandLine;
 
-namespace Client
+namespace Slate.Client
 {
     public class Options
     {

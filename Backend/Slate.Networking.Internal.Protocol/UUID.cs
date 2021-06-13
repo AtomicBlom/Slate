@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Game.Networking.Internal.Protocol
+namespace Slate.Networking.Internal.Protocol
 {
     public partial class Uuid
     {
         public Guid ToGuid()
         {
             Span<byte> guidBytes = stackalloc byte[16];
-            BitConverter.TryWriteBytes(guidBytes[..8], A);
-            BitConverter.TryWriteBytes(guidBytes[8..16], B);
+            BitConverter.TryWriteBytes(guidBytes[..8], (ulong)A);
+            BitConverter.TryWriteBytes(guidBytes[8..16], (ulong)B);
 
             return new Guid(guidBytes);
         }

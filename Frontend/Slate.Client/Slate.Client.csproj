@@ -56,9 +56,9 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
-		<ProjectReference Include="..\Client.UI.Common\Slate.Client.UI.Common.csproj" />
-		<ProjectReference Include="..\Networking\Slate.Networking.csproj" />
-		<ProjectReference Include="..\..\Tools\NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\Tools\BinaryVibrance.NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\Slate.Client.Networking\Slate.Client.Networking.csproj" />
+		<ProjectReference Include="..\Slate.Client.UI.Common\Slate.Client.UI.Common.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="UI\Content\" />

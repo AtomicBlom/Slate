@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace SunriseLauncher.Models
+namespace Slate.FakeCDN.Models
 {
     public class Manifest : ManifestMetadata
     {

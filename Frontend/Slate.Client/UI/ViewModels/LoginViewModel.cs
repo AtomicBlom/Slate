@@ -5,7 +5,7 @@ using BinaryVibrance.INPCSourceGenerator;
 using EmptyKeys.UserInterface.Input;
 using IdentityModel.Client;
 
-namespace Client.UI.ViewModels
+namespace Slate.Client.UI.ViewModels
 {
     public partial class LoginViewModel
     {

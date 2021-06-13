@@ -1,7 +1,8 @@
 ﻿using EmptyKeys.UserInterface.Controls;
+
 // ReSharper disable ConvertToAutoProperty
 
-namespace Client.UI.Views
+namespace Slate.Client.UI.Views
 {
     public partial class GameUI
     {

@@ -1,5 +1,5 @@
 ﻿#nullable disable // JSON + nullable sucks...
-namespace Overseer.Configuration
+namespace Slate.Overseer.Configuration
 {
     internal class ComponentSection
     {

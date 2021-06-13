@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Client.UI.Common.Model;
-using EmptyKeys.UserInterface.Input;
-using Networking;
 using BinaryVibrance.INPCSourceGenerator;
+using EmptyKeys.UserInterface.Input;
+using Slate.Client.Networking;
+using Slate.Client.UI.Common.Model;
 
-namespace Client.UI.ViewModels
+namespace Slate.Client.UI.ViewModels
 {
     public partial class CharacterListViewModel
     {
