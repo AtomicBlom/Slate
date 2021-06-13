@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoScene.Runtime.Scene3D",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunriseLauncher", "Sunrise\SunriseLauncher.csproj", "{1055CF76-6DBB-468A-91A3-6EB0EA4839EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client", "Slate.Client\Slate.Client.csproj", "{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}"
 	ProjectSection(Project..\Dependencies) = postProject
 		{CF40B351-77F1-43BB-B24E-C9C8D44D92AC} = {CF40B351-77F1-43BB-B24E-C9C8D44D92AC}
 	EndProjectSection
@@ -34,22 +34,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Des
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Generator", "..\Dependencies\UI_Generator\UIGenerator\EmptyKeys.UserInterface.Generator.csproj", "{F0F78B47-FADA-4EE0-9D94-FCD94F555166}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.UI", "Client.UI\Client.UI.csproj", "{CF40B351-77F1-43BB-B24E-C9C8D44D92AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.UI", "Slate.Client.UI\Slate.Client.UI.csproj", "{CF40B351-77F1-43BB-B24E-C9C8D44D92AC}"
 	ProjectSection(Project..\Dependencies) = postProject
 		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networking", "Networking\Networking.csproj", "{E6899054-DEB7-4093-867D-9FE10F39134D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.Networking", "Slate.Client.Networking\Slate.Client.Networking.csproj", "{E6899054-DEB7-4093-867D-9FE10F39134D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{E94A7E73-7D87-4FB6-A818-B014CD127704}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.UI.Common", "Client.UI.Common\Client.UI.Common.csproj", "{C8DFDAF6-D9BF-455A-B88A-2FFCDB64E696}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.UI.Common", "Slate.Client.UI.Common\Slate.Client.UI.Common.csproj", "{C8DFDAF6-D9BF-455A-B88A-2FFCDB64E696}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{9403E16B-0BB3-4D80-80E9-4C35CE483B80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryVibrance.INPCSourceGenerator", "..\Tools\NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj", "{6B84871F-F241-421C-838F-0C9FE10FD382}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryVibrance.INPCSourceGenerator", "..\Tools\BinaryVibrance.NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj", "{6B84871F-F241-421C-838F-0C9FE10FD382}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Networking.External", "..\Shared\Game.Networking.External\Game.Networking.External.csproj", "{8FCC109D-116C-4803-971A-5E02025B23BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Networking.External.Protocol", "..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj", "{8FCC109D-116C-4803-971A-5E02025B23BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -347,6 +347,7 @@ Global
 		{8853ED25-278B-4AF6-AFFE-2A0F97345E50} = {7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}
 		{4138B9D6-7752-4D69-B02F-EFBE62DF772A} = {7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}
 		{6EBCDF70-67E1-4D24-BF04-F804E37F0684} = {7C9A63D1-8660-4E1B-AA96-F9C0CD1FB3F3}
+		{1055CF76-6DBB-468A-91A3-6EB0EA4839EB} = {9403E16B-0BB3-4D80-80E9-4C35CE483B80}
 		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {D8183253-E3D1-470D-80B7-5EA9E0129DB4}
 		{1AFC50BD-017E-4D20-B912-2A05C96F38F9} = {D8183253-E3D1-470D-80B7-5EA9E0129DB4}
 		{F0F78B47-FADA-4EE0-9D94-FCD94F555166} = {D8183253-E3D1-470D-80B7-5EA9E0129DB4}

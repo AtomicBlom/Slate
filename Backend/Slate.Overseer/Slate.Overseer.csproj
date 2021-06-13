@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>Enable</Nullable>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Overseer</OutputPath>
+		<ApplicationIcon>clock_hour_watch_time_icon_186976.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="OverseerSettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="OverseerSettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.4.21253.7" />
+		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Shared\Game.Networking.Internal\Slate.Networking.Internal.csproj" />
+	  <ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
+	  <ProjectReference Include="..\Slate.Networking.RabbitMQ\Slate.Networking.RabbitMQ.csproj" />
+	</ItemGroup>
+
+</Project>
