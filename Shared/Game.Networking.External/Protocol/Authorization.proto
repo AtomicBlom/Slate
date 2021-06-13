@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Game.CoreNetworking";
+option csharp_namespace = "Game.Networking.External.Protocol";
 
 service AuthorizationService {
 	rpc Authorize(AuthorizeRequest) returns (AuthorizeReply) {}

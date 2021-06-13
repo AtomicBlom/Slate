@@ -1,5 +1,5 @@
 ﻿using System.IO.Compression;
-using Game.CoreNetworking;
+using Game.Networking.External.Protocol;
 using GameWarden.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

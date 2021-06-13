@@ -53,9 +53,9 @@ namespace Client.UI.ViewModels
             _client = new HttpClient();
         }
 
-        private bool CanLogin(object obj) => _disco != null && 
+        private bool CanLogin(object obj) => true; /*_disco != null && 
                                              !string.IsNullOrWhiteSpace(Username) && 
-                                             !string.IsNullOrWhiteSpace(Password);
+                                             !string.IsNullOrWhiteSpace(Password);*/
 
         private async void OnLogin(object obj)
         {

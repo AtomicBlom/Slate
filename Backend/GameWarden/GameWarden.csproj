@@ -18,7 +18,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Shared\Game.CoreNetworking\Game.CoreNetworking.csproj" />
+		<ProjectReference Include="..\..\Shared\Game.Networking.External\Game.Networking.External.csproj" />
+		<ProjectReference Include="..\..\Shared\Game.Networking.Internal\Game.Networking.Internal.csproj" />
 	</ItemGroup>
 
 </Project>

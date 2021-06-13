@@ -1,22 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ProtoBufNet_Debug>True</ProtoBufNet_Debug>
-
-	</PropertyGroup>
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <ProtoBufNet_Debug>True</ProtoBufNet_Debug>
+  </PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="**/*.proto" />
 		<AdditionalFiles Include="**/*.proto" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Account.proto" />
-	  <None Remove="Game.proto" />
-	  <None Remove="GameClientUpdates.proto" />
-	  <None Remove="GameServerUpdates.proto" />
-	  <None Remove="UUID.proto" />
-	  <None Remove="Vector.proto" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -28,5 +19,4 @@
 		<PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
 	</ItemGroup>
-
 </Project>

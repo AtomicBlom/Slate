@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Game.CoreNetworking;
+using Game.Networking.External.Protocol;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc;
 using ProtoBuf.Grpc.Client;

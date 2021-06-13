@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Game.CoreNetworking;
+using Game.Networking.External.Protocol;
 using ProtoBuf.Grpc;
 
 namespace GameWarden.Services

@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Game.Networking.Internal.Client.RabbitMQ;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Overseer;
 
 Host.CreateDefaultBuilder(args)
@@ -16,6 +18,10 @@ Host.CreateDefaultBuilder(args)
         services
             .AddLogging()
             .AddHostedService<ApplicationLauncher>();
+        
+        services.Configure<RabbitSettings>(hostContext.Configuration.GetSection(nameof(RabbitSettings)));
+        services.AddSingleton<IRabbitSettings>(sp => sp.GetRequiredService<IOptions<RabbitSettings>>().Value);
+        services.AddSingleton<IRabbitClient, RabbitClient>();
     })
     .Build()
     .Run();

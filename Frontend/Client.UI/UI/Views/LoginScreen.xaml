@@ -15,10 +15,6 @@
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI" />
         </Style>
-
-        <Style TargetType="Button">
-            <Setter Property="Background" Value="Green" />
-        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>

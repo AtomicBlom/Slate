@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ProtoBufNet_Debug>True</ProtoBufNet_Debug>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="**/*.proto" />
+		<AdditionalFiles Include="**/*.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="protobuf-net" Version="3.0.101" />
+		<PackageReference Include="protobuf-net.BuildTools" Version="3.0.101">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
+		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+	</ItemGroup>
+</Project>

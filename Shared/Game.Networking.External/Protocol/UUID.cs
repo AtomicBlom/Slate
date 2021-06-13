@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Game.CoreNetworking
+namespace Game.Networking.External.Protocol
 {
     public partial class Uuid
     {
