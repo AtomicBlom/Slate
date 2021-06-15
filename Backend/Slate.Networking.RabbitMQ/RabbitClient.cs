@@ -4,39 +4,29 @@ using System.Threading.Tasks;
 using ProtoBuf;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Slate.Networking.Internal.Protocol;
 
 namespace Slate.Networking.RabbitMQ
 {
-    public interface IRabbitClient
+    internal interface IRPCProvider
     {
-        IDisposable Subscribe<T>(Action<T> action);
-        void Send<T>(T message);
-
-        Task<TResponse> CallAsync<TRequest, TResponse>(TRequest request) 
-            where TRequest : ICorrelatedObject
-            where TResponse : ICorrelatedObject;
+        void EnsureConnection();
+        IModel? Model { get; }
     }
 
-    public interface ICorrelatedObject
-    {
-        Uuid CorrelationId { get; }
-    }
-
-    public class RabbitClient : IRabbitClient, IDisposable
+    public class RabbitClient : IRabbitClient, IDisposable, IRPCProvider
     {
         private readonly IRabbitSettings _rabbitSettings;
         private readonly object _lock = new();
         private bool _connectionStarted;
         private IConnection? _connection;
-        private IModel? _channel;
+        public IModel? Model { get; private set; }
 
         public RabbitClient(IRabbitSettings rabbitSettings)
         {
             _rabbitSettings = rabbitSettings;
         }
 
-        private void EnsureConnection()
+        public void EnsureConnection()
         {
             lock (_lock)
             {
@@ -49,51 +39,51 @@ namespace Slate.Networking.RabbitMQ
                     UserName = _rabbitSettings.Username,
                     Password = _rabbitSettings.Password,
                     VirtualHost = _rabbitSettings.VirtualHost,
-                    ClientProvidedName = _rabbitSettings.ClientName
+                    ClientProvidedName = _rabbitSettings.ClientName,
+                    DispatchConsumersAsync = true
                 };
                 _connection = factory.CreateConnection();
-                _channel = _connection.CreateModel();
+                Model = _connection.CreateModel();
                 _connectionStarted = true;
             }
         }
-
-
-        public IDisposable Subscribe<T>(Action<T> action)
+        
+        public IDisposable Subscribe<T>(Func<T, Task> action)
         {
             EnsureConnection();
 
-            _channel.ExchangeDeclare(exchange: "e.Slate.Fanout", type: ExchangeType.Fanout);
+            Model.ExchangeDeclare(exchange: "e.Slate.Fanout", type: ExchangeType.Fanout);
 
 
             var queue = $"q.{typeof(T).FullName}";
-            _channel.QueueDeclare(queue, autoDelete: false);
-            _channel.QueueBind(queue, "e.Slate.Fanout", typeof(T).FullName);
-            var consumer = new EventingBasicConsumer(_channel);
+            Model.QueueDeclare(queue, autoDelete: false);
+            Model.QueueBind(queue, "e.Slate.Fanout", typeof(T).FullName);
+            var consumer = new AsyncEventingBasicConsumer(Model);
             
             consumer.Received += ConsumeMessage;
-            var consumerTag = _channel.BasicConsume(queue, autoAck: false, consumer: consumer);
+            var consumerTag = Model.BasicConsume(queue, autoAck: false, consumer: consumer);
             var subscriptionToken = new ActionDisposable(() =>
             {
-                _channel?.BasicCancel(consumerTag);
+                Model?.BasicCancel(consumerTag);
                 consumer.Received -= ConsumeMessage;
             });
             
             return subscriptionToken;
 
-            void ConsumeMessage(object? sender, BasicDeliverEventArgs args)
+            async Task ConsumeMessage(object? sender, BasicDeliverEventArgs args)
             {
                 var message = Serializer.Deserialize<T>(args.Body);
                 var deliveryTag = args.DeliveryTag;
                 try
                 {
-                    action(message);
-                    _channel?.BasicAck(deliveryTag, false);
+                    await action(message);
+                    Model?.BasicAck(deliveryTag, false);
                 }
                 catch (Exception e)
                 {
                     //FIXME: Log this
                     //FIXME: Consider whether a message can be re-queued 
-                    _channel?.BasicNack(deliveryTag, false, true);
+                    Model?.BasicNack(deliveryTag, false, true);
                 }
             }
         }
@@ -103,40 +93,25 @@ namespace Slate.Networking.RabbitMQ
             using MemoryStream ms = new();
             Serializer.Serialize(ms, message);
 
-            _channel.ExchangeDeclare(exchange: "e.Slate.Fanout", type: ExchangeType.Fanout);
-            _channel.BasicPublish("e.Slate.Fanout", typeof(T).FullName, body:ms.ToArray());
+            Model.ExchangeDeclare("e.Slate.Fanout", ExchangeType.Fanout);
+            Model.BasicPublish("e.Slate.Fanout", typeof(T).FullName, body:ms.ToArray());
         }
 
-        public Task<TResponse> CallAsync<TRequest, TResponse>(TRequest request) where TRequest : ICorrelatedObject where TResponse : ICorrelatedObject
+        public IRPCClient CreateRPCClient()
         {
-            throw new NotImplementedException();
+            return new RabbitMQRPCClient("e.Slate.RPC", "q.Slate.RPC", this);
+        }
+
+        public IRPCServer CreateRPCServer()
+        {
+            return new RabbitMQRPCServer("e.Slate.RPC", "q.Slate.RPC", this);
         }
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
             _connection?.Dispose();
-            _channel?.Dispose();
+            Model?.Dispose();
         }
-    }
-
-    public interface IRabbitSettings
-    {
-        string Hostname { get; }
-        string VirtualHost { get; }
-        int Port { get; }
-        string Username { get; }
-        string Password { get; }
-        string ClientName { get; }
-    }
-
-    public class RabbitSettings : IRabbitSettings
-    {
-        public string Hostname { get; set; } = "localhost";
-        public string VirtualHost { get; set; } = "/";
-        public int Port { get; set; } = 5672;
-        public string Username { get; set; } = "guest";
-        public string Password { get; set; } = "guest";
-        public string ClientName { get; } = "RabbitMQ client";
     }
 }
