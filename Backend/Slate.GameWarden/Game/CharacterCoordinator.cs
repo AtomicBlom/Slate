@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Slate.Networking.External.Protocol;
 using Slate.Networking.Internal.Protocol;
@@ -32,14 +33,10 @@ namespace Slate.GameWarden.Game
             }
         }
 
-        public async Task MoveToCellAsync(string cellName)
+
+        public T? GetService<T>()
         {
-            var getCellResponse = await _rpcClient.CallAsync<GetCellServerRequest, GetCellServerResponse>(
-                new GetCellServerRequest()
-                {
-                    CellName = cellName
-                });
-            
+            return _playerServices.OfType<T>().FirstOrDefault();
         }
 
         public void Dispose()
@@ -50,9 +47,25 @@ namespace Slate.GameWarden.Game
 
     public class CellPlayerService : IPlayerService
     {
-        public void StartService(IRabbitClient rabbitClient, IRPCClient rpcClient)
+        private readonly IRPCClient _rpcClient;
+
+        public CellPlayerService(IRabbitClient rabbitClient, IRPCClient rpcClient)
         {
-            throw new NotImplementedException();
+            _rpcClient = rpcClient;
+        }
+
+        public void StartService()
+        {
+            
+        }
+
+        public async Task MoveToCellAsync(string cellName)
+        {
+            var getCellResponse = await _rpcClient.CallAsync<GetCellServerRequest, GetCellServerResponse>(
+                new GetCellServerRequest()
+                {
+                    CellName = cellName
+                });
         }
     }
 

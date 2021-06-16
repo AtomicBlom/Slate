@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using ProtoBuf.Grpc;
 using Slate.GameWarden.Game;
 using Slate.Networking.External.Protocol;
@@ -66,6 +67,13 @@ namespace Slate.GameWarden.Services
 
     internal class PlayerLocator : IPlayerLocator
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
+        public PlayerLocator(IServiceScopeFactory serviceScopeFactory)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+        }
+
         private Dictionary<Guid, CharacterCoordinator> _loggedInCharacters = new();
 
         public async Task<CharacterCoordinator> GetOrCreatePlayer(Guid characterId)
