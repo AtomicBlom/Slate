@@ -24,4 +24,9 @@ namespace Slate.Networking.External.Protocol
             return new Uuid { A = a, B = b };
         }
     }
+
+    public partial class GameClientUpdate
+    {
+        public int Discriminator => __pbn__Message.Discriminator;
+    }
 }

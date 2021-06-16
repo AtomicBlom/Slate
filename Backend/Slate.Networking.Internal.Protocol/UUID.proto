@@ -5,7 +5,3 @@ message UUID {
 	fixed64 a = 1;
 	fixed64 b = 2;
 }
-
-message TestMessage {
-	string Message = 1;
-}

@@ -4,5 +4,5 @@ import "GameClientUpdates.proto";
 import "GameServerUpdates.proto";
 
 service GameService {
-	rpc Subscribe(GameClientUpdate) returns (stream GameServerUpdate);
+	rpc Subscribe(stream GameClientUpdate) returns (stream GameServerUpdate);
 }

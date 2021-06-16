@@ -20,6 +20,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Shared\Game.Networking.Internal\Slate.Networking.Internal.csproj" />
 		<ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
+		<ProjectReference Include="..\Slate.Networking.RabbitMQ\Slate.Networking.RabbitMQ.csproj" />
 	</ItemGroup>
 
 </Project>
