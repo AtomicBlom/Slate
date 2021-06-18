@@ -126,7 +126,6 @@ namespace Slate.Client
                 _gameUi.CurrentScreen.Children.Remove(existingScreen);
                 var characterListViewModel = new CharacterListViewModel(gameConnection)
                 {
-                    PlayAsCharacterCommand = new RelayCommand(OnCharacterSelected)
                 };
                 _gameUi.CurrentScreen.Children.Add(
                     new CharacterListScreen()
@@ -137,11 +136,6 @@ namespace Slate.Client
                 await Task.Run(characterListViewModel.OnNavigatedTo);
             }
 
-        }
-
-        private void OnCharacterSelected(object obj)
-        {
-            
         }
 
         protected override void UnloadContent()

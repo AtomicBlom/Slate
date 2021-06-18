@@ -15,10 +15,32 @@ namespace Slate.Client.UI.ViewModels
         [ImplementNotifyPropertyChanged] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
         [ImplementNotifyPropertyChanged] private ICommand? _playAsCharacterCommand = null;
 
+        private GameCharacter? _selectedCharacter;
+        public GameCharacter? SelectedCharacter
+        {
+            get => _selectedCharacter;
+            set
+            {
+                if (SetField(ref _selectedCharacter, value))
+                {
+                    RaisePropertyChanged(nameof(CanEnterGame));
+                    RaisePropertyChanged(nameof(PlayAsCharacterCommand));
+                }
+            }
+        }
+
+        public bool CanEnterGame => SelectedCharacter?.Id is not null;
+
+
         public CharacterListViewModel(GameConnection gameConnection)
         {
             _gameConnection = gameConnection;
+
+            PlayAsCharacterCommand = new RelayCommand(Execute, CanExecute);
         }
+
+        void Execute(object o) => _gameConnection.PlayAsCharacter(SelectedCharacter.Id);
+        bool CanExecute(object o) => CanEnterGame;
 
         public async Task OnNavigatedTo()
         {

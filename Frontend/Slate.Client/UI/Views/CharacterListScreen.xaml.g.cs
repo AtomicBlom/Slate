@@ -29,7 +29,7 @@ namespace Slate.Client.UI.Views {
         
         private Grid e_0;
         
-        private ItemsControl e_1;
+        private ListBox e_1;
         
         private Button e_5;
         
@@ -52,14 +52,17 @@ namespace Slate.Client.UI.Views {
             ColumnDefinition col_e_0_1 = new ColumnDefinition();
             this.e_0.ColumnDefinitions.Add(col_e_0_1);
             // e_1 element
-            this.e_1 = new ItemsControl();
+            this.e_1 = new ListBox();
             this.e_0.Children.Add(this.e_1);
             this.e_1.Name = "e_1";
             Func<UIElement, UIElement> e_1_dtFunc = e_1_dtMethod;
             this.e_1.ItemTemplate = new DataTemplate(e_1_dtFunc);
+            this.e_1.SelectionMode = SelectionMode.Single;
             Grid.SetColumn(this.e_1, 0);
             Binding binding_e_1_ItemsSource = new Binding("Characters");
-            this.e_1.SetBinding(ItemsControl.ItemsSourceProperty, binding_e_1_ItemsSource);
+            this.e_1.SetBinding(ListBox.ItemsSourceProperty, binding_e_1_ItemsSource);
+            Binding binding_e_1_SelectedItem = new Binding("SelectedCharacter");
+            this.e_1.SetBinding(ListBox.SelectedItemProperty, binding_e_1_SelectedItem);
             // e_5 element
             this.e_5 = new Button();
             this.e_0.Children.Add(this.e_5);
@@ -71,13 +74,17 @@ namespace Slate.Client.UI.Views {
             this.e_5.Content = "Play";
             Grid.SetColumn(this.e_5, 1);
             Grid.SetRow(this.e_5, 0);
+            Binding binding_e_5_IsEnabled = new Binding("CanEnterGame");
+            binding_e_5_IsEnabled.Mode = BindingMode.OneWay;
+            this.e_5.SetBinding(Button.IsEnabledProperty, binding_e_5_IsEnabled);
             Binding binding_e_5_Command = new Binding("PlayAsCharacterCommand");
+            binding_e_5_Command.Mode = BindingMode.OneWay;
             this.e_5.SetBinding(Button.CommandProperty, binding_e_5_Command);
         }
         
         private static void InitializeElementResources(UIElement elem) {
             // Resource - [ItemBackgroundBrush] SolidColorBrush
-            elem.Resources.Add("ItemBackgroundBrush", new SolidColorBrush(new ColorW(0, 0, 0, 255)));
+            elem.Resources.Add("ItemBackgroundBrush", new SolidColorBrush(new ColorW(0, 0, 0, 128)));
         }
         
         private static UIElement e_1_dtMethod(UIElement parent) {
@@ -87,8 +94,7 @@ namespace Slate.Client.UI.Views {
             e_2.Name = "e_2";
             e_2.Margin = new Thickness(16F, 16F, 16F, 16F);
             e_2.HorizontalAlignment = HorizontalAlignment.Stretch;
-            e_2.Background = new SolidColorBrush(new ColorW(0, 0, 0, 255));
-            e_2.Background.Opacity = 0.5F;
+            e_2.Background = new SolidColorBrush(new ColorW(0, 0, 0, 128));
             e_2.Orientation = Orientation.Vertical;
             // e_3 element
             TextBlock e_3 = new TextBlock();

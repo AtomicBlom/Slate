@@ -2,6 +2,8 @@
 {
     public class RabbitSettings : IRabbitSettings
     {
+        public const string SectionName = "RabbitMQ";
+
         public string Hostname { get; set; } = "localhost";
         public string VirtualHost { get; set; } = "/";
         public int Port { get; set; } = 5672;

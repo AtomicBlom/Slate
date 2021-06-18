@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <SolidColorBrush x:Key="ItemBackgroundBrush" Color="Black" Opacity="0.5" />
+        <SolidColorBrush x:Key="ItemBackgroundBrush" Color="#80000000" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -18,8 +18,10 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ItemsControl Grid.Column="0"
-                      ItemsSource="{Binding Characters}">
+        <ListBox Grid.Column="0"
+                 ItemsSource="{Binding Characters}"
+                 SelectedItem="{Binding SelectedCharacter}"
+                 SelectionMode="Single">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="model:GameCharacter">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Background="{StaticResource ItemBackgroundBrush}" Margin="16">
@@ -28,10 +30,11 @@
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        </ListBox>
         <Button Content="Play" Grid.Column="1" Grid.Row="0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom" Margin="16" Padding="16, 8"
-                Command="{Binding PlayAsCharacterCommand}"/>
+                Command="{Binding PlayAsCharacterCommand, Mode=OneWay}"
+                IsEnabled="{Binding CanEnterGame, Mode=OneWay}"/>
     </Grid>
 </UserControl>

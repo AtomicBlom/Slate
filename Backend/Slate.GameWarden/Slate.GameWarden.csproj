@@ -10,6 +10,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Jab" Version="0.0.2-beta.108" />
+		<PackageReference Include="MessagePipe" Version="1.6.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0-preview.4.21253.5" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
@@ -18,8 +20,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Shared\Game.Networking.Internal\Slate.Networking.Internal.csproj" />
 		<ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
+		<ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
 		<ProjectReference Include="..\Slate.Networking.RabbitMQ\Slate.Networking.RabbitMQ.csproj" />
 	</ItemGroup>
 

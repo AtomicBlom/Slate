@@ -44,5 +44,40 @@ namespace Slate.Client.Networking
             var response = await account.GetCharactersAsync(new GetCharactersRequest());
             return response.Characters;
         }
+
+        public async void PlayAsCharacter(Guid character)
+        {
+            if (_channel is null) throw new Exception("Channel not ready yet!");
+            var gameService = _channel.CreateGrpcService<IGameService>();
+
+            var serverMessages = gameService.SubscribeAsync(PublishClientMessages(character));
+
+            await foreach (var message in serverMessages)
+            {
+                Console.WriteLine($"Received message type {message.Discriminator}");
+            }
+        }
+
+        public async IAsyncEnumerable<GameClientUpdate> PublishClientMessages(Guid characterId)
+        {
+            yield return new GameClientUpdate { ConnectToGameRequest = new ConnectToGameRequest()
+            {
+                CharacterId = characterId.ToUuid()
+            }};
+
+            while (true)
+            {
+                await Task.Delay(1000);
+                yield return new GameClientUpdate()
+                {
+                    ClientRequestMove = new ClientRequestMove()
+                    {
+                        Location = new Vector3() { X = 0, Y = 0, Z = 0 },
+                        Velocity = new Vector3() { X = 0, Y = 0, Z = 0 }
+                    }
+                };
+                Console.WriteLine($"Sent message type ClientRequestMove");
+            }
+        }
     }
 }
