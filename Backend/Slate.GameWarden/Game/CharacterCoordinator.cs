@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using Slate.Networking.External.Protocol;
 
 namespace Slate.GameWarden.Game
@@ -9,14 +8,12 @@ namespace Slate.GameWarden.Game
     public class CharacterCoordinator : IDisposable
     {
         private readonly Guid _id;
-        private readonly IServiceScope _serviceScope;
-        private readonly IEnumerable<IPlayerService> _playerServices;
+        private readonly IPlayerService[] _playerServices;
         private bool _disposed;
 
-        public CharacterCoordinator(Guid id, IServiceScope serviceScope, IEnumerable<IPlayerService> playerServices)
+        public CharacterCoordinator(Guid id, IPlayerService[] playerServices)
         {
             _id = id;
-            _serviceScope = serviceScope;
             _playerServices = playerServices;
         }
 
@@ -39,7 +36,6 @@ namespace Slate.GameWarden.Game
         {
             if (!_disposed)
             {
-                _serviceScope.Dispose();
                 _disposed = true;
             }
         }

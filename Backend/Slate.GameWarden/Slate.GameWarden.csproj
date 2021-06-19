@@ -10,17 +10,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Jab" Version="0.0.2-beta.108" />
 		<PackageReference Include="MessagePipe" Version="1.6.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0-preview.4.21253.5" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.0.152" />
 		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+		<PackageReference Include="StrongInject" Version="1.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
+		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.DependencyInjection.WithoutMVC\StrongInject.Extensions.DependencyInjection.WithoutMVC.csproj" />
+		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj" />
 		<ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
 		<ProjectReference Include="..\Slate.Networking.RabbitMQ\Slate.Networking.RabbitMQ.csproj" />
 	</ItemGroup>

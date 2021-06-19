@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
+		<PackageReference Include="StrongInject" Version="1.2.0" />
+	</ItemGroup>
+</Project>
