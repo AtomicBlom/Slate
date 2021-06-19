@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+    slate-message-bus:
+        image: rabbitmq:3.8-management
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+    
+    slate-auth-db:
+        image: mongo:5.0-rc
+        ports:
+            - "27017:27017"
+
+    slate-character-db:
+        image: mongo:5.0-rc
+        ports:
+            - "27018:27017"
+
+    slate-mongo-graylog:
+        image: mongo:4.2
+    
+    slate-elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+        environment:
+            - http.host=0.0.0.0
+            - discovery.type=single-node
+            - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    
+    slate-graylog:
+        image: graylog/graylog:4.0
+        ports:
+            - "9000:9000"
+            - "12201:12201"
+            - "1514:1514"
+        environment: 
+            - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+            - GRAYLOG_MONGODB_URI=mongodb://slate-mongo-graylog/graylog
+            - GRAYLOG_ELASTICSEARCH_HOSTS=http://slate-elasticsearch:9200
+        depends_on:
+            - slate-elasticsearch
+            - slate-mongo-graylog

@@ -24,11 +24,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Networking.RabbitMQ",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Networking.External.Protocol", "..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj", "{68EDC3B0-2C00-4A64-ACDE-F70E206D48B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Extensions.DependencyInjection.WithoutMVC", "..\Shared\StrongInject.Extensions.DependencyInjection.WithoutMVC\StrongInject.Extensions.DependencyInjection.WithoutMVC.csproj", "{3578E3DC-9BA2-494D-AEC4-433EA96ECAE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Extensions.DependencyInjection.WithoutMVC", "..\Shared\StrongInject.Extensions.DependencyInjection.WithoutMVC\StrongInject.Extensions.DependencyInjection.WithoutMVC.csproj", "{3578E3DC-9BA2-494D-AEC4-433EA96ECAE9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1C9F0506-F8A0-41EB-8D36-E9B00F5A0368}"
+	ProjectSection(SolutionItems) = preProject
+		..\docker-containers.sh = ..\docker-containers.sh
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Extensions.Grpc", "..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj", "{38D830E0-224A-45CB-AC58-A62B7943F1EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Extensions.Grpc", "..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj", "{38D830E0-224A-45CB-AC58-A62B7943F1EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
