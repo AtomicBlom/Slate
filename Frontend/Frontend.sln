@@ -22,6 +22,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunriseLauncher", "Sunrise\SunriseLauncher.csproj", "{1055CF76-6DBB-468A-91A3-6EB0EA4839EB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client", "Slate.Client\Slate.Client.csproj", "{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CF40B351-77F1-43BB-B24E-C9C8D44D92AC} = {CF40B351-77F1-43BB-B24E-C9C8D44D92AC}
+	EndProjectSection
 	ProjectSection(Project..\Dependencies) = postProject
 		{CF40B351-77F1-43BB-B24E-C9C8D44D92AC} = {CF40B351-77F1-43BB-B24E-C9C8D44D92AC}
 	EndProjectSection
