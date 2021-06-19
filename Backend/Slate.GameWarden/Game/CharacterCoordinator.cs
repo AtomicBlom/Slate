@@ -36,6 +36,7 @@ namespace Slate.GameWarden.Game
         {
             if (!_disposed)
             {
+                GC.SuppressFinalize(this);
                 _disposed = true;
             }
         }

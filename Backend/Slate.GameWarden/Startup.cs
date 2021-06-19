@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProtoBuf.Grpc.Configuration;
 using ProtoBuf.Grpc.Server;
 using Slate.GameWarden.Game;
+using Slate.GameWarden.ServiceLocation;
 using Slate.Networking.External.Protocol;
 using StrongInject;
 
@@ -40,10 +41,10 @@ namespace Slate.GameWarden
                     };
                 });
 
-            services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAuthorizationService>();
-            services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAccountService>();
-            services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IGameService>();
-            services.AddSingleton<IContainer<Func<Guid, CharacterCoordinator>>>(sp => sp.GetRequiredService<GameContainer>());
+            services.ReplaceWithSingletonServiceUsingContainer<ServiceLocation.GameContainer, IAuthorizationService>();
+            services.ReplaceWithSingletonServiceUsingContainer<ServiceLocation.GameContainer, IAccountService>();
+            services.ReplaceWithSingletonServiceUsingContainer<ServiceLocation.GameContainer, IGameService>();
+            services.AddSingleton<IContainer<Func<Guid, CharacterCoordinator>>>(sp => sp.GetRequiredService<ServiceLocation.GameContainer>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)

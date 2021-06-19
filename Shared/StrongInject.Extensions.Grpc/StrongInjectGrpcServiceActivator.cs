@@ -15,7 +15,7 @@ namespace StrongInject.Extensions.Grpc
 #if NET5_0
         internal const DynamicallyAccessedMemberTypes ServiceAccessibility = DynamicallyAccessedMemberTypes.PublicConstructors;
 #endif
-        private static readonly Lazy<ObjectFactory> _objectFactory = new Lazy<ObjectFactory>(static () => ActivatorUtilities.CreateFactory(typeof(TGrpcService), Type.EmptyTypes));
+        private static readonly Lazy<ObjectFactory> ObjectFactory = new(static () => ActivatorUtilities.CreateFactory(typeof(TGrpcService), Type.EmptyTypes));
 
         public GrpcActivatorHandle<TGrpcService> Create(IServiceProvider serviceProvider)
         {
@@ -24,17 +24,17 @@ namespace StrongInject.Extensions.Grpc
             var container = serviceProvider.GetService<IContainer<TGrpcService>>();
             if (container is not null)
             {
-                //Resolve from service provider instead
                 service = container.Resolve().Value;
             }
             else
             {
+                //Resolve from service provider instead
                 service = serviceProvider.GetService<TGrpcService>();
             }
             
             if (service == null)
             {
-                service = (TGrpcService)_objectFactory.Value(serviceProvider, Array.Empty<object>());
+                service = (TGrpcService)ObjectFactory.Value(serviceProvider, Array.Empty<object>());
                 return new GrpcActivatorHandle<TGrpcService>(service, created: true, state: null);
             }
 
