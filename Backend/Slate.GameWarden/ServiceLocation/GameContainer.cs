@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Slate.GameWarden.Game;
 using Slate.GameWarden.Services;
 using Slate.Networking.External.Protocol;
+using Slate.Networking.RabbitMQ.StrongInject;
 using StrongInject;
 
 namespace Slate.GameWarden.ServiceLocation

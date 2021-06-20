@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Slate.Networking.RabbitMQ;
 using StrongInject;
 
-namespace Slate.GameWarden.ServiceLocation
+namespace Slate.Networking.RabbitMQ.StrongInject
 {
     [Register(typeof(RabbitClient), Scope.SingleInstance, typeof(IRabbitClient))]
-    internal class RabbitMQModule
+    public class RabbitMQModule
     {
         [Factory(Scope.SingleInstance)]
         public static IRabbitSettings CreateRabbitSettings(IConfiguration configuration)

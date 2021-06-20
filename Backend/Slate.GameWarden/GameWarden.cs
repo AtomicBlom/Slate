@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using Slate.GameWarden;
 
 if (args.Any(a => a.Contains("--attachDebugger"))) Debugger.Break();
+
+Console.Title = "Game Warden (Player Server)";
 
 WebHost.CreateDefaultBuilder(args)
     .ConfigureKestrel(options =>

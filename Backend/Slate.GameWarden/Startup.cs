@@ -3,11 +3,13 @@ using System.IO.Compression;
 using MessagePipe;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using ProtoBuf.Grpc.Configuration;
 using ProtoBuf.Grpc.Server;
+using Serilog;
 using Slate.GameWarden.Game;
 using Slate.GameWarden.ServiceLocation;
 using Slate.Networking.External.Protocol;
@@ -17,8 +19,22 @@ namespace Slate.GameWarden
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(_configuration)
+                .CreateLogger();
+
+            Log.Logger.Information("GameWarden Starting");
+
+            services.AddLogging(lb => lb.AddSerilog(dispose: true));
             services.UseStrongInjectForGrpcServiceResolution();
             services.AddMessagePipe();
             services.AddCodeFirstGrpc(config =>
@@ -44,7 +60,7 @@ namespace Slate.GameWarden
             services.ReplaceWithSingletonServiceUsingContainer<ServiceLocation.GameContainer, IAuthorizationService>();
             services.ReplaceWithSingletonServiceUsingContainer<ServiceLocation.GameContainer, IAccountService>();
             services.ReplaceWithSingletonServiceUsingContainer<ServiceLocation.GameContainer, IGameService>();
-            services.AddSingleton<IContainer<Func<Guid, CharacterCoordinator>>>(sp => sp.GetRequiredService<ServiceLocation.GameContainer>());
+            services.AddSingleton<IContainer<Func<Guid, CharacterCoordinator>>>(sp => sp.GetRequiredService<GameContainer>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)

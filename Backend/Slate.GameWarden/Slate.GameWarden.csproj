@@ -16,6 +16,10 @@
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.0.152" />
 		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+		<PackageReference Include="Serilog" Version="2.10.0" />
+		<PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+		<PackageReference Include="Serilog.Sinks.Graylog" Version="2.2.2" />
 		<PackageReference Include="StrongInject" Version="1.2.0" />
 	</ItemGroup>
 
@@ -24,6 +28,7 @@
 		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.DependencyInjection.WithoutMVC\StrongInject.Extensions.DependencyInjection.WithoutMVC.csproj" />
 		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj" />
 		<ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
+		<ProjectReference Include="..\Slate.Networking.RabbitMQ.StrongInject\Slate.Networking.RabbitMQ.StrongInject.csproj" />
 		<ProjectReference Include="..\Slate.Networking.RabbitMQ\Slate.Networking.RabbitMQ.csproj" />
 	</ItemGroup>
 

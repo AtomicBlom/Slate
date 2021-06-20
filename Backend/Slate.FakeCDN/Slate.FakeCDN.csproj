@@ -8,4 +8,10 @@
 	  <ApplicationIcon>diving_goggles_swim_snorkel_diving_icon_186982.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Graylog" Version="2.2.2" />
+  </ItemGroup>
+
 </Project>

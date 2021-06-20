@@ -31,7 +31,7 @@ services:
         image: graylog/graylog:4.0
         ports:
             - "9000:9000"
-            - "12201:12201"
+            - "12201:12201/udp"
             - "1514:1514"
         environment: 
             - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
