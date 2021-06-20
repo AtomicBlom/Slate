@@ -8,25 +8,37 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Slate.Genealogist.Stores;
 
 namespace Slate.Genealogist
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
         public IWebHostEnvironment Environment { get; }
-        public IConfiguration Configuration { get; }
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             Environment = environment;
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AuthDatabaseSettings>(Configuration.GetSection(nameof(AuthDatabaseSettings)));
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(_configuration)
+                .CreateLogger();
+
+            Log.Logger.Information("Genaeologist Starting");
+
+            services.AddLogging(lb => lb
+                .ClearProviders()
+                .AddSerilog(dispose: true));
+
+            services.Configure<AuthDatabaseSettings>(_configuration.GetSection(nameof(AuthDatabaseSettings)));
             services.AddSingleton<IAuthDatabaseSettings>(sp => sp.GetRequiredService<IOptions<AuthDatabaseSettings>>().Value);
             services.AddTransient<IClientStore, MongoClientStore>();
             services.AddTransient<IMigrateDatabase, MigrateDatabase>();

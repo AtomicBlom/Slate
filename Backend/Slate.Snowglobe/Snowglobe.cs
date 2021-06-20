@@ -4,11 +4,12 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Slate.Snowglobe;
 
 Console.Title = "Snowglobe (Cell Server)";
 if (args.Any(a => a.Contains("--attachDebugger"))) Debugger.Break();
-
 
 Host.CreateDefaultBuilder(args)
     .ConfigureHostConfiguration((configHost) =>
@@ -20,8 +21,15 @@ Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((hostContext, services) =>
     {
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(hostContext.Configuration)
+            .CreateLogger();
+
+        services.AddLogging(lb => lb
+            .ClearProviders()
+            .AddSerilog(dispose: true));
+
         services
-            .AddLogging()
             .AddHostedService<CellServer>();
     })
     .Build()

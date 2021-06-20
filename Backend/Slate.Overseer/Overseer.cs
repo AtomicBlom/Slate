@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using Serilog;
+using Slate.Networking.Internal.Protocol;
 using Slate.Networking.RabbitMQ;
 using Slate.Overseer;
 
@@ -26,16 +30,17 @@ Host.CreateDefaultBuilder(args)
             .ReadFrom.Configuration(hostContext.Configuration)
             .CreateLogger();
         
-        services.AddLogging(lb => lb.AddSerilog(dispose: true));
+        services.AddLogging(lb => lb
+            .ClearProviders()
+            .AddSerilog(dispose: true));
 
         services.AddTransientServiceUsingContainer<OverseerContainer, IHostedService, ApplicationLauncher>();
 
-        //services.AddHostedService<ApplicationLauncher>();
-        
-        //services.Configure<RabbitSettings>(hostContext.Configuration.GetSection(nameof(RabbitSettings)));
-        //services.AddSingleton<IRabbitSettings>(sp => sp.GetRequiredService<IOptions<RabbitSettings>>().Value);
-        //services.AddSingleton<IRabbitClient, RabbitClient>();
+        if (Debugger.IsAttached)
+        {
+            services.AddTransientServiceUsingContainer<OverseerContainer, IHostedService, DebugHeartbeatService>();
+        }
+
     })
     .Build()
     .Run();
-

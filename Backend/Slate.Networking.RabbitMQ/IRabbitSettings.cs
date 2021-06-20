@@ -8,5 +8,6 @@
         string Username { get; }
         string Password { get; }
         string ClientName { get; }
+        bool IncludeMessageContentsInLogs { get; }
     }
 }

@@ -7,7 +7,7 @@
 
 	<ItemGroup>
 		<None Remove="**/*.proto" />
-		<AdditionalFiles Include="**/*.proto" />
+		<AdditionalFiles Include="**/*.proto" OneOf="enum" />
 	</ItemGroup>
 
 	<ItemGroup>

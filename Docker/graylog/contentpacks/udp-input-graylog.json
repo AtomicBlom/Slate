@@ -1,0 +1,400 @@
+{
+    "v": 1,
+    "id": "e2f9c75d-a14a-424e-a283-43c796c2626a",
+    "rev": 1,
+    "name": "Slate",
+    "summary": "Sets up Graylog to capture logs from Slate",
+    "description": "",
+    "vendor": "AtomicBlom",
+    "url": "http://github.com/AtomicBlom/Slate",
+    "parameters": [],
+    "entities": [
+      {
+        "v": "1",
+        "type": {
+          "name": "input",
+          "version": "1"
+        },
+        "id": "abe318e3-5a6d-45df-900a-b39fa4fc3b16",
+        "data": {
+          "title": {
+            "@type": "string",
+            "@value": "GELF over UDP (12201)"
+          },
+          "configuration": {
+            "recv_buffer_size": {
+              "@type": "integer",
+              "@value": 262144
+            },
+            "port": {
+              "@type": "integer",
+              "@value": 12201
+            },
+            "number_worker_threads": {
+              "@type": "integer",
+              "@value": 32
+            },
+            "bind_address": {
+              "@type": "string",
+              "@value": "0.0.0.0"
+            },
+            "decompress_size_limit": {
+              "@type": "integer",
+              "@value": 8388608
+            }
+          },
+          "static_fields": {},
+          "type": {
+            "@type": "string",
+            "@value": "org.graylog2.inputs.gelf.udp.GELFUDPInput"
+          },
+          "global": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "extractors": []
+        },
+        "constraints": [
+          {
+            "type": "server-version",
+            "version": ">=4.0.8+6b8c55d"
+          }
+        ]
+      },
+      {
+        "v": "1",
+        "type": {
+          "name": "stream",
+          "version": "1"
+        },
+        "id": "4da876d9-85f9-4c90-8d95-ad2de3fc2d29",
+        "data": {
+          "alarm_callbacks": [],
+          "outputs": [],
+          "remove_matches": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "title": {
+            "@type": "string",
+            "@value": "GameWarden"
+          },
+          "stream_rules": [
+            {
+              "type": {
+                "@type": "string",
+                "@value": "EXACT"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "facility"
+              },
+              "value": {
+                "@type": "string",
+                "@value": "GameWarden"
+              },
+              "inverted": {
+                "@type": "boolean",
+                "@value": false
+              },
+              "description": {
+                "@type": "string",
+                "@value": ""
+              }
+            }
+          ],
+          "alert_conditions": [],
+          "matching_type": {
+            "@type": "string",
+            "@value": "AND"
+          },
+          "disabled": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "description": {
+            "@type": "string",
+            "@value": "Events from GameWarden"
+          },
+          "default_stream": {
+            "@type": "boolean",
+            "@value": false
+          }
+        },
+        "constraints": [
+          {
+            "type": "server-version",
+            "version": ">=4.0.8+6b8c55d"
+          }
+        ]
+      },
+      {
+        "v": "1",
+        "type": {
+          "name": "stream",
+          "version": "1"
+        },
+        "id": "24b7327d-ce36-46dc-a401-0669c89f5906",
+        "data": {
+          "alarm_callbacks": [],
+          "outputs": [],
+          "remove_matches": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "title": {
+            "@type": "string",
+            "@value": "Overseer"
+          },
+          "stream_rules": [
+            {
+              "type": {
+                "@type": "string",
+                "@value": "EXACT"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "facility"
+              },
+              "value": {
+                "@type": "string",
+                "@value": "Overseer"
+              },
+              "inverted": {
+                "@type": "boolean",
+                "@value": false
+              },
+              "description": {
+                "@type": "string",
+                "@value": ""
+              }
+            }
+          ],
+          "alert_conditions": [],
+          "matching_type": {
+            "@type": "string",
+            "@value": "AND"
+          },
+          "disabled": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "description": {
+            "@type": "string",
+            "@value": "Events from Overseer"
+          },
+          "default_stream": {
+            "@type": "boolean",
+            "@value": false
+          }
+        },
+        "constraints": [
+          {
+            "type": "server-version",
+            "version": ">=4.0.8+6b8c55d"
+          }
+        ]
+      },
+      {
+        "v": "1",
+        "type": {
+          "name": "stream",
+          "version": "1"
+        },
+        "id": "954363bf-d93b-40af-9259-9942630f342d",
+        "data": {
+          "alarm_callbacks": [],
+          "outputs": [],
+          "remove_matches": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "title": {
+            "@type": "string",
+            "@value": "Snowglobe"
+          },
+          "stream_rules": [
+            {
+              "type": {
+                "@type": "string",
+                "@value": "EXACT"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "facility"
+              },
+              "value": {
+                "@type": "string",
+                "@value": "Snowglobe"
+              },
+              "inverted": {
+                "@type": "boolean",
+                "@value": false
+              },
+              "description": {
+                "@type": "string",
+                "@value": ""
+              }
+            }
+          ],
+          "alert_conditions": [],
+          "matching_type": {
+            "@type": "string",
+            "@value": "AND"
+          },
+          "disabled": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "description": {
+            "@type": "string",
+            "@value": "Events from Snowglobe"
+          },
+          "default_stream": {
+            "@type": "boolean",
+            "@value": false
+          }
+        },
+        "constraints": [
+          {
+            "type": "server-version",
+            "version": ">=4.0.8+6b8c55d"
+          }
+        ]
+      },
+      {
+        "v": "1",
+        "type": {
+          "name": "stream",
+          "version": "1"
+        },
+        "id": "226b82cc-f266-447a-a6c8-f776eb49bd9c",
+        "data": {
+          "alarm_callbacks": [],
+          "outputs": [],
+          "remove_matches": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "title": {
+            "@type": "string",
+            "@value": "Genealogist"
+          },
+          "stream_rules": [
+            {
+              "type": {
+                "@type": "string",
+                "@value": "EXACT"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "facility"
+              },
+              "value": {
+                "@type": "string",
+                "@value": "Genealogist"
+              },
+              "inverted": {
+                "@type": "boolean",
+                "@value": false
+              },
+              "description": {
+                "@type": "string",
+                "@value": ""
+              }
+            }
+          ],
+          "alert_conditions": [],
+          "matching_type": {
+            "@type": "string",
+            "@value": "AND"
+          },
+          "disabled": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "description": {
+            "@type": "string",
+            "@value": "Events from Genealogist"
+          },
+          "default_stream": {
+            "@type": "boolean",
+            "@value": false
+          }
+        },
+        "constraints": [
+          {
+            "type": "server-version",
+            "version": ">=4.0.8+6b8c55d"
+          }
+        ]
+      },
+      {
+        "v": "1",
+        "type": {
+          "name": "stream",
+          "version": "1"
+        },
+        "id": "d73afec9-2ca4-4d45-8b49-91a090c2a4a1",
+        "data": {
+          "alarm_callbacks": [],
+          "outputs": [],
+          "remove_matches": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "title": {
+            "@type": "string",
+            "@value": "FakeCDN"
+          },
+          "stream_rules": [
+            {
+              "type": {
+                "@type": "string",
+                "@value": "EXACT"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "facility"
+              },
+              "value": {
+                "@type": "string",
+                "@value": "FakeCDN"
+              },
+              "inverted": {
+                "@type": "boolean",
+                "@value": false
+              },
+              "description": {
+                "@type": "string",
+                "@value": ""
+              }
+            }
+          ],
+          "alert_conditions": [],
+          "matching_type": {
+            "@type": "string",
+            "@value": "AND"
+          },
+          "disabled": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "description": {
+            "@type": "string",
+            "@value": "Events from FakeCDN"
+          },
+          "default_stream": {
+            "@type": "boolean",
+            "@value": false
+          }
+        },
+        "constraints": [
+          {
+            "type": "server-version",
+            "version": ">=4.0.8+6b8c55d"
+          }
+        ]
+      }
+    ]
+  }

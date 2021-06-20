@@ -13,21 +13,8 @@ using Slate.Genealogist.Stores;
 Console.Title = "Genealogist (Identity Server)";
 if (args.Any(a => a.Contains("--attachDebugger"))) Debugger.Break();
 
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Verbose)
-    .MinimumLevel.Override("System", LogEventLevel.Verbose)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Verbose)
-    .WriteTo.Seq("http://localhost:5341")
-    .Enrich.FromLogContext()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Code)
-    .CreateLogger();
-
 try
 {
-    Log.Information("Starting host...");
     var host = CreateHostBuilder(args).Build();
     var databaseMigration = host.Services.GetService<IMigrateDatabase>();
     await databaseMigration.Migrate();
@@ -47,7 +34,6 @@ finally
 
 static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)
-        .UseSerilog()
         .ConfigureWebHostDefaults(webBuilder =>
         {
             webBuilder.UseStartup<Startup>();

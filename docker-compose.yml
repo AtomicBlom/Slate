@@ -22,6 +22,7 @@ services:
     
     slate-elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+        
         environment:
             - http.host=0.0.0.0
             - discovery.type=single-node
@@ -33,10 +34,16 @@ services:
             - "9000:9000"
             - "12201:12201/udp"
             - "1514:1514"
+        volumes:
+            - ./Docker/graylog/contentpacks:/usr/share/graylog/data/contentpacks:ro
         environment: 
             - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
             - GRAYLOG_MONGODB_URI=mongodb://slate-mongo-graylog/graylog
             - GRAYLOG_ELASTICSEARCH_HOSTS=http://slate-elasticsearch:9200
+            - GRAYLOG_ELASTICSEARCH_VERSION=7
+            - GRAYLOG_CONTENT_PACKS_AUTO_INSTALL=udp-input-graylog.json
+            - GRAYLOG_CONTENT_PACKS_LOADER_ENABLED=true
         depends_on:
             - slate-elasticsearch
             - slate-mongo-graylog
+        entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh

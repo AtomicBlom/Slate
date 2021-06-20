@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using Slate.GameWarden.Game;
 using Slate.GameWarden.Services;
 using Slate.Networking.External.Protocol;
@@ -14,7 +15,8 @@ namespace Slate.GameWarden.ServiceLocation
     [Register(typeof(CharacterCoordinator))]
     [RegisterModule(typeof(RabbitMQModule))]
     [RegisterModule(typeof(GrpcServicesModule))]
-    internal partial class GameContainer : IContainer<IAccountService>, IContainer<IGameService>, IContainer<IAuthorizationService>, IContainer<Func<Guid, CharacterCoordinator>>
+    [Register(typeof(HeartbeatService))]
+    internal partial class GameContainer : IContainer<IAccountService>, IContainer<IGameService>, IContainer<IAuthorizationService>, IContainer<Func<Guid, CharacterCoordinator>>, IContainer<HeartbeatService>
     {
         public GameContainer(IServiceProvider serviceProvider)
         {
@@ -22,6 +24,8 @@ namespace Slate.GameWarden.ServiceLocation
         }
 
         [Instance] private readonly IConfiguration _configuration;
-
+        
+        [Factory(Scope.InstancePerDependency)]
+        private ILogger CreateLogger() => Log.Logger;
     }
 }

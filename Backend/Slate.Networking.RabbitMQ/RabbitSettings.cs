@@ -9,6 +9,7 @@
         public int Port { get; set; } = 5672;
         public string Username { get; set; } = "guest";
         public string Password { get; set; } = "guest";
-        public string ClientName { get; } = "RabbitMQ client";
+        public string ClientName { get; set;  } = "RabbitMQ client";
+        public bool IncludeMessageContentsInLogs { get; } = true;
     }
 }

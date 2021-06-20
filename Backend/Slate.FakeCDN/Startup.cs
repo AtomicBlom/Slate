@@ -8,21 +8,33 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Slate.FakeCDN
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(_configuration)
+                .CreateLogger();
+
+            Log.Logger.Information("FakeCDN Starting");
+
+            services.AddLogging(lb => lb
+                .ClearProviders()
+                .AddSerilog(dispose: true));
+
             services.AddRazorPages();
         }
 
@@ -46,7 +58,7 @@ namespace Slate.FakeCDN
                                       throw new Exception("Could not determine running application location");
 
             //FIXME: Consider if GameFiles is absolute
-            var fullPath = Path.GetFullPath(Path.Combine(applicationLocation, Configuration["GameFiles"]));
+            var fullPath = Path.GetFullPath(Path.Combine(applicationLocation, _configuration["GameFiles"]));
             Console.WriteLine(fullPath);
             app.UseStaticFiles(new StaticFileOptions
             {

@@ -21,28 +21,19 @@ namespace Slate.Overseer
 
         private readonly ILogger _logger;
         private readonly IHostEnvironment _hostingEnvironment;
-        private readonly IHostApplicationLifetime _lifetime;
         private readonly IRabbitClient _rabbitClient;
         private readonly ComponentSection _componentSection;
         private bool _running = true;
 
-        public ApplicationLauncher(ILogger logger, IHostEnvironment hostingEnvironment, IHostApplicationLifetime lifetime, IConfiguration configuration, IRabbitClient rabbitClient)
+        public ApplicationLauncher(ILogger logger, IHostEnvironment hostingEnvironment, ComponentSection componentSection, IRabbitClient rabbitClient)
         {
             _logger = logger.ForContext<ApplicationLauncher>();
             _hostingEnvironment = hostingEnvironment;
-            _lifetime = lifetime;
+            _componentSection = componentSection;
             _rabbitClient = rabbitClient;
-            _componentSection = configuration.GetSection("Components").Get<ComponentSection>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _lifetime.ApplicationStarted.Register(OnStarted);
-
-            return Task.CompletedTask;
-        }
-        
-        private void OnStarted()
         {
             _logger.Information($"{Assembly.GetEntryAssembly()?.GetName().Name} Started");
             _logger.Information($"Component Root Path: {_componentSection.ComponentRootPath}");
@@ -51,24 +42,33 @@ namespace Slate.Overseer
             {
                 LaunchComponent(definition);
             }
+
+            return Task.CompletedTask;
         }
 
         private void LaunchComponent(ComponentDefinition definition)
         {
             if (!_running) return;
 
+            string useHeartbeat = Debugger.IsAttached ? " --UseHeartbeat True" : string.Empty;
+
             var fileName = Path.GetFullPath(Path.Combine(_componentSection.ComponentRootPath, definition.Application));
             var startInfo = new ProcessStartInfo(fileName)
             {
                 WorkingDirectory = Path.GetDirectoryName(fileName),
                 UseShellExecute = true,
-                Arguments = $"--Environment={_hostingEnvironment.EnvironmentName}"
+                Arguments = $"--Environment={_hostingEnvironment.EnvironmentName}{useHeartbeat}"
             };
-
+            
             Task.Run(async () =>
             {
                 try
                 {
+                    _logger
+                        .ForContext("Parameters", startInfo.ArgumentList, true)
+                        .ForContext("WorkingDirectory", startInfo.WorkingDirectory)
+                        .Information("Starting application {ApplicationName}", startInfo.FileName);
+
                     var process = Process.Start(startInfo);
                     if (process is null)
                     {
