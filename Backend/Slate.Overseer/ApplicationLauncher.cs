@@ -51,13 +51,16 @@ namespace Slate.Overseer
             if (!_running) return;
 
             string useHeartbeat = Debugger.IsAttached ? " --UseHeartbeat True" : string.Empty;
+            var additionalArguments = definition.AdditionalArguments.Any()
+                ? " " + string.Join(' ', definition.AdditionalArguments)
+                : string.Empty;
 
             var fileName = Path.GetFullPath(Path.Combine(_componentSection.ComponentRootPath, definition.Application));
             var startInfo = new ProcessStartInfo(fileName)
             {
                 WorkingDirectory = Path.GetDirectoryName(fileName),
                 UseShellExecute = true,
-                Arguments = $"--Environment={_hostingEnvironment.EnvironmentName}{useHeartbeat}"
+                Arguments = $"--Environment={_hostingEnvironment.EnvironmentName}{useHeartbeat}{additionalArguments}"
             };
             
             Task.Run(async () =>
@@ -65,7 +68,7 @@ namespace Slate.Overseer
                 try
                 {
                     _logger
-                        .ForContext("Parameters", startInfo.ArgumentList, true)
+                        .ForContext("Parameters", startInfo.Arguments)
                         .ForContext("WorkingDirectory", startInfo.WorkingDirectory)
                         .Information("Starting application {ApplicationName}", startInfo.FileName);
 

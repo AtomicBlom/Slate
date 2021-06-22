@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Slate.Backend.Shared;
 using Slate.Genealogist.Stores;
 
 namespace Slate.Genealogist
@@ -28,22 +28,15 @@ namespace Slate.Genealogist
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(_configuration)
-                .CreateLogger();
-
-            Log.Logger.Information("Genaeologist Starting");
-
-            services.AddLogging(lb => lb
-                .ClearProviders()
-                .AddSerilog(dispose: true));
-
+            services.AddCoreSlateServices<GenealogistContainer>(_configuration);
+            
+            Log.Logger.Information("Genealogist Starting");
+            
             services.Configure<AuthDatabaseSettings>(_configuration.GetSection(nameof(AuthDatabaseSettings)));
             services.AddSingleton<IAuthDatabaseSettings>(sp => sp.GetRequiredService<IOptions<AuthDatabaseSettings>>().Value);
             services.AddTransient<IClientStore, MongoClientStore>();
             services.AddTransient<IMigrateDatabase, MigrateDatabase>();
-
-
+            
             // uncomment, if you want to add an MVC-based UI
             //services.AddControllersWithViews();
 

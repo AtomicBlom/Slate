@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
+using Slate.Networking.RabbitMQ;
 using StrongInject;
 
-namespace Slate.Networking.RabbitMQ.StrongInject
+namespace Slate.Backend.Shared
 {
     [Register(typeof(RabbitClient), Scope.SingleInstance, typeof(IRabbitClient))]
     public class RabbitMQModule
@@ -12,7 +13,7 @@ namespace Slate.Networking.RabbitMQ.StrongInject
         {
             return configuration
                 .GetSection(RabbitSettings.SectionName)
-                .Get<RabbitSettings>();
+                .Get<RabbitSettings>() ?? throw new StrongInjectException("RabbitSettings missing from application configuration");
         }
 
         [Factory(Scope.SingleInstance)]

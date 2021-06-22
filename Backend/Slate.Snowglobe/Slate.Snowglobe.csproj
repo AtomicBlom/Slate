@@ -5,7 +5,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>Enable</Nullable>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Backend\Nanny</OutputPath>
+		<OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\Backend\Snowglobe</OutputPath>
 		<ApplicationIcon>star_favourite_icon_186991.ico</ApplicationIcon>
 	</PropertyGroup>
 
@@ -21,11 +21,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.4.21253.7" />
-		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
-		<PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-		<PackageReference Include="Serilog.Sinks.Graylog" Version="2.2.2" />
-		<PackageReference Include="StrongInject" Version="1.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Slate.Backend.Shared\Slate.Backend.Shared.csproj" />
 	</ItemGroup>
 </Project>

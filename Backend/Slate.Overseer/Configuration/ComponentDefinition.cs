@@ -1,4 +1,6 @@
-﻿#nullable disable // JSON + nullable sucks...
+﻿using System;
+
+#nullable disable // JSON + nullable sucks...
 
 namespace Slate.Overseer.Configuration
 {
@@ -6,5 +8,6 @@ namespace Slate.Overseer.Configuration
     {
         public string Application { get; set; }
         public bool LaunchOnStart { get; set; } = true;
+        public string[] AdditionalArguments { get; set; } = Array.Empty<string>();
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Slate.Networking.RabbitMQ.StrongInject;
+using Slate.Backend.Shared;
 using Slate.Overseer.Configuration;
 using StrongInject;
 

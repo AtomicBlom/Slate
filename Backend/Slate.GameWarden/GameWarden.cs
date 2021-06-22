@@ -9,7 +9,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Slate.GameWarden;
 
-if (args.Any(a => a.Contains("--attachDebugger"))) Debugger.Break();
+if (args.Any(a => a.Contains("--AttachDebugger")))
+{
+    if (!Debugger.IsAttached)
+    {
+        Debugger.Launch();
+    }
+    else
+    {
+        Debugger.Break();
+    }
+}
 
 Console.Title = "Game Warden (Player Server)";
 

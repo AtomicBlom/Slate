@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Serilog;
-using Slate.Networking.Internal.Protocol;
-using Slate.Networking.RabbitMQ;
 using Slate.Overseer;
 
 Console.Title = "Overseer (Service Orchestration)";
@@ -28,6 +23,7 @@ Host.CreateDefaultBuilder(args)
     {
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(hostContext.Configuration)
+            .Enrich.FromLogContext()
             .CreateLogger();
         
         services.AddLogging(lb => lb

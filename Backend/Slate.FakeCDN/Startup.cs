@@ -10,6 +10,7 @@ using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Slate.Backend.Shared;
 
 namespace Slate.FakeCDN
 {
@@ -25,16 +26,10 @@ namespace Slate.FakeCDN
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(_configuration)
-                .CreateLogger();
-
+            services.AddCoreSlateServices<FakeCDNContainer>(_configuration);
+            
             Log.Logger.Information("FakeCDN Starting");
-
-            services.AddLogging(lb => lb
-                .ClearProviders()
-                .AddSerilog(dispose: true));
-
+                                             
             services.AddRazorPages();
         }
 

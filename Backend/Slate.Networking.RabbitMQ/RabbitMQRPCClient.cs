@@ -129,7 +129,7 @@ namespace Slate.Networking.RabbitMQ
             var logger = _rabbitSettings.IncludeMessageContentsInLogs
                 ? _logger.ForContext("MessageBody", request, true)
                 : _logger;
-            logger.Verbose("Sent a message {MessageType}", typeof(TResponse).Name);
+            logger.Verbose("Sent a message {MessageType}", typeof(TRequest).Name);
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var firstResponse = await Task.WhenAny(tcs.Task, timeoutTask);

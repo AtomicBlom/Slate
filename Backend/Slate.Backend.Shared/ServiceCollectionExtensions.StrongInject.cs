@@ -7,10 +7,6 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddTransientServiceUsingContainer<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            //    services.TryAddSingleton<TContainer, TContainer>();
-            //    services.TryAddSingleton<IContainer<TService>>(sp => sp.GetRequiredService<TContainer>());
-            //    services.AddTransient(x => x.GetRequiredService<TContainer>().Resolve());
-            //    services.AddTransient(x => x.GetRequiredService<Owned<TService>>().Value);
             AddTransientServiceUsingContainer<TContainer, TService, TService>(services);
         }
 
