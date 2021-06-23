@@ -2,31 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Serilog;
 using Slate.Networking.External.Protocol;
 
 namespace Slate.GameWarden.Game
 {
-    public class PlayerConnection : IDisposable
+    public record CharacterIdentifier(Guid UserId, Guid CharacterId);
+
+    public class PlayerConnection : IDisposable, IPlayerServiceHost
     {
         private readonly Guid _userId;
         private readonly Guid _characterId;
         private readonly IPlayerService[] _playerServices;
         private readonly ILogger _logger;
         private bool _disposed;
+        private BufferBlock<GameServerUpdate> MessagesToServer = new();
 
-        public PlayerConnection(Guid userId, Guid characterId, IPlayerService[] playerServices, ILogger logger)
+        public PlayerConnection(CharacterIdentifier characterIdentifier, IPlayerService[] playerServices, ILogger logger)
         {
-            _userId = userId;
-            _characterId = characterId;
+            (_userId, _characterId) = characterIdentifier;
             _playerServices = playerServices;
             _logger = logger.ForContext<PlayerConnection>()
-                .ForContext("UserId", userId)
-                .ForContext("CharacterId", characterId);
+                .ForContext("UserId", _userId)
+                .ForContext("CharacterId", _characterId);
         }
 
-        public IAsyncEnumerable<GameServerUpdate> Updates { get; }
-        
         public T? GetService<T>()
         {
             return _playerServices.OfType<T>().FirstOrDefault();
@@ -54,6 +55,28 @@ namespace Slate.GameWarden.Game
                     _logger.Error(e, "Error processing a message from the client");
                 }
             }
+        }
+
+        public async IAsyncEnumerable<GameServerUpdate> HandleOutgoingMessages()
+        {
+            while (!_disposed)
+            {
+                GameServerUpdate message;
+                try
+                {
+                    message = await MessagesToServer.ReceiveAsync();
+                }
+                catch (InvalidOperationException e)
+                {
+                    break;
+                }
+                yield return message;
+            }
+        }
+
+        public async Task QueueOutgoingMessage(GameServerUpdate message)
+        {
+            await MessagesToServer.SendAsync(message);
         }
     }
 }

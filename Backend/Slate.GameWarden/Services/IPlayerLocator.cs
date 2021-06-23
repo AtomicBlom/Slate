@@ -6,6 +6,6 @@ namespace Slate.GameWarden.Services
 {
     public interface IPlayerLocator
     {
-        Task<PlayerConnection> GetOrCreateCharacter(Guid playerId, Guid characterId);
+        Task<PlayerConnection> GetOrCreateCharacter(CharacterIdentifier characterIdentifier);
     }
 }

@@ -10,12 +10,12 @@ namespace Slate.GameWarden.Services
 {
     public class GameService : IGameService
     {
-        private readonly IPlayerLocator _playerLocator;
+        private readonly IPlayerLocator _characterLocator;
         private readonly ILogger _logger;
 
-        public GameService(IPlayerLocator playerLocator, ILogger logger)
+        public GameService(IPlayerLocator characterLocator, ILogger logger)
         {
-            _playerLocator = playerLocator;
+            _characterLocator = characterLocator;
             _logger = logger.ForContext<GameService>();
         }
         
@@ -37,7 +37,7 @@ namespace Slate.GameWarden.Services
 
                 var connectRequest = clientEnumerator.Current.ConnectToGameRequest;
 
-                character = await _playerLocator.GetOrCreatePlayer(connectRequest.CharacterId.ToGuid());
+                character = await _characterLocator.GetOrCreateCharacter(new CharacterIdentifier(userId, connectRequest.CharacterId.ToGuid()));
                 if (character is null)
                 {
                     throw new Exception("Could not create or find character");
@@ -49,9 +49,9 @@ namespace Slate.GameWarden.Services
                 throw;
             }
 
-            Task.Run(async () => await character.HandleIncomingMessages(clientEnumerator));
+            var _ = Task.Run(async () => await character.HandleIncomingMessages(clientEnumerator));
 
-            await foreach (var update in character.Updates)
+            await foreach (var update in character.HandleOutgoingMessages())
             {
                 yield return update;
             }

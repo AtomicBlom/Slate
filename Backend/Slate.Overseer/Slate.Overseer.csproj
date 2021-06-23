@@ -30,6 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj" />
 		<ProjectReference Include="..\Slate.Backend.Shared\Slate.Backend.Shared.csproj" />
 		<ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
 	</ItemGroup>

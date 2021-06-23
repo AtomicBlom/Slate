@@ -18,6 +18,6 @@ namespace Slate.Backend.Shared
         [Instance] protected IConfiguration Configuration { get; }
 
         [Factory(Scope.InstancePerDependency)]
-        protected ILogger CreateLogger() => Log.Logger;
+        protected static ILogger CreateLogger() => Log.Logger;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
@@ -46,7 +47,7 @@ namespace Slate.Genealogist
             {
                 new TestUser
                 {
-                    SubjectId = "1",
+                    SubjectId = Guid.Parse("11FB4912-2EEE-4A2C-96C9-16D1AB267184").ToString(),
                     Username = "atomicblom",
                     Password = "password",
                     Claims = new[]
@@ -56,7 +57,7 @@ namespace Slate.Genealogist
                 },
                 new TestUser
                 {
-                    SubjectId = "2",
+                    SubjectId = Guid.Parse("050FF185B3544E08905F6D6B2782D5F1").ToString(),
                     Username = "rosethethorn",
                     Password = "password",
                     Claims = new[]

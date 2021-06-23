@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ProtoBuf.Grpc.Server;
 using Serilog;
 using Slate.Overseer;
 
@@ -30,13 +32,14 @@ Host.CreateDefaultBuilder(args)
             .ClearProviders()
             .AddSerilog(dispose: true));
 
-        services.AddTransientServiceUsingContainer<OverseerContainer, IHostedService, ApplicationLauncher>();
+        services.AddSingletonServiceUsingContainer<OverseerContainer, IHostedService, ApplicationLauncher>();
 
         if (Debugger.IsAttached)
         {
             services.AddTransientServiceUsingContainer<OverseerContainer, IHostedService, DebugHeartbeatService>();
         }
-
+        
     })
+    .
     .Build()
     .Run();
