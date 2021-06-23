@@ -3,9 +3,11 @@
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <ProtoBufNet_Debug>True</ProtoBufNet_Debug>
+	  
   </PropertyGroup>
 
 	<ItemGroup>
+		<CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="OneOf" />
 		<None Remove="**/*.proto" />
 		<AdditionalFiles Include="**/*.proto" OneOf="enum" />
 	</ItemGroup>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProtoBuf.Grpc;
+using Serilog;
 using Slate.GameWarden.Game;
 using Slate.Networking.External.Protocol;
 
@@ -9,51 +10,48 @@ namespace Slate.GameWarden.Services
 {
     public class GameService : IGameService
     {
-        private readonly IPlayerLocator _playerLocator; 
+        private readonly IPlayerLocator _playerLocator;
+        private readonly ILogger _logger;
 
-        public GameService(IPlayerLocator playerLocator)
+        public GameService(IPlayerLocator playerLocator, ILogger logger)
         {
             _playerLocator = playerLocator;
+            _logger = logger.ForContext<GameService>();
         }
         
         public async IAsyncEnumerable<GameServerUpdate> SubscribeAsync(IAsyncEnumerable<GameClientUpdate> clientUpdates, CallContext context = default)
         {
-            var awaitLogin = new TaskCompletionSource<CharacterCoordinator>();
+            PlayerConnection? character = null;
 
-            var _ = Task.Run(async () =>
+            var clientEnumerator = clientUpdates.GetAsyncEnumerator();
+            try
             {
-                var clientEnumerator = clientUpdates.GetAsyncEnumerator();
-                try
-                {
-                    if (!await clientEnumerator.MoveNextAsync()) throw new Exception("Missing first message");
-                    if (!clientEnumerator.Current.ShouldSerializeConnectToGameRequest())
-                    {
-                        throw new Exception($"Expected first message to be a {nameof(ConnectToGameRequest)}");
-                    }
+                //FIXME: Read this from the header
+                var userId = Guid.NewGuid();
 
-                    var connectRequest = clientEnumerator.Current.ConnectToGameRequest;
-
-                    var character = await _playerLocator.GetOrCreatePlayer(connectRequest.CharacterId.ToGuid());
-                    if (character is null)
-                    {
-                        throw new Exception("Could not create or find character");
-                    }
-                }
-                catch (Exception e)
+                if (!await clientEnumerator.MoveNextAsync()) throw new Exception("Missing first message");
+                if (!clientEnumerator.Current.ShouldSerializeConnectToGameRequest())
                 {
-                    awaitLogin.SetException(e);
+                    throw new Exception($"Expected first message to be a {nameof(ConnectToGameRequest)}");
                 }
 
-                while (await clientEnumerator.MoveNextAsync())
-                {
-                    //FIXME: Process client messages, look up processors via the discriminator
-                    Console.WriteLine($"Received from client: {clientEnumerator.Current.ClientRequestMove}");
-                }
-            });
+                var connectRequest = clientEnumerator.Current.ConnectToGameRequest;
 
-            var characterInstance = await awaitLogin.Task;
-            
-            await foreach (var update in characterInstance.Updates)
+                character = await _playerLocator.GetOrCreatePlayer(connectRequest.CharacterId.ToGuid());
+                if (character is null)
+                {
+                    throw new Exception("Could not create or find character");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Could not connect player");
+                throw;
+            }
+
+            Task.Run(async () => await character.HandleIncomingMessages(clientEnumerator));
+
+            await foreach (var update in character.Updates)
             {
                 yield return update;
             }

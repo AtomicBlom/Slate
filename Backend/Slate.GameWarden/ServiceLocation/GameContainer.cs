@@ -9,9 +9,9 @@ namespace Slate.GameWarden.ServiceLocation
 {
     [Register(typeof(PlayerLocator), Scope.SingleInstance, typeof(IPlayerLocator))]
     [Register(typeof(CellPlayerService), typeof(IPlayerService))]
-    [Register(typeof(CharacterCoordinator))]
+    [Register(typeof(PlayerConnection))]
     [RegisterModule(typeof(GrpcServicesModule))]
-    internal partial class GameContainer : CoreServicesModule, IContainer<IAccountService>, IContainer<IGameService>, IContainer<IAuthorizationService>, IContainer<Func<Guid, CharacterCoordinator>>, IContainer<HeartbeatService>
+    internal partial class GameContainer : CoreServicesModule, IContainer<IAccountService>, IContainer<IGameService>, IContainer<IAuthorizationService>, IContainer<Func<Guid, PlayerConnection>>, IContainer<HeartbeatService>
     {
         public GameContainer(IServiceProvider serviceProvider) : base(serviceProvider)
         {

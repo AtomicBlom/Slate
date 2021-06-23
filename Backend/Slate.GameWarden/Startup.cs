@@ -61,7 +61,7 @@ namespace Slate.GameWarden
             services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAuthorizationService>();
             services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAccountService>();
             services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IGameService>();
-            services.AddSingleton<IContainer<Func<Guid, CharacterCoordinator>>>(sp => sp.GetRequiredService<GameContainer>());
+            services.AddSingleton<IContainer<Func<Guid, PlayerConnection>>>(sp => sp.GetRequiredService<GameContainer>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)

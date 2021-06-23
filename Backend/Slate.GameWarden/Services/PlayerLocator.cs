@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Slate.GameWarden.Game;
-using StrongInject;
 
 namespace Slate.GameWarden.Services
 {
     internal class PlayerLocator : IPlayerLocator
     {
-        private readonly Func<Guid, CharacterCoordinator> _serviceScopeFactory;
+        private readonly Func<Guid, Guid, PlayerConnection> _serviceScopeFactory;
 
-        public PlayerLocator(Func<Guid, CharacterCoordinator> serviceScopeFactory)
+        public PlayerLocator(Func<Guid, Guid, PlayerConnection> serviceScopeFactory)
         {
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        private readonly Dictionary<Guid, CharacterCoordinator> _loggedInCharacters = new();
+        private readonly Dictionary<Guid, PlayerConnection> _loggedInCharacters = new();
 
-        public async Task<CharacterCoordinator> GetOrCreatePlayer(Guid characterId)
+        public async Task<PlayerConnection> GetOrCreateCharacter(Guid playerId, Guid characterId)
         {
-            CharacterCoordinator? characterInstance;
+            PlayerConnection? characterInstance;
 
             bool initializeCharacter = false;
             lock (_loggedInCharacters)
@@ -28,7 +26,7 @@ namespace Slate.GameWarden.Services
                 if (!_loggedInCharacters.TryGetValue(characterId, out characterInstance))
                 {
                     
-                    characterInstance = _serviceScopeFactory(characterId);
+                    characterInstance = _serviceScopeFactory(playerId, characterId);
                     _loggedInCharacters.Add(characterId, characterInstance);
                     initializeCharacter = true;
                 }
