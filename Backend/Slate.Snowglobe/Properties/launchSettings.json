@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Slate.Snowglobe": {
+      "commandName": "Project",
+      "commandLineArgs": "--Id=8d2303d2-5f9d-4f82-99eb-38aca9763b7b --Cell \"Bleah\""
+    }
+  }
+}

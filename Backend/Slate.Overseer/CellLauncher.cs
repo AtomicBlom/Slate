@@ -5,6 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Nito.AsyncEx;
+using Serilog;
+using Serilog.Context;
+using Slate.Backend.Shared;
 using Slate.Networking.Internal.Protocol;
 using Slate.Networking.Internal.Protocol.Cell;
 using Slate.Networking.RabbitMQ;
@@ -25,97 +28,124 @@ namespace Slate.Overseer
         private readonly IRPCServer _server;
         private readonly IApplicationLauncher _applicationLauncher;
         private readonly IRabbitClient _rabbitClient;
+        private readonly ILogger _logger;
         private IDisposable? _lifecycleToken;
         private readonly Dictionary<string, List<CellInstance>> _knownCells = new();
         private readonly AsyncReaderWriterLock _knownCellLock = new();
         private readonly uint PlayerLimitPerCell = 64;
 
-        public CellLauncher(IRPCServer server, IApplicationLauncher applicationLauncher, IRabbitClient rabbitClient)
+        public CellLauncher(IRPCServer server, IApplicationLauncher applicationLauncher, IRabbitClient rabbitClient, ILogger logger)
         {
             _server = server;
             _applicationLauncher = applicationLauncher;
             _rabbitClient = rabbitClient;
+            _logger = logger.ForContext<CellLauncher>();
         }
 
-        public async Task<GetCellServerResponse> ProcessCellRequests(GetCellServerRequest request)
+        //FIXME: player affinity
+        private async Task<GetCellServerResponse> ProcessCellRequests(GetCellServerRequest request)
         {
-            //Best case, we already have an instance of the cell, find the best one
-            //FIXME: player affinity
-            
-
-            var (existed, id, endpoint) = await TryGetExistingCellServer(request, false);
-            if (existed)
+            using var logContext = LogContext.PushProperty("CellName", request.CellName);
+            IDisposable? instanceIdContext = null;
+            try
             {
+                //Best case, we already have an instance of the cell, find the best one
+                var (existed, cellInstance) = await TryGetExistingCellServer(request, false);
+                if (!existed)
+                {
+                    //We're going to need to create a new instance.
+                    using (await _knownCellLock.WriterLockAsync())
+                    {
+                        //First we need to guard against the idea that two requests might have made it through the reader lock
+                        (existed, cellInstance) = await TryGetExistingCellServer(request, true);
+                        if (!existed)
+                        {
+                            _logger.Information("GetCellServerRequest is spawning a new instance of Snowglobe");
+                            var instanceId = Guid.NewGuid();
+                            instanceIdContext = CommonLogContexts.ApplicationInstanceId(instanceId);
+
+                            var launchRequest = new TaskCompletionSource();
+
+                            cellInstance = new CellInstance(
+                                instanceId,
+                                request.CellName,
+                                launchRequest.Task,
+                                new CellMetrics
+                                {
+                                    InstanceId = new Uuid(),
+                                    PlayerCount = 0
+                                }
+                            );
+
+                            IDisposable? awakeSubscription = null;
+                            awakeSubscription = _rabbitClient.Subscribe<NotifyCellServerAwake>(message =>
+                            {
+                                if (awakeSubscription is null)
+                                    throw new Exception(
+                                        "Processed the awake message before the awake subscription was assigned!?");
+                                if (instanceId.Equals(message.Id.ToGuid()))
+                                {
+                                    using var innerInstanceId = CommonLogContexts.ApplicationInstanceId(instanceId);
+
+                                    _logger.Information("Received notification that the cell is now awake");
+                                    cellInstance.Endpoint = message.Endpoint;
+                                    launchRequest.SetResult();
+                                    awakeSubscription?.Dispose();
+                                }
+
+                                return Task.CompletedTask;
+                            });
+
+                            //Ok good, we're the only one in here now, let's launch it in the background
+                            var _ = _applicationLauncher.LaunchAsync("Snowglobe", new()
+                            {
+                                { "--Id", instanceId.ToString() },
+                                { "--Cell", request.CellName }
+                            });
+
+                            if (!_knownCells.TryGetValue(request.CellName, out var cellInstances))
+                            {
+                                cellInstances = new List<CellInstance>();
+                                _knownCells.Add(request.CellName, cellInstances);
+                            }
+
+                            cellInstances.Add(cellInstance);
+                        }
+                    }
+                }
+
+                if (cellInstance is null)
+                {
+                    throw new Exception("The cell instance was null somehow???");
+                }
+
+                if (!cellInstance.LaunchRequest.IsCompleted)
+                {
+                    _logger.Information("Waiting for cell to come alive");
+                }
+
+                //Unlock from the queue and await for the cell to come up.
+                await cellInstance.LaunchRequest;
+
+                _logger.Information("Cell is alive");
                 return new GetCellServerResponse
                 {
-                    Id = id!.Value.ToUuid(),
-                    Endpoint = endpoint
+                    Id = cellInstance.InstanceId.ToUuid(),
+                    Endpoint = cellInstance.Endpoint
                 };
             }
-
-            //We're going to need to create a new instance.
-            CellInstance cellInstance;
-            using (await _knownCellLock.WriterLockAsync())
+            catch (Exception e)
             {
-                //First we need to guard against the idea that two requests might have made it through the reader lock
-                (existed, id, endpoint) = await TryGetExistingCellServer(request, true);
-                if (existed)
-                {
-                    return new GetCellServerResponse
-                    {
-                        Id = id!.Value.ToUuid(),
-                        Endpoint = endpoint
-                    };
-                }
-
-                var instanceId = Guid.NewGuid();
-
-                var launchRequest = new TaskCompletionSource();
-                cellInstance = new CellInstance(
-                    instanceId,
-                    request.CellName,
-                    launchRequest.Task,
-                    new CellMetrics
-                    {
-                        InstanceId = new Uuid(),
-                        PlayerCount = 0
-                    }
-                );
-
-                
-                using var awakeSubscription = _rabbitClient.Subscribe<NotifyCellServerAwake>(message =>
-                {
-                    cellInstance.Endpoint = message.Endpoint;
-                    launchRequest.SetResult();
-                    return Task.CompletedTask;
-                });
-
-                //Ok good, we're the only one in here now, let's launch it in the background
-                var _ = _applicationLauncher.LaunchAsync("Snowglobe", new ()
-                {
-                    { "--Id", instanceId.ToString() },
-                    { "--Cell", request.CellName }
-                });
-
-                if (!_knownCells.TryGetValue(request.CellName, out var cellInstances))
-                {
-                    cellInstances = new List<CellInstance>();
-                    _knownCells.Add(request.CellName, cellInstances);
-                }
-
-                cellInstances.Add(cellInstance);
+                _logger.Error(e, "Failed to locate a cell server on demand");
+                throw;
             }
-
-            //Unlock from the queue and await for the cell to come up.
-            await cellInstance.LaunchRequest;
-            return new GetCellServerResponse
+            finally
             {
-                Id = cellInstance.InstanceId.ToUuid(),
-                Endpoint = cellInstance.Endpoint
-            };
+                instanceIdContext?.Dispose();
+            }
         }
 
-        private async Task<(bool Existing, Guid? Id, Endpoint? Endpoint)> TryGetExistingCellServer(GetCellServerRequest request, bool useExistingLock)
+        private async Task<(bool Existing, CellInstance? cellInstance)> TryGetExistingCellServer(GetCellServerRequest request, bool useExistingLock)
         {
             CellInstance? bestCell;
             IDisposable? innerLock = null;
@@ -127,7 +157,7 @@ namespace Slate.Overseer
                 }
 
                 if (!_knownCells.TryGetValue(request.CellName, out var cellInstances))
-                    return (false, null, null);
+                    return (false, null);
 
                 bestCell = cellInstances
                     .Where(ci => ci.Metrics.PlayerCount > PlayerLimitPerCell)
@@ -135,15 +165,14 @@ namespace Slate.Overseer
                     .FirstOrDefault();
 
                 if (bestCell is null)
-                    return (false, null, null);
+                    return (false, null);
             }
             finally
             {
                 innerLock?.Dispose();
             }
 
-            await bestCell.LaunchRequest;
-            return (true, bestCell.InstanceId, bestCell.Endpoint);
+            return (true, bestCell);
 
         }
 
@@ -159,11 +188,5 @@ namespace Slate.Overseer
             _lifecycleToken = null;
             return Task.CompletedTask;
         }
-    }
-
-    public interface IApplicationLauncher
-    {
-        Task LaunchAsync(string applicationDefinitionName, Dictionary<string, string?>? arguments = null);
-        Task ExitAllApplicationsAsync();
     }
 }

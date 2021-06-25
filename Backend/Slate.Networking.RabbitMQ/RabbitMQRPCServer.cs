@@ -12,35 +12,35 @@ namespace Slate.Networking.RabbitMQ
     public class RabbitMQRPCServer : IRPCServer
     {
         private readonly string _exchangeName;
-        private readonly IRPCProvider _rabbitClient;
         private readonly ILogger _logger;
         private readonly string _rpcQueueName;
+        private readonly IModel _model;
         private readonly IRabbitSettings _rabbitSettings;
 
-        internal RabbitMQRPCServer(string exchangeName, string queueName, IRPCProvider rabbitClient, ILogger logger)
+        internal RabbitMQRPCServer(string exchangeName, string queueName, IModel model, IRabbitSettings rabbitSettings, ILogger logger)
         {
             _exchangeName = exchangeName;
-            _rabbitClient = rabbitClient;
-            _rabbitSettings = rabbitClient.Settings;
             _logger = logger.ForContext<RabbitMQRPCServer>();
             _rpcQueueName = queueName;
+            _model = model;
+            _rabbitSettings = rabbitSettings;
         }
 
         public IDisposable Serve<TRequest, TResponse>(Func<TRequest, Task<TResponse>> processor)
         {
-            var consumer = new AsyncEventingBasicConsumer(_rabbitClient.Model);
+            var consumer = new AsyncEventingBasicConsumer(_model);
 
-            _rabbitClient.Model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
-            _rabbitClient.Model.QueueDeclare($"{_rpcQueueName}.{typeof(TRequest).Name}", false, false, false, null);
-            _rabbitClient.Model.QueueBind($"{_rpcQueueName}.{typeof(TRequest).Name}", _exchangeName, $"{_rpcQueueName}.{typeof(TRequest).Name}");
-            _rabbitClient.Model.BasicQos(0, 1, false);
+            _model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
+            _model.QueueDeclare($"{_rpcQueueName}.{typeof(TRequest).Name}", false, false, false, null);
+            _model.QueueBind($"{_rpcQueueName}.{typeof(TRequest).Name}", _exchangeName, $"{_rpcQueueName}.{typeof(TRequest).Name}");
+            _model.BasicQos(0, 1, false);
             
             _logger.Information("Listening to RPC pair Request {RequestType}, Response {ResponseType}", typeof(TRequest).Name, typeof(TResponse).Name);
 
             consumer.Received += async (model, args) =>
             {
                 Memory<byte> response = Array.Empty<byte>();
-                var replyProps = _rabbitClient.Model.CreateBasicProperties();
+                var replyProps = _model.CreateBasicProperties();
                 replyProps.CorrelationId = args.BasicProperties.CorrelationId;
                 using var correlationIdContext =
                     LogContext.PushProperty("CorrelationId", args.BasicProperties.CorrelationId);
@@ -71,17 +71,17 @@ namespace Slate.Networking.RabbitMQ
                     _logger.Error(e, "Error processing an RPC Request {MessageType}", typeof(TRequest).Name);
                 }
 
-                _rabbitClient.Model.BasicPublish(string.Empty, args.BasicProperties.ReplyTo, replyProps, response);
-                _rabbitClient.Model.BasicAck(args.DeliveryTag, false);
+                _model.BasicPublish(string.Empty, args.BasicProperties.ReplyTo, replyProps, response);
+                _model.BasicAck(args.DeliveryTag, false);
             };
 
-            _rabbitClient.Model.BasicConsume($"{_rpcQueueName}.{typeof(TRequest).Name}", false, consumer);
+            _model.BasicConsume($"{_rpcQueueName}.{typeof(TRequest).Name}", false, consumer);
 
             return new ActionDisposable(() =>
             {
                 foreach (var consumerTag in consumer.ConsumerTags)
                 {
-                    _rabbitClient.Model.BasicCancel(consumerTag);
+                    _model.BasicCancel(consumerTag);
                 }
             });
         }

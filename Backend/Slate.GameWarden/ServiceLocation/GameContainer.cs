@@ -17,7 +17,8 @@ namespace Slate.GameWarden.ServiceLocation
         IContainer<IGameService>, 
         IContainer<IAuthorizationService>, 
         IContainer<Func<CharacterIdentifier, PlayerConnection>>, 
-        IContainer<HeartbeatService>
+        IContainer<HeartbeatService>,
+        IContainer<GracefulShutdownService>
     {
         public GameContainer(IServiceProvider serviceProvider) : base(serviceProvider)
         {

@@ -10,7 +10,7 @@ namespace Slate.Backend.Shared
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddCoreSlateServices<TContainer>(this IServiceCollection services, IConfiguration configuration) 
-            where TContainer : CoreServicesModule, IContainer<HeartbeatService>
+            where TContainer : CoreServicesModule, IContainer<HeartbeatService>, IContainer<GracefulShutdownService>
         {
             services.AddCoreSlateLogging(configuration);
 
@@ -18,6 +18,7 @@ namespace Slate.Backend.Shared
             {
                 services.AddHostedServiceUsingContainer<TContainer, HeartbeatService>();
             }
+            services.AddHostedServiceUsingContainer<TContainer, GracefulShutdownService>();
 
             return services;
         }

@@ -33,13 +33,13 @@ namespace Slate.Backend.Shared
             return factory.CreateConnection();
         }
 
-        [Factory]
-        public static IModel CreateRabbitMQModel(IConnection connection) => connection.CreateModel();
+        //[Factory]
+        //public static IModel CreateRabbitMQModel(IConnection connection) => connection.CreateModel();
 
-        [Factory]
+        [Factory(Scope.SingleInstance)]
         public static IRPCServer CreateRPCServer(IRabbitClient client) => client.CreateRPCServer();
 
-        [Factory]
+        [Factory(Scope.SingleInstance)]
         public static IRPCClient CreateRPCClient(IRabbitClient client) => client.CreateRPCClient();
     }
 }

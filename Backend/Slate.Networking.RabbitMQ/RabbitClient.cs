@@ -8,49 +8,58 @@ using Serilog;
 
 namespace Slate.Networking.RabbitMQ
 {
-    public class RabbitClient : IRabbitClient, IDisposable, IRPCProvider
+    public class RabbitClient : IRabbitClient, IDisposable
     {
+        private readonly IConnection _connection;
         private readonly IRabbitSettings _rabbitSettings;
         private readonly ILogger _logger;
         private bool _disposed;
-
-        public IModel Model { get; }
+        private IModel? _subscriptionModel;
         public IRabbitSettings Settings => _rabbitSettings;
 
-        public RabbitClient(IModel model, ILogger logger, IRabbitSettings rabbitSettings)
+        public RabbitClient(IConnection connection, ILogger logger, IRabbitSettings rabbitSettings)
         {
+            _connection = connection;
             _rabbitSettings = rabbitSettings;
-            Model = model;
             _logger = logger.ForContext<RabbitClient>();
         }
 
         public IDisposable Subscribe<T>(Func<T, Task> action)
         {
-            if (_disposed)
+            _subscriptionModel ??= _connection.CreateModel();
+
+            try
             {
-                _logger.Warning("Attempted to send a message after the RabbitClient has been disposed");
-                throw new ObjectDisposedException(nameof(RabbitClient));
+                if (_disposed)
+                {
+                    _logger.Warning("Attempted to send a message after the RabbitClient has been disposed");
+                    throw new ObjectDisposedException(nameof(RabbitClient));
+                }
+
+                _subscriptionModel.ExchangeDeclare(exchange: "e.Slate.Fanout", type: ExchangeType.Fanout);
+                var queueName =
+                    $"q.Slate.Fanout.{_rabbitSettings.ClientName}.{Guid.NewGuid().ToString().Substring(24)}";
+                var declaredQueue = _subscriptionModel.QueueDeclare(queueName);
+                _subscriptionModel.QueueBind(declaredQueue.QueueName, "e.Slate.Fanout", typeof(T).FullName);
+                var consumer = new AsyncEventingBasicConsumer(_subscriptionModel);
+                consumer.Received += ConsumeMessage;
+                var consumerTag = _subscriptionModel.BasicConsume(declaredQueue.QueueName, false, consumer);
+                var subscriptionToken = new ActionDisposable(() =>
+                {
+                    _logger.Verbose("Cleaning up queue for subscription {MessageType}", typeof(T).Name);
+                    _subscriptionModel?.BasicCancel(consumerTag);
+                    consumer.Received -= ConsumeMessage;
+                });
+
+                _logger.Information("Subscribed to message {MessageType}", typeof(T).Name);
+
+                return subscriptionToken;
             }
-
-            Model.ExchangeDeclare(exchange: "e.Slate.Fanout", type: ExchangeType.Fanout);
-            
-            var queue = $"q.{typeof(T).FullName}";
-            Model.QueueDeclare(queue, autoDelete: false);
-            Model.QueueBind(queue, "e.Slate.Fanout", typeof(T).FullName);
-            var consumer = new AsyncEventingBasicConsumer(Model);
-            
-            consumer.Received += ConsumeMessage;
-            var consumerTag = Model.BasicConsume(queue, false, consumer);
-            var subscriptionToken = new ActionDisposable(() =>
+            catch (Exception e)
             {
-                Model?.BasicCancel(consumerTag);
-                consumer.Received -= ConsumeMessage;
-            });
-
-            _logger.Information("Subscribed to message {MessageType}", typeof(T).Name);
-
-
-            return subscriptionToken;
+                _logger.Error(e, "Error subscribing to message {MessageType}", typeof(T).Name);
+                throw;
+            }
 
             async Task ConsumeMessage(object? sender, BasicDeliverEventArgs args)
             {
@@ -65,13 +74,13 @@ namespace Slate.Networking.RabbitMQ
                     logger.Verbose("Received a message {MessageType}", typeof(T).Name);
 
                     await action(message);
-                    Model?.BasicAck(deliveryTag, false);
+                    _subscriptionModel?.BasicAck(deliveryTag, false);
                 }
                 catch (Exception e)
                 {
                     _logger.Error(e, "Could not process a {MessageType} message", typeof(T).Name);
                     //FIXME: Consider whether a message can be re-queued 
-                    Model?.BasicNack(deliveryTag, false, true);
+                    _subscriptionModel?.BasicNack(deliveryTag, false, true);
                 }
             }
         }
@@ -84,13 +93,15 @@ namespace Slate.Networking.RabbitMQ
                 throw new ObjectDisposedException(nameof(RabbitClient));
             }
 
+            _subscriptionModel ??= _connection.CreateModel();
+
             try
             {
                 using MemoryStream ms = new();
                 Serializer.Serialize(ms, message);
 
-                Model.ExchangeDeclare("e.Slate.Fanout", ExchangeType.Fanout);
-                Model.BasicPublish("e.Slate.Fanout", typeof(T).FullName, body: ms.ToArray());
+                _subscriptionModel.ExchangeDeclare("e.Slate.Fanout", ExchangeType.Fanout);
+                _subscriptionModel.BasicPublish("e.Slate.Fanout", typeof(T).FullName, body: ms.ToArray());
 
                 var logger = _rabbitSettings.IncludeMessageContentsInLogs
                     ? _logger.ForContext("MessageBody", message, true)
@@ -106,20 +117,20 @@ namespace Slate.Networking.RabbitMQ
         public IRPCClient CreateRPCClient()
         {
             if (_disposed) throw new ObjectDisposedException(nameof(RabbitClient));
-            return new RabbitMQRPCClient("e.Slate.RPC", "q.Slate.RPC", this, _logger);
+            return new RabbitMQRPCClient("e.Slate.RPC", "q.Slate.RPC", _connection.CreateModel(), _rabbitSettings, _logger);
         }
 
         public IRPCServer CreateRPCServer()
         {
             if (_disposed) throw new ObjectDisposedException(nameof(RabbitClient));
-            return new RabbitMQRPCServer("e.Slate.RPC", "q.Slate.RPC", this, _logger);
+            return new RabbitMQRPCServer("e.Slate.RPC", "q.Slate.RPC", _connection.CreateModel(), _rabbitSettings, _logger);
         }
 
         public void Dispose()
         {
             _disposed = true;
             GC.SuppressFinalize(this);
-            Model?.Dispose();
+            _subscriptionModel?.Dispose();
         }
     }
 }

@@ -12,7 +12,6 @@ namespace Slate.Networking.RabbitMQ
 {
     internal class RabbitMQRPCClient : IRPCClient
     {
-        private readonly IRPCProvider _rabbitClient;
         private readonly ILogger _logger;
         private string _replyQueueName;
 
@@ -24,13 +23,14 @@ namespace Slate.Networking.RabbitMQ
         private bool _clientCreated = false;
         private object _lock = new();
         private readonly IRabbitSettings _rabbitSettings;
+        private readonly IModel _model;
 
-        internal RabbitMQRPCClient(string exchangeName, string queueName, IRPCProvider rabbitClient, ILogger logger)
+        internal RabbitMQRPCClient(string exchangeName, string queueName, IModel model, IRabbitSettings rabbitSettings, ILogger logger)
         {
             _exchangeName = exchangeName;
             _queueName = queueName;
-            _rabbitClient = rabbitClient;
-            _rabbitSettings = rabbitClient.Settings;
+            _model = model;
+            _rabbitSettings = rabbitSettings;
             _logger = logger.ForContext<RabbitMQRPCClient>();
         }
 
@@ -42,14 +42,17 @@ namespace Slate.Networking.RabbitMQ
                 _clientCreated = true;
             }
 
-            _replyQueueName = _rabbitClient.Model.QueueDeclare().QueueName;
-            _consumer = new AsyncEventingBasicConsumer(_rabbitClient.Model);
+            var queueName = $"{_queueName}.Client.{_rabbitSettings.ClientName}.{Guid.NewGuid().ToString().Substring(24)}";
+            _replyQueueName = _model.QueueDeclare(queueName).QueueName;
+            _consumer = new AsyncEventingBasicConsumer(_model);
             _consumer.Received += MessageReceived;
 
-            _rabbitClient.Model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
+            _model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
 
             Task MessageReceived(object sender, BasicDeliverEventArgs basicDeliverEventArgs)
             {
+                Action<ReadOnlyMemory<byte>> ? actionToRun = null;
+
                 lock (_pendingCallLock)
                 {
                     if (!basicDeliverEventArgs.BasicProperties.IsCorrelationIdPresent() ||
@@ -60,30 +63,39 @@ namespace Slate.Networking.RabbitMQ
 
                     using var correlationContext = LogContext.PushProperty("CorrelationId", correlationId);
 
-                    if (PendingCalls.TryGetValue(correlationId, out var action))
+                    if (PendingCalls.TryGetValue(correlationId, out actionToRun))
                     {
-                        try
-                        {
-                            action(basicDeliverEventArgs.Body);
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.Error(e, "Failed to process the callback of an RPC response");
-                        }
+                        PendingCalls.Remove(correlationId);
                     }
                 }
+
+                try
+                {
+                    if (actionToRun == null)
+                    {
+                        throw new Exception("Attempted to process a message that did not belong to us");
+                    }
+
+                    actionToRun?.Invoke(basicDeliverEventArgs.Body);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e, "Failed to process the callback of an RPC response");
+                }
+
+                
 
                 return Task.CompletedTask;
             }
 
-            _rabbitClient.Model.BasicConsume(_consumer, _replyQueueName, true);
+            _model.BasicConsume(_consumer, _replyQueueName, true);
         }
 
         public async Task<TResponse> CallAsync<TRequest, TResponse>(TRequest request)
         {
             EnsureRPCClient();
             
-            var props = _rabbitClient.Model.CreateBasicProperties();
+            var props = _model.CreateBasicProperties();
             var correlationId = Guid.NewGuid();
             using var correlationContext = LogContext.PushProperty("CorrelationId", correlationId);
             props.CorrelationId = correlationId.ToString();
@@ -120,7 +132,7 @@ namespace Slate.Networking.RabbitMQ
             await using var memoryStream = new MemoryStream();
             Serializer.Serialize(memoryStream, request);
 
-            _rabbitClient.Model.BasicPublish(
+            _model.BasicPublish(
                 exchange: _exchangeName,
                 routingKey: $"{_queueName}.{typeof(TRequest).Name}",
                 basicProperties: props,
@@ -145,11 +157,11 @@ namespace Slate.Networking.RabbitMQ
 
         public void Dispose()
         {
-            if (_consumer is null || _rabbitClient.Model is null) return;
+            if (_consumer is null) return;
 
             foreach (var consumerTag in _consumer.ConsumerTags)
             {
-                _rabbitClient.Model.BasicCancel(consumerTag);
+                _model.BasicCancel(consumerTag);
                 
             }
         }
