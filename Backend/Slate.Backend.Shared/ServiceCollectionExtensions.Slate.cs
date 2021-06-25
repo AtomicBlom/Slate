@@ -16,7 +16,7 @@ namespace Slate.Backend.Shared
 
             if (bool.TryParse(configuration["UseHeartbeat"], out var useHeartbeat) && useHeartbeat)
             {
-                services.AddTransientServiceUsingContainer<TContainer, IHostedService, HeartbeatService>();
+                services.AddHostedServiceUsingContainer<TContainer, HeartbeatService>();
             }
 
             return services;

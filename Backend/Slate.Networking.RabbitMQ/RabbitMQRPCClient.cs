@@ -122,7 +122,7 @@ namespace Slate.Networking.RabbitMQ
 
             _rabbitClient.Model.BasicPublish(
                 exchange: _exchangeName,
-                routingKey: _queueName,
+                routingKey: $"{_queueName}.{typeof(TRequest).Name}",
                 basicProperties: props,
                 body: memoryStream.GetBuffer().AsMemory(..(int)memoryStream.Length));
 

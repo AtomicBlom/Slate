@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Slate.Networking.Internal.Protocol;
@@ -15,46 +13,82 @@ using Slate.Overseer.Configuration;
 
 namespace Slate.Overseer
 {
-    internal class ApplicationLauncher : IHostedService
+    internal class CoreApplicationStarter : IHostedService
     {
-        private readonly List<Process> _managedProcesses = new();
-
-        private readonly ILogger _logger;
-        private readonly IHostEnvironment _hostingEnvironment;
-        private readonly IRabbitClient _rabbitClient;
+        private readonly IApplicationLauncher _applicationLauncher;
         private readonly ComponentSection _componentSection;
-        private bool _running = true;
+        private readonly IRabbitClient _rabbitClient;
+        private readonly ILogger _logger;
 
-        public ApplicationLauncher(ILogger logger, IHostEnvironment hostingEnvironment, ComponentSection componentSection, IRabbitClient rabbitClient)
+        public CoreApplicationStarter(IApplicationLauncher applicationLauncher, ILogger logger, ComponentSection componentSection, IRabbitClient rabbitClient)
         {
-            _logger = logger.ForContext<ApplicationLauncher>();
-            _hostingEnvironment = hostingEnvironment;
+            _applicationLauncher = applicationLauncher;
             _componentSection = componentSection;
             _rabbitClient = rabbitClient;
+            _logger = logger.ForContext<CoreApplicationStarter>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.Information($"{Assembly.GetEntryAssembly()?.GetName().Name} Started");
             _logger.Information($"Component Root Path: {_componentSection.ComponentRootPath}");
-
             foreach (var definition in _componentSection.Definitions.Where(d => d.LaunchOnStart))
             {
-                LaunchComponent(definition);
+                _applicationLauncher.LaunchAsync(definition.Name);
             }
 
             return Task.CompletedTask;
         }
 
-        private void LaunchComponent(ComponentDefinition definition)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            if (!_running) return;
+            _rabbitClient.Send(new FullSystemShutdownMessage());
+            await _applicationLauncher.ExitAllApplicationsAsync();
+            
+        }
+
+
+    }
+
+    internal class ApplicationLauncher : IApplicationLauncher
+    {
+        private readonly List<Process> _managedProcesses = new();
+
+        private readonly ILogger _logger;
+        private readonly IHostEnvironment _hostingEnvironment;
+        private readonly ComponentSection _componentSection;
+        private bool _running = true;
+
+        public ApplicationLauncher(ILogger logger, IHostEnvironment hostingEnvironment, ComponentSection componentSection)
+        {
+            _logger = logger.ForContext<ApplicationLauncher>();
+            _hostingEnvironment = hostingEnvironment;
+            _componentSection = componentSection;
+        }
+
+        private void RelaunchApplication(string definition, Dictionary<string, string?> dictionary)
+        {
+            Task.Run(async () => await LaunchAsync(definition, dictionary));
+        }
+
+
+        public async Task LaunchAsync(string applicationDefinitionName, Dictionary<string, string?>? arguments = null)
+        {
+            if (!_running) throw new TaskCanceledException("Application is shutting down");
+            arguments ??= new();
+
+            var definition = _componentSection.Definitions.SingleOrDefault(s => s.Name == applicationDefinitionName)
+                ?? throw new ArgumentException("unknown application name", nameof(applicationDefinitionName));
 
             string useHeartbeat = Debugger.IsAttached ? " --UseHeartbeat True" : string.Empty;
-            var additionalArguments = definition.AdditionalArguments.Any()
-                ? " " + string.Join(' ', definition.AdditionalArguments)
-                : string.Empty;
 
+            var allArguments = definition.AdditionalArguments.Concat(
+                arguments.Select(a => a.Value is null ? a.Key : $"{a.Key}={a.Value}"))
+                .ToList();
+
+            var additionalArguments = allArguments.Any()
+                ? " " + string.Join(' ', allArguments)
+                : string.Empty;
+            
             var fileName = Path.GetFullPath(Path.Combine(_componentSection.ComponentRootPath, definition.Application));
             var startInfo = new ProcessStartInfo(fileName)
             {
@@ -62,8 +96,10 @@ namespace Slate.Overseer
                 UseShellExecute = true,
                 Arguments = $"--Environment={_hostingEnvironment.EnvironmentName}{useHeartbeat}{additionalArguments}"
             };
-            
-            Task.Run(async () =>
+
+            var tcs = new TaskCompletionSource();
+
+            var _ = Task.Run(async () =>
             {
                 try
                 {
@@ -78,28 +114,25 @@ namespace Slate.Overseer
                         throw new Exception($"Unable to start process {fileName}");
                     }
                     _managedProcesses.Add(process);
+                    tcs.SetResult();
                     await process.WaitForExitAsync();
-                    OnProcessExited(definition);
+                    if (definition.LaunchOnStart)
+                    {
+                        RelaunchApplication(applicationDefinitionName, arguments);
+                    }
                 }
                 catch (Exception e)
                 {
                     _logger.Error(e, $"Error in component {definition.Application}");
                 }
             });
+
+            await tcs.Task;
         }
 
-        private void OnProcessExited(ComponentDefinition definition)
-        {
-            if (definition.LaunchOnStart)
-            {
-                LaunchComponent(definition);
-            }
-        }
-        
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public async Task ExitAllApplicationsAsync()
         {
             _running = false;
-            _rabbitClient.Send(new FullSystemShutdownMessage());
             var exitTasks = _managedProcesses.Select(async mp =>
             {
                 var delayTask = Task.Delay(TimeSpan.FromSeconds(30));

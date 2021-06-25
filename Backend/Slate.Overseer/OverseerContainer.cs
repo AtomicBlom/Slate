@@ -9,10 +9,12 @@ using StrongInject;
 
 namespace Slate.Overseer
 {
-    [Register(typeof(ApplicationLauncher))]
+    [Register(typeof(ApplicationLauncher), Scope.SingleInstance, typeof(IApplicationLauncher))]
+    [Register(typeof(CoreApplicationStarter))]
+    [Register(typeof(CellLauncher))]
     [Register(typeof(DebugHeartbeatService))]
     [RegisterModule(typeof(RabbitMQModule))]
-    internal partial class OverseerContainer : IContainer<ApplicationLauncher>, IContainer<DebugHeartbeatService>
+    internal partial class OverseerContainer : IContainer<CoreApplicationStarter>, IContainer<CellLauncher>, IContainer<DebugHeartbeatService>
     {
         [Instance] private readonly IServiceProvider _serviceProvider;
         [Instance] private readonly IConfiguration _configuration;

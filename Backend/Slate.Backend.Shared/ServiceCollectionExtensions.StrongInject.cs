@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using StrongInject;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -7,15 +8,18 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddTransientServiceUsingContainer<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            AddTransientServiceUsingContainer<TContainer, TService, TService>(services);
+            services.TryAddSingleton<TContainer, TContainer>();
+            services.TryAddSingleton<IContainer<TService>>(sp => sp.GetRequiredService<TContainer>());
+            services.AddTransient(x => x.GetRequiredService<TContainer>().Resolve());
+            services.AddTransient<TService>(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
-        public static void AddTransientServiceUsingContainer<TContainer, TService, TServiceImpl>(this IServiceCollection services) where TContainer : class, IContainer<TServiceImpl> where TService : class where TServiceImpl : TService
+        public static void AddHostedServiceUsingContainer<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class, IHostedService
         {
             services.TryAddSingleton<TContainer, TContainer>();
-            services.TryAddSingleton<IContainer<TServiceImpl>>(sp => sp.GetRequiredService<TContainer>());
+            services.TryAddSingleton<IContainer<TService>>(sp => sp.GetRequiredService<TContainer>());
             services.AddTransient(x => x.GetRequiredService<TContainer>().Resolve());
-            services.AddTransient<TService>(x => x.GetRequiredService<Owned<TServiceImpl>>().Value);
+            services.AddTransient<IHostedService>(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
         public static void AddTransientServiceUsingContainer<TService>(this IServiceCollection services, IContainer<TService> container) where TService : class

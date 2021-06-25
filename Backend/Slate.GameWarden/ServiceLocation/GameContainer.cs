@@ -8,8 +8,9 @@ using StrongInject;
 namespace Slate.GameWarden.ServiceLocation
 {
     [Register(typeof(PlayerLocator), Scope.SingleInstance, typeof(IPlayerLocator))]
-    [Register(typeof(CellPlayerService), typeof(IPlayerService))]
+    [Register(typeof(PlayerCellService), typeof(IPlayerService))]
     [Register(typeof(PlayerConnection))]
+    [Register(typeof(CellConnectionManager), Scope.SingleInstance, typeof(ICellConnectionManager))]
     [RegisterModule(typeof(GrpcServicesModule))]
     internal partial class GameContainer : CoreServicesModule, 
         IContainer<IAccountService>, 

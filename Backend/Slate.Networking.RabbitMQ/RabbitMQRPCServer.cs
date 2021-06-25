@@ -31,11 +31,10 @@ namespace Slate.Networking.RabbitMQ
             var consumer = new AsyncEventingBasicConsumer(_rabbitClient.Model);
 
             _rabbitClient.Model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
-            _rabbitClient.Model.QueueDeclare(_rpcQueueName, false, false, false, null);
-            _rabbitClient.Model.QueueBind(_rpcQueueName, _exchangeName, _rpcQueueName);
+            _rabbitClient.Model.QueueDeclare($"{_rpcQueueName}.{typeof(TRequest).Name}", false, false, false, null);
+            _rabbitClient.Model.QueueBind($"{_rpcQueueName}.{typeof(TRequest).Name}", _exchangeName, $"{_rpcQueueName}.{typeof(TRequest).Name}");
             _rabbitClient.Model.BasicQos(0, 1, false);
-            _rabbitClient.Model.BasicConsume(_rpcQueueName, false, consumer);
-
+            
             _logger.Information("Listening to RPC pair Request {RequestType}, Response {ResponseType}", typeof(TRequest).Name, typeof(TResponse).Name);
 
             consumer.Received += async (model, args) =>
@@ -76,6 +75,7 @@ namespace Slate.Networking.RabbitMQ
                 _rabbitClient.Model.BasicAck(args.DeliveryTag, false);
             };
 
+            _rabbitClient.Model.BasicConsume($"{_rpcQueueName}.{typeof(TRequest).Name}", false, consumer);
 
             return new ActionDisposable(() =>
             {

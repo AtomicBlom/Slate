@@ -32,14 +32,14 @@ Host.CreateDefaultBuilder(args)
             .ClearProviders()
             .AddSerilog(dispose: true));
 
-        services.AddSingletonServiceUsingContainer<OverseerContainer, IHostedService, ApplicationLauncher>();
+        services.AddHostedServiceUsingContainer<OverseerContainer, CoreApplicationStarter>();
+        services.AddHostedServiceUsingContainer<OverseerContainer, CellLauncher>();
 
         if (Debugger.IsAttached)
         {
-            services.AddTransientServiceUsingContainer<OverseerContainer, IHostedService, DebugHeartbeatService>();
+            services.AddHostedServiceUsingContainer<OverseerContainer, DebugHeartbeatService>();
         }
         
     })
-    .
     .Build()
     .Run();

@@ -6,8 +6,17 @@ message GetCellServerRequest {
 	string CellName = 1;
 }
 
+message Endpoint {
+	string Hostname = 1;
+	uint32 Port = 2;
+}
+
 message GetCellServerResponse {
 	UUID Id = 3;
-	string IPAddress = 1;
-	int32 Port = 2;	
+	Endpoint Endpoint = 2;	
+}
+
+message NotifyCellServerAwake {
+	UUID Id = 3;
+	Endpoint Endpoint = 1;
 }
