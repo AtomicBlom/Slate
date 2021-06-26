@@ -29,7 +29,7 @@ services:
             - ES_JAVA_OPTS=-Xms512m -Xmx512m
     
     slate-graylog:
-        image: graylog/graylog:4.0
+        image: graylog/graylog:4.1
         ports:
             - "9000:9000"
             - "12201:12201/udp"

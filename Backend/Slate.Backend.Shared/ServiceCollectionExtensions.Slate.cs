@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using StrongInject;
@@ -26,9 +26,20 @@ namespace Slate.Backend.Shared
         public static IServiceCollection AddCoreSlateLogging(this IServiceCollection services,
             IConfiguration configuration)
         {
-            Log.Logger = new LoggerConfiguration()
+            var applicationSessionId = Guid.NewGuid().ToString().Substring(24);
+            var instanceId = configuration["Id"];
+
+            var loggerConfiguration = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .Enrich.FromLogContext()
+                .Enrich.WithProperty("ApplicationSessionId", applicationSessionId);
+
+            if (!string.IsNullOrEmpty(instanceId))
+            {
+                loggerConfiguration = loggerConfiguration.Enrich.WithProperty("InstanceId", instanceId);
+            }
+            
+            Log.Logger = loggerConfiguration
                 .CreateLogger();
 
             services.AddLogging(lb => lb

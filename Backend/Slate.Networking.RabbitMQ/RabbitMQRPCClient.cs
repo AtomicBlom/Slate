@@ -45,9 +45,11 @@ namespace Slate.Networking.RabbitMQ
             var queueName = $"{_queueName}.Client.{_rabbitSettings.ClientName}.{Guid.NewGuid().ToString().Substring(24)}";
             _replyQueueName = _model.QueueDeclare(queueName).QueueName;
             _consumer = new AsyncEventingBasicConsumer(_model);
+            _model.BasicQos(0,8, false);
             _consumer.Received += MessageReceived;
 
             _model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
+            
 
             Task MessageReceived(object sender, BasicDeliverEventArgs basicDeliverEventArgs)
             {

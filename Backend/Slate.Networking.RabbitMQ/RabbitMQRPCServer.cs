@@ -33,7 +33,7 @@ namespace Slate.Networking.RabbitMQ
             _model.ExchangeDeclare(_exchangeName, ExchangeType.Direct, false, false);
             _model.QueueDeclare($"{_rpcQueueName}.{typeof(TRequest).Name}", false, false, false, null);
             _model.QueueBind($"{_rpcQueueName}.{typeof(TRequest).Name}", _exchangeName, $"{_rpcQueueName}.{typeof(TRequest).Name}");
-            _model.BasicQos(0, 1, false);
+            _model.BasicQos(0, 8, false);
             
             _logger.Information("Listening to RPC pair Request {RequestType}, Response {ResponseType}", typeof(TRequest).Name, typeof(TResponse).Name);
 

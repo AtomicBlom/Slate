@@ -24,7 +24,8 @@ namespace Slate.Networking.RabbitMQ
             _logger = logger.ForContext<RabbitClient>();
         }
 
-        public IDisposable Subscribe<T>(Func<T, Task> action)
+        //FIXME: Consider what happens if this gets called asynchronously? - Introduce locking?
+        public IDisposable Subscribe<T>(Func<T, Task> action, ushort parallelism = 0)
         {
             _subscriptionModel ??= _connection.CreateModel();
 
@@ -36,14 +37,15 @@ namespace Slate.Networking.RabbitMQ
                     throw new ObjectDisposedException(nameof(RabbitClient));
                 }
 
-                _subscriptionModel.ExchangeDeclare(exchange: "e.Slate.Fanout", type: ExchangeType.Fanout);
-                var queueName =
-                    $"q.Slate.Fanout.{_rabbitSettings.ClientName}.{Guid.NewGuid().ToString().Substring(24)}";
-                var declaredQueue = _subscriptionModel.QueueDeclare(queueName);
-                _subscriptionModel.QueueBind(declaredQueue.QueueName, "e.Slate.Fanout", typeof(T).FullName);
+                var queueName = $"q.Slate.Fanout.{_rabbitSettings.ClientName}.{Guid.NewGuid().ToString().Substring(24)}";
+
+                _subscriptionModel.ExchangeDeclare("e.Slate.Fanout", ExchangeType.Fanout);
+                _subscriptionModel.QueueDeclare(queueName);
+                _subscriptionModel.QueueBind(queueName, "e.Slate.Fanout", typeof(T).FullName);
+                _subscriptionModel.BasicQos(0, parallelism, false);
                 var consumer = new AsyncEventingBasicConsumer(_subscriptionModel);
                 consumer.Received += ConsumeMessage;
-                var consumerTag = _subscriptionModel.BasicConsume(declaredQueue.QueueName, false, consumer);
+                var consumerTag = _subscriptionModel.BasicConsume(queueName, false, consumer);
                 var subscriptionToken = new ActionDisposable(() =>
                 {
                     _logger.Verbose("Cleaning up queue for subscription {MessageType}", typeof(T).Name);
