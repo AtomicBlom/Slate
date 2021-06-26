@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Slate.Networking.Internal.Protocol;
+using Slate.Networking.Internal.Protocol.Model;
+using Slate.Networking.Internal.Protocol.Overseer;
 using Slate.Networking.RabbitMQ;
 
 namespace Slate.GameWarden.Game

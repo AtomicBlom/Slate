@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Serilog;
 using Slate.Networking.External.Protocol;
+using Slate.Networking.External.Protocol.ClientToServer;
+using Slate.Networking.External.Protocol.ServerToClient;
 
 namespace Slate.GameWarden.Game
 {
@@ -17,7 +19,7 @@ namespace Slate.GameWarden.Game
         private readonly IPlayerService[] _playerServices;
         private readonly ILogger _logger;
         private bool _disposed;
-        private BufferBlock<GameServerUpdate> MessagesToServer = new();
+        private BufferBlock<ServerToClientMessage> MessagesToServer = new();
 
         public PlayerConnection(CharacterIdentifier characterIdentifier, IPlayerService[] playerServices, ILogger logger)
         {
@@ -42,13 +44,13 @@ namespace Slate.GameWarden.Game
             }
         }
 
-        public async Task HandleIncomingMessages(IAsyncEnumerator<GameClientUpdate> clientEnumerator)
+        public async Task HandleIncomingMessages(IAsyncEnumerator<ClientToServerMessage> clientEnumerator)
         {
             while (await clientEnumerator.MoveNextAsync())
             {
                 try
                 {
-                    _logger.Verbose("Received {MessageType} from client: ", clientEnumerator.Current.MessageCase);
+                    _logger.Verbose("Received {MessageType} from client: ", clientEnumerator.Current.GetType().Name);
                 }
                 catch (Exception e)
                 {
@@ -57,11 +59,11 @@ namespace Slate.GameWarden.Game
             }
         }
 
-        public async IAsyncEnumerable<GameServerUpdate> HandleOutgoingMessages()
+        public async IAsyncEnumerable<ServerToClientMessage> HandleOutgoingMessages()
         {
             while (!_disposed)
             {
-                GameServerUpdate message;
+                ServerToClientMessage message;
                 try
                 {
                     message = await MessagesToServer.ReceiveAsync();
@@ -74,7 +76,7 @@ namespace Slate.GameWarden.Game
             }
         }
 
-        public async Task QueueOutgoingMessage(GameServerUpdate message)
+        public async Task QueueOutgoingMessage(ServerToClientMessage message)
         {
             await MessagesToServer.SendAsync(message);
         }

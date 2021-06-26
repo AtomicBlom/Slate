@@ -7,7 +7,7 @@ using ProtoBuf.Grpc.Configuration;
 
 namespace Slate.GameWarden.ServiceLocation
 {
-    internal class ServiceBinderWithServiceResolutionFromServiceCollection : ServiceBinder
+    public class ServiceBinderWithServiceResolutionFromServiceCollection : ServiceBinder
     {
         private readonly IServiceCollection _services;
 

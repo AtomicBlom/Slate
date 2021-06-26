@@ -13,11 +13,17 @@
 
 	<ItemGroup>
 		<PackageReference Include="protobuf-net" Version="3.0.101" />
-		<PackageReference Include="protobuf-net.BuildTools" Version="3.0.101">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
-		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Shared\Slate.Networking.Shared.Protocol\Slate.Networking.Shared.Protocol.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AdditionalFiles Update="Vector.proto">
+	    <OneOf>enum</OneOf>
+	  </AdditionalFiles>
 	</ItemGroup>
 </Project>

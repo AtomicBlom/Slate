@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Slate.Networking.Internal.Protocol;
+using Slate.Networking.Internal.Protocol.Overseer;
 using Slate.Networking.RabbitMQ;
 
 namespace Slate.GameWarden.Services

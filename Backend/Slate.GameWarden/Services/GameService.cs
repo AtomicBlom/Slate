@@ -5,6 +5,9 @@ using ProtoBuf.Grpc;
 using Serilog;
 using Slate.GameWarden.Game;
 using Slate.Networking.External.Protocol;
+using Slate.Networking.External.Protocol.ClientToServer;
+using Slate.Networking.External.Protocol.ServerToClient;
+using Slate.Networking.External.Protocol.Services;
 
 namespace Slate.GameWarden.Services
 {
@@ -19,7 +22,7 @@ namespace Slate.GameWarden.Services
             _logger = logger.ForContext<GameService>();
         }
         
-        public async IAsyncEnumerable<GameServerUpdate> SubscribeAsync(IAsyncEnumerable<GameClientUpdate> clientUpdates, CallContext context = default)
+        public async IAsyncEnumerable<ServerToClientMessage> SubscribeAsync(IAsyncEnumerable<ClientToServerMessage> clientUpdates, CallContext context = default)
         {
             PlayerConnection? character = null;
 
@@ -30,12 +33,10 @@ namespace Slate.GameWarden.Services
                 var userId = Guid.NewGuid();
 
                 if (!await clientEnumerator.MoveNextAsync()) throw new Exception("Missing first message");
-                if (!clientEnumerator.Current.ShouldSerializeConnectToGameRequest())
+                if (clientEnumerator.Current is not ConnectToRequest connectRequest)
                 {
-                    throw new Exception($"Expected first message to be a {nameof(ConnectToGameRequest)}");
+                    throw new Exception($"Expected first message to be a {nameof(ConnectToRequest)}");
                 }
-
-                var connectRequest = clientEnumerator.Current.ConnectToGameRequest;
 
                 character = await _characterLocator.GetOrCreateCharacter(new CharacterIdentifier(userId, connectRequest.CharacterId.ToGuid()));
                 if (character is null)

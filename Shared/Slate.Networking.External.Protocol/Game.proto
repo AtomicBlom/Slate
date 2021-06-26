@@ -1,8 +1,0 @@
-﻿syntax = "proto3";
-option csharp_namespace = "Slate.Networking.External.Protocol";
-import "GameClientUpdates.proto";
-import "GameServerUpdates.proto";
-
-service GameService {
-	rpc Subscribe(stream GameClientUpdate) returns (stream GameServerUpdate);
-}

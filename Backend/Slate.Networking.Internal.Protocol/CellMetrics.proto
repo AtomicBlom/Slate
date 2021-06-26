@@ -1,9 +1,0 @@
-﻿syntax = "proto3";
-option csharp_namespace = "Slate.Networking.Internal.Protocol.Cell";
-
-import "UUID.proto";
-
-message CellMetrics {
-	UUID InstanceId = 1;
-	uint32 PlayerCount = 2;
-}

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Slate.Networking.Internal.Protocol;
+using Slate.Networking.Internal.Protocol.Shared;
 using Slate.Networking.RabbitMQ;
 
 namespace Slate.Backend.Shared

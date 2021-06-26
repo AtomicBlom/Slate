@@ -3,6 +3,7 @@ using Slate.Backend.Shared;
 using Slate.GameWarden.Game;
 using Slate.GameWarden.Services;
 using Slate.Networking.External.Protocol;
+using Slate.Networking.External.Protocol.Services;
 using StrongInject;
 
 namespace Slate.GameWarden.ServiceLocation

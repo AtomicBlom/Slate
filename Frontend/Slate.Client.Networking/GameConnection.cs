@@ -5,7 +5,10 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
-using Slate.Networking.External.Protocol;
+using Slate.Networking.External.Protocol.ClientToServer;
+using Slate.Networking.External.Protocol.Model;
+using Slate.Networking.External.Protocol.Services;
+using Slate.Networking.Shared.Protocol;
 
 namespace Slate.Client.Networking
 {
@@ -54,27 +57,24 @@ namespace Slate.Client.Networking
 
             await foreach (var message in serverMessages)
             {
-                Console.WriteLine($"Received message type {message.Discriminator}");
+                Console.WriteLine($"Received message type {message.GetType().Name}");
             }
         }
 
-        public async IAsyncEnumerable<GameClientUpdate> PublishClientMessages(Guid characterId)
+        public async IAsyncEnumerable<ClientToServerMessage> PublishClientMessages(Guid characterId)
         {
-            yield return new GameClientUpdate { ConnectToGameRequest = new ConnectToGameRequest()
+            yield return new ConnectToRequest()
             {
                 CharacterId = characterId.ToUuid()
-            }};
+            };
 
             while (true)
             {
                 await Task.Delay(1000);
-                yield return new GameClientUpdate()
+                yield return new ClientRequestMove
                 {
-                    ClientRequestMove = new ClientRequestMove()
-                    {
-                        Location = new Vector3() { X = 0, Y = 0, Z = 0 },
-                        Velocity = new Vector3() { X = 0, Y = 0, Z = 0 }
-                    }
+                    Location = new Vector3() { X = 0, Y = 0, Z = 0 },
+                    Velocity = new Vector3() { X = 0, Y = 0, Z = 0 }
                 };
                 Console.WriteLine($"Sent message type ClientRequestMove");
             }

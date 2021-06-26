@@ -5,20 +5,22 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Slate.Networking.Internal.Protocol;
+using Slate.Networking.Internal.Protocol.Cell;
+using Slate.Networking.Internal.Protocol.Model;
 using Slate.Networking.RabbitMQ;
+using Slate.Networking.Shared.Protocol;
 
 namespace Slate.Snowglobe
 {
-    public class CellServer : IHostedService
+    public class CellServerNotifierService : IHostedService
     {
         private readonly ILogger _logger;
         private readonly IRabbitClient _rabbitClient;
         private readonly IConfiguration _configuration;
 
-        public CellServer(ILogger logger, IRabbitClient rabbitClient, IConfiguration configuration)
+        public CellServerNotifierService(ILogger logger, IRabbitClient rabbitClient, IConfiguration configuration)
         {
-            _logger = logger.ForContext<CellServer>();
+            _logger = logger.ForContext<CellServerNotifierService>();
             _rabbitClient = rabbitClient;
             _configuration = configuration;
         }

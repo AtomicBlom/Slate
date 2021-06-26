@@ -1,5 +1,6 @@
 ﻿using Slate.GameWarden.Services;
 using Slate.Networking.External.Protocol;
+using Slate.Networking.External.Protocol.Services;
 using StrongInject;
 
 namespace Slate.GameWarden.ServiceLocation

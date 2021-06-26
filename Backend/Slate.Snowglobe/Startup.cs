@@ -10,6 +10,8 @@ using ProtoBuf.Grpc.Configuration;
 using ProtoBuf.Grpc.Server;
 using Serilog;
 using Slate.Backend.Shared;
+using Slate.GameWarden.ServiceLocation;
+using Slate.Networking.Internal.Protocol.Cell.Services;
 
 namespace Slate.Snowglobe
 {
@@ -50,9 +52,7 @@ namespace Slate.Snowglobe
                     };
                 });
             
-            services.ReplaceWithSingletonServiceUsingContainer<SnowglobeContainer, IGameWardenService>();
-
-            //services.AddSingleton<IContainer<Func<Guid, PlayerConnection>>>(sp => sp.GetRequiredService<GameContainer>());
+            services.ReplaceWithSingletonServiceUsingContainer<SnowglobeContainer, ICellService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
@@ -64,7 +64,7 @@ namespace Slate.Snowglobe
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<IGameWardenService>();
+                endpoints.MapGrpcService<ICellService>();
             });
         }
     }

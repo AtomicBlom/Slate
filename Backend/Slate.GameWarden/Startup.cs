@@ -12,6 +12,7 @@ using Serilog;
 using Slate.Backend.Shared;
 using Slate.GameWarden.ServiceLocation;
 using Slate.Networking.External.Protocol;
+using Slate.Networking.External.Protocol.Services;
 
 namespace Slate.GameWarden
 {

@@ -8,9 +8,11 @@ using Nito.AsyncEx;
 using Serilog;
 using Serilog.Context;
 using Slate.Backend.Shared;
-using Slate.Networking.Internal.Protocol;
 using Slate.Networking.Internal.Protocol.Cell;
+using Slate.Networking.Internal.Protocol.Model;
+using Slate.Networking.Internal.Protocol.Overseer;
 using Slate.Networking.RabbitMQ;
+using Slate.Networking.Shared.Protocol;
 
 namespace Slate.Overseer
 {
@@ -72,7 +74,7 @@ namespace Slate.Overseer
                                 launchRequest.Task,
                                 new CellMetrics
                                 {
-                                    InstanceId = new Uuid(),
+                                    InstanceId = instanceId.ToUuid(),
                                     PlayerCount = 0
                                 }
                             );
