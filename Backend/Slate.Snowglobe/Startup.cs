@@ -10,10 +10,8 @@ using ProtoBuf.Grpc.Configuration;
 using ProtoBuf.Grpc.Server;
 using Serilog;
 using Slate.Backend.Shared;
-using Slate.GameWarden.ServiceLocation;
-using Slate.Networking.External.Protocol;
 
-namespace Slate.GameWarden
+namespace Slate.Snowglobe
 {
     public class Startup
     {
@@ -26,7 +24,7 @@ namespace Slate.GameWarden
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCoreSlateServices<GameContainer>(_configuration);
+            services.AddCoreSlateServices<SnowglobeContainer>(_configuration);
 
             Log.Logger.Information("GameWarden Starting");
 
@@ -51,10 +49,8 @@ namespace Slate.GameWarden
                         ValidateAudience = false
                     };
                 });
-
-            services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAuthorizationService>();
-            services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAccountService>();
-            services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IGameService>();
+            
+            services.ReplaceWithSingletonServiceUsingContainer<SnowglobeContainer, IGameWardenService>();
 
             //services.AddSingleton<IContainer<Func<Guid, PlayerConnection>>>(sp => sp.GetRequiredService<GameContainer>());
         }
@@ -68,11 +64,8 @@ namespace Slate.GameWarden
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<IAuthorizationService>();
-                endpoints.MapGrpcService<IAccountService>();
-                endpoints.MapGrpcService<IGameService>();
+                endpoints.MapGrpcService<IGameWardenService>();
             });
         }
     }
 }
-

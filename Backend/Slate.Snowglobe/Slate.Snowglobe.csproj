@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -10,26 +10,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="AppSettings.Development.json" />
-		<None Remove="AppSettings.json" />
+		<PackageReference Include="MessagePipe" Version="1.6.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0-preview.4.21253.5" />
+		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
+		<PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.0.152" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="AppSettings.Development.json">
-		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-		  <DependentUpon>appsettings.json</DependentUpon>
-		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
-		<Content Include="AppSettings.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.4.21253.7" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj" />
 		<ProjectReference Include="..\Slate.Backend.Shared\Slate.Backend.Shared.csproj" />
+		<ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
 	</ItemGroup>
+
 </Project>

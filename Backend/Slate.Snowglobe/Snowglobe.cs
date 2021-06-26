@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Slate.Backend.Shared;
 using Slate.Snowglobe;
 
 if (args.Any(a => a.Contains("--AttachDebugger")))
@@ -19,20 +20,24 @@ if (args.Any(a => a.Contains("--AttachDebugger")))
     }
 }
 
-Console.Title = "Snowglobe (Cell Server)";
+Console.Title = "Game Warden (Player Server)";
 
-Host.CreateDefaultBuilder(args)
-    .ConfigureHostConfiguration((configHost) =>
+WebHost.CreateDefaultBuilder(args)
+    .ConfigureKestrel(options =>
     {
-        configHost
-            .AddJsonFile("AppSettings.json")
-            .AddEnvironmentVariables("SNOWGLOBE_")
-            .AddCommandLine(args);
+        var configuration = options.ApplicationServices.GetService<IConfiguration>() ??
+                            throw new Exception("Configuration was not available");
+
+        if (!int.TryParse(configuration["port"], out var port))
+        {
+            port = 0;
+        }
+
+        options.ListenAnyIP(port, listenOptions =>
+        {
+            listenOptions.Protocols = HttpProtocols.Http2;
+        });
     })
-    .ConfigureServices((hostContext, services) =>
-    {
-        services.AddCoreSlateServices<SnowglobeContainer>(hostContext.Configuration);
-        services.AddHostedServiceUsingContainer<SnowglobeContainer, CellServer>();
-    })
+    .UseStartup<Startup>()
     .Build()
     .Run();
