@@ -28,7 +28,7 @@ namespace Slate.Snowglobe
         {
             services.AddCoreSlateServices<SnowglobeContainer>(_configuration);
 
-            Log.Logger.Information("GameWarden Starting");
+            Log.Logger.Information("Snowglobe Starting");
 
             services.UseStrongInjectForGrpcServiceResolution();
             services.AddMessagePipe();
@@ -53,6 +53,7 @@ namespace Slate.Snowglobe
                 });
             
             services.ReplaceWithSingletonServiceUsingContainer<SnowglobeContainer, ICellService>();
+            services.AddHostedServiceUsingContainer<SnowglobeContainer, CellServerNotifierService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)

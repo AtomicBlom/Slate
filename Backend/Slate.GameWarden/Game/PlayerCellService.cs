@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Slate.Networking.Internal.Protocol;
-using Slate.Networking.Internal.Protocol.Model;
 using Slate.Networking.Internal.Protocol.Overseer;
 using Slate.Networking.RabbitMQ;
 
@@ -21,21 +20,9 @@ namespace Slate.GameWarden.Game
         public async Task MoveToCellAsync(string cellName)
         {
             var response = await _rpcClient.CallAsync<GetCellServerRequest, GetCellServerResponse>(new GetCellServerRequest { CellName = cellName });
-            _cellConnectionManager.GetOrConnect(response.Id.ToGuid(), response.Endpoint);
+            var connectTask = await _cellConnectionManager.GetOrConnectAsync(response.Id.ToGuid(), response.Endpoint);
+            await connectTask;
 
-        }
-    }
-
-    public interface ICellConnectionManager
-    {
-        void GetOrConnect(Guid guid, Endpoint endpoint);
-    }
-
-    public class CellConnectionManager : ICellConnectionManager
-    {
-        public void GetOrConnect(Guid guid, Endpoint endpoint)
-        {
-            throw new NotImplementedException();
         }
     }
 }

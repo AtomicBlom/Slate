@@ -20,7 +20,7 @@ if (args.Any(a => a.Contains("--AttachDebugger")))
     }
 }
 
-Console.Title = "Game Warden (Player Server)";
+Console.Title = "Snowglobe (Cell Server)";
 
 WebHost.CreateDefaultBuilder(args)
     .ConfigureKestrel(options =>

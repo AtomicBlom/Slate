@@ -91,6 +91,10 @@ namespace Slate.Overseer
 
                                     _logger.Information("Received notification that the cell is now awake");
                                     cellInstance.Endpoint = message.Endpoint;
+                                    if (cellInstance.Endpoint.Hostname == "[::]")
+                                    {
+                                        cellInstance.Endpoint.Hostname = "localhost";
+                                    }
                                     launchRequest.SetResult();
                                     awakeSubscription?.Dispose();
                                 }
