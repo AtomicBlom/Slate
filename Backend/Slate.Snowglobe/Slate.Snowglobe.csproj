@@ -14,6 +14,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0-preview.4.21253.5" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.0.152" />
+		<PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

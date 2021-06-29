@@ -63,7 +63,7 @@ namespace Slate.Networking.RabbitMQ
                         return Task.CompletedTask;
                     }
 
-                    using var correlationContext = LogContext.PushProperty("CorrelationId", correlationId);
+                    using var correlationContext = LogContext.PushProperty("RabbitMQCorrelationId", correlationId);
 
                     if (PendingCalls.TryGetValue(correlationId, out actionToRun))
                     {
@@ -95,11 +95,15 @@ namespace Slate.Networking.RabbitMQ
 
         public async Task<TResponse> CallAsync<TRequest, TResponse>(TRequest request)
         {
+            var _logger = this._logger
+                .ForContext("RabbitMQRequestType", typeof(TRequest).FullName)
+                .ForContext("RabbitMQResponseType", typeof(TResponse).FullName);
+
             EnsureRPCClient();
             
             var props = _model.CreateBasicProperties();
             var correlationId = Guid.NewGuid();
-            using var correlationContext = LogContext.PushProperty("CorrelationId", correlationId);
+            using var correlationContext = LogContext.PushProperty("RabbitMQCorrelationId", correlationId);
             props.CorrelationId = correlationId.ToString();
             props.ReplyTo = _replyQueueName;
 

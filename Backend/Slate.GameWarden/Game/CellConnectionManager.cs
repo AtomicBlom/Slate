@@ -12,9 +12,9 @@ namespace Slate.GameWarden.Game
 {
     public class CellConnectionManager : ICellConnectionManager
     {
-        private Dictionary<Guid, Task> _knownCells = new();
-        private AsyncReaderWriterLock _knownCellLock = new();
-
+        private readonly Dictionary<Guid, Task> _knownCells = new();
+        private readonly AsyncReaderWriterLock _knownCellLock = new();
+        
         public async Task<Task> GetOrConnectAsync(Guid guid, Endpoint endpoint)
         {
             using (await _knownCellLock.ReaderLockAsync())
@@ -47,7 +47,7 @@ namespace Slate.GameWarden.Game
             });
 
             var cellService = channel.CreateGrpcService<ICellService>();
-            
+
             tcs.SetResult();
             return tcs.Task;
         }

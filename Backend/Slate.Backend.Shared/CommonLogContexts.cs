@@ -10,5 +10,6 @@ namespace Slate.Backend.Shared
     public static class CommonLogContexts
     {
         public static IDisposable ApplicationInstanceId(Guid id) => LogContext.PushProperty("ApplicationInstanceId", id);
+        public static IDisposable CorrelationId(Guid id) => LogContext.PushProperty("CorrelationId", id);
     }
 }

@@ -5,6 +5,7 @@ using ProtoBuf;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Serilog;
+using Serilog.Context;
 
 namespace Slate.Networking.RabbitMQ
 {
@@ -15,7 +16,6 @@ namespace Slate.Networking.RabbitMQ
         private readonly ILogger _logger;
         private bool _disposed;
         private IModel? _subscriptionModel;
-        public IRabbitSettings Settings => _rabbitSettings;
 
         public RabbitClient(IConnection connection, ILogger logger, IRabbitSettings rabbitSettings)
         {
@@ -28,7 +28,7 @@ namespace Slate.Networking.RabbitMQ
         public IDisposable Subscribe<T>(Func<T, Task> action, ushort parallelism = 0)
         {
             _subscriptionModel ??= _connection.CreateModel();
-
+            var _logger = this._logger.ForContext("MessageType", typeof(T).FullName);
             try
             {
                 if (_disposed)
@@ -39,9 +39,9 @@ namespace Slate.Networking.RabbitMQ
 
                 var queueName = $"q.Slate.Fanout.{_rabbitSettings.ClientName}.{Guid.NewGuid().ToString().Substring(24)}";
 
-                _subscriptionModel.ExchangeDeclare("e.Slate.Fanout", ExchangeType.Fanout);
+                _subscriptionModel.ExchangeDeclare("e.Slate.Direct", ExchangeType.Direct);
                 _subscriptionModel.QueueDeclare(queueName);
-                _subscriptionModel.QueueBind(queueName, "e.Slate.Fanout", typeof(T).FullName);
+                _subscriptionModel.QueueBind(queueName, "e.Slate.Direct", typeof(T).FullName);
                 _subscriptionModel.BasicQos(0, parallelism, false);
                 var consumer = new AsyncEventingBasicConsumer(_subscriptionModel);
                 consumer.Received += ConsumeMessage;
@@ -66,6 +66,8 @@ namespace Slate.Networking.RabbitMQ
             async Task ConsumeMessage(object? sender, BasicDeliverEventArgs args)
             {
                 var deliveryTag = args.DeliveryTag;
+                var correlationId = args.BasicProperties.CorrelationId;
+                using var correlationLogContext = LogContext.PushProperty("RabbitMQCorrelationId", correlationId);
                 try
                 {
                     var message = Serializer.Deserialize<T>(args.Body);
@@ -89,21 +91,28 @@ namespace Slate.Networking.RabbitMQ
 
         public void Send<T>(T message)
         {
+            var _logger = this._logger.ForContext("MessageType", typeof(T).FullName);
             if (_disposed)
             {
                 _logger.Warning("Attempted to send a message after the RabbitClient has been disposed");
                 throw new ObjectDisposedException(nameof(RabbitClient));
             }
-
+            
             _subscriptionModel ??= _connection.CreateModel();
+            var correlationId = Guid.NewGuid();
 
+            using var correlationIdContext = LogContext.PushProperty("RabbitMQCorrelationId", correlationId);
             try
             {
                 using MemoryStream ms = new();
                 Serializer.Serialize(ms, message);
 
-                _subscriptionModel.ExchangeDeclare("e.Slate.Fanout", ExchangeType.Fanout);
-                _subscriptionModel.BasicPublish("e.Slate.Fanout", typeof(T).FullName, body: ms.ToArray());
+                _subscriptionModel.ExchangeDeclare("e.Slate.Direct", ExchangeType.Direct);
+                var properties = _subscriptionModel.CreateBasicProperties();
+                
+                properties.CorrelationId = correlationId.ToString();
+
+                _subscriptionModel.BasicPublish("e.Slate.Direct", typeof(T).FullName, body: ms.ToArray(), basicProperties: properties);
 
                 var logger = _rabbitSettings.IncludeMessageContentsInLogs
                     ? _logger.ForContext("MessageBody", message, true)

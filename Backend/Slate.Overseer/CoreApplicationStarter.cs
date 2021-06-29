@@ -37,7 +37,7 @@ namespace Slate.Overseer
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _rabbitClient.Send(new FullSystemShutdownMessage());
+            _rabbitClient.Send(new FullSystemShutdownMessage() { Reason = "Overseer application closed" });
             await _applicationLauncher.ExitAllApplicationsAsync();
             
         }

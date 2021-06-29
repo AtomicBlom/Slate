@@ -20,7 +20,22 @@ namespace Slate.Backend.Shared
             }
             services.AddHostedServiceUsingContainer<TContainer, GracefulShutdownService>();
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
             return services;
+        }
+
+        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.IsTerminating)
+            {
+                Log.Logger.Fatal(e.ExceptionObject as Exception, "Fatal Unhandled Exception");
+                Log.CloseAndFlush();
+            }
+            else
+            {
+                Log.Logger.Error(e.ExceptionObject as Exception, "Unhandled Exception");
+            }
         }
 
         public static IServiceCollection AddCoreSlateLogging(this IServiceCollection services,

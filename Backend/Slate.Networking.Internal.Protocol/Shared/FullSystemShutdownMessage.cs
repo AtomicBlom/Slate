@@ -3,8 +3,9 @@
 namespace Slate.Networking.Internal.Protocol.Shared
 {
     [ProtoContract]
-    public partial class FullSystemShutdownMessage
+    public class FullSystemShutdownMessage
     {
-
+        [ProtoMember(1)]
+        public string? Reason { get; set; }
     }
 }
