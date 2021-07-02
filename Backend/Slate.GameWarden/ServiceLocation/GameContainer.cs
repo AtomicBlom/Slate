@@ -1,4 +1,6 @@
 ﻿using System;
+using MessagePipe;
+using Microsoft.Extensions.DependencyInjection;
 using Slate.Backend.Shared;
 using Slate.GameWarden.Game;
 using Slate.GameWarden.Services;
@@ -21,8 +23,23 @@ namespace Slate.GameWarden.ServiceLocation
         IContainer<HeartbeatService>,
         IContainer<GracefulShutdownService>
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public GameContainer(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            _serviceProvider = serviceProvider;
         }
+
+        [Factory(Scope.SingleInstance)]
+        EventFactory ResolveEventFactory() => _serviceProvider.GetRequiredService<EventFactory>();
+
+        [Factory(Scope.SingleInstance)]
+        IBufferedPublisher<T> ResolveBufferedPublisherOfT<T>() => _serviceProvider.GetRequiredService<IBufferedPublisher<T>>();
+
+        [Factory(Scope.SingleInstance)]
+        IBufferedAsyncPublisher<T> ResolveBufferedAsyncPublisherOfT<T>() => _serviceProvider.GetRequiredService<IBufferedAsyncPublisher<T>>();
+
+        [Factory(Scope.SingleInstance)]
+        IBufferedAsyncSubscriber<T> ResolveBufferedAsyncSubscriberOfT<T>() => _serviceProvider.GetRequiredService<IBufferedAsyncSubscriber<T>>();
     }
 }

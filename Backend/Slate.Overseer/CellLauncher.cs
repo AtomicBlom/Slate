@@ -129,16 +129,17 @@ namespace Slate.Overseer
                 {
                     _logger.Information("Waiting for cell to come alive");
                 }
-
+                
                 //Unlock from the queue and await for the cell to come up.
                 await cellInstance.LaunchRequest;
+                
+                if (cellInstance.Endpoint is null)
+                {
+                    throw new Exception("The cell instance should have had an endpoint, but didn't");
+                }
 
                 _logger.Information("Cell is alive");
-                return new GetCellServerResponse
-                {
-                    Id = cellInstance.InstanceId.ToUuid(),
-                    Endpoint = cellInstance.Endpoint
-                };
+                return new GetCellServerResponse(cellInstance.InstanceId, cellInstance.Endpoint);
             }
             catch (Exception e)
             {

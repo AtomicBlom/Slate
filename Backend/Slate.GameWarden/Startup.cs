@@ -10,6 +10,7 @@ using ProtoBuf.Grpc.Configuration;
 using ProtoBuf.Grpc.Server;
 using Serilog;
 using Slate.Backend.Shared;
+using Slate.GameWarden.Middleware;
 using Slate.GameWarden.ServiceLocation;
 using Slate.Networking.External.Protocol;
 using Slate.Networking.External.Protocol.Services;
@@ -32,7 +33,10 @@ namespace Slate.GameWarden
             Log.Logger.Information("GameWarden Starting");
 
             services.UseStrongInjectForGrpcServiceResolution();
-            services.AddMessagePipe();
+            services.AddMessagePipe(config =>
+            {
+                config.InstanceLifetime = InstanceLifetime.Singleton;
+            });
             services.AddCodeFirstGrpc(config =>
             {
                 config.ResponseCompressionLevel = CompressionLevel.Optimal;
@@ -66,6 +70,9 @@ namespace Slate.GameWarden
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // custom jwt auth middleware
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

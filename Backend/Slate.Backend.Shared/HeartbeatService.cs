@@ -32,9 +32,9 @@ namespace Slate.Backend.Shared
                     await Task.Delay(TimeSpan.FromSeconds(5));
                     try
                     {
-                        await _rpcClient.CallAsync<HeartbeatRequest, HeartbeatResponse>(new HeartbeatRequest());
+                        await _rpcClient.CallAsync<HeartbeatRequest, HeartbeatResponse>(new HeartbeatRequest(), silent: true);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         Environment.Exit(-1);
                     }

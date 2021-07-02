@@ -1,17 +1,24 @@
-﻿using ProtoBuf;
+﻿using System;
+using ProtoBuf;
 using Slate.Networking.Internal.Protocol.Model;
 using Slate.Networking.Shared.Protocol;
 
 namespace Slate.Networking.Internal.Protocol.Overseer
 {
-    [ProtoContract]
-    public partial class GetCellServerResponse
+    [ProtoContract(SkipConstructor = true)]
+    public class GetCellServerResponse
     {
+        public GetCellServerResponse(Guid id, Endpoint endpoint)
+        {
+            Id = id.ToUuid();
+            Endpoint = endpoint;
+        }
+
         [ProtoMember(1)]
-        public Uuid Id { get; set; }
+        public Uuid Id { get; }
 
         [ProtoMember(2)]
-        public Endpoint Endpoint { get; set; }
+        public Endpoint Endpoint { get; }
 
     }
 }

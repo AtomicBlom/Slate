@@ -1,13 +1,19 @@
-﻿using ProtoBuf;
+﻿using System;
+using ProtoBuf;
 using Slate.Networking.Shared.Protocol;
 
 namespace Slate.Networking.Internal.Protocol.Model
 {
-    [ProtoContract]
-    public partial class CharacterMovement
+    [ProtoContract(SkipConstructor = true)]
+    public class CharacterMovement
     {
+        public CharacterMovement(Guid playerId)
+        {
+            Id = playerId.ToUuid();
+        }
+
         [ProtoMember(1)]
-        public Uuid Id { get; set; }
+        public Uuid Id { get; }
 
     }
 }

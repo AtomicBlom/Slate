@@ -1,4 +1,5 @@
 ﻿using System;
+using MessagePipe;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,5 +28,11 @@ namespace Slate.Snowglobe
         private IServerAddressesFeature Addresses =>
             _services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()
             ?? throw new Exception($"Unable to resolve {nameof(IServerAddressesFeature)}");
+
+        [Factory(Scope.InstancePerDependency)]
+        IBufferedPublisher<T> ResolveBufferedPublisherOfT<T>() => _services.GetRequiredService<IBufferedPublisher<T>>();
+
+        [Factory(Scope.InstancePerDependency)]
+        IBufferedAsyncSubscriber<T> ResolveBufferedAsyncSubscriberOfT<T>() => _services.GetRequiredService<IBufferedAsyncSubscriber<T>>();
     }
 }

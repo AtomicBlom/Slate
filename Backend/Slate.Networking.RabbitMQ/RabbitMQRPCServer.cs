@@ -26,7 +26,7 @@ namespace Slate.Networking.RabbitMQ
             _rabbitSettings = rabbitSettings;
         }
 
-        public IDisposable Serve<TRequest, TResponse>(Func<TRequest, Task<TResponse>> processor)
+        public IDisposable Serve<TRequest, TResponse>(Func<TRequest, Task<TResponse>> processor, bool silent = false)
         {
             var consumer = new AsyncEventingBasicConsumer(_model);
 
@@ -51,8 +51,10 @@ namespace Slate.Networking.RabbitMQ
                     var logger = _rabbitSettings.IncludeMessageContentsInLogs
                         ? _logger.ForContext("MessageBody", message, true)
                         : _logger;
-                    logger.Verbose("Received a message {MessageType}", typeof(TRequest).Name);
-
+                    if (!silent)
+                    {
+                        logger.Verbose("Received a message {MessageType}", typeof(TRequest).Name);
+                    }
 
                     var responseObj = await processor(message);
 
@@ -64,7 +66,11 @@ namespace Slate.Networking.RabbitMQ
                     logger = _rabbitSettings.IncludeMessageContentsInLogs
                         ? _logger.ForContext("MessageBody", responseObj, true)
                         : _logger;
-                    logger.Verbose("Replied to an RPC message with a {MessageType}", typeof(TResponse).Name);
+
+                    if (!silent)
+                    {
+                        logger.Verbose("Replied to an RPC message with a {MessageType}", typeof(TResponse).Name);
+                    }
                 }
                 catch (Exception e)
                 {

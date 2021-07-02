@@ -41,7 +41,7 @@ namespace Slate.Overseer
             var definition = _componentSection.Definitions.SingleOrDefault(s => s.Name == applicationDefinitionName)
                 ?? throw new ArgumentException("unknown application name", nameof(applicationDefinitionName));
 
-            string useHeartbeat = false && Debugger.IsAttached ? " --UseHeartbeat True" : string.Empty;
+            string useHeartbeat = Debugger.IsAttached ? " --UseHeartbeat True" : string.Empty;
 
             var allArguments = definition.AdditionalArguments.Concat(
                 arguments.Select(a => a.Value is null ? a.Key : $"{a.Key}={a.Value}"))

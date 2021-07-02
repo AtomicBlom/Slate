@@ -93,7 +93,7 @@ namespace Slate.Networking.RabbitMQ
             _model.BasicConsume(_consumer, _replyQueueName, true);
         }
 
-        public async Task<TResponse> CallAsync<TRequest, TResponse>(TRequest request)
+        public async Task<TResponse> CallAsync<TRequest, TResponse>(TRequest request, bool silent = false)
         {
             var _logger = this._logger
                 .ForContext("RabbitMQRequestType", typeof(TRequest).FullName)
@@ -116,10 +116,13 @@ namespace Slate.Networking.RabbitMQ
                     try
                     {
                         var message = Serializer.Deserialize<TResponse>(memory);
-                        var logger = _rabbitSettings.IncludeMessageContentsInLogs
-                            ? _logger.ForContext("MessageBody", message, true)
-                            : _logger;
-                        logger.Verbose("Received a message {MessageType}", typeof(TResponse).Name);
+                        if (!silent)
+                        {
+                            var logger = _rabbitSettings.IncludeMessageContentsInLogs
+                                ? _logger.ForContext("MessageBody", message, true)
+                                : _logger;
+                            logger.Verbose("Received a message {MessageType}", typeof(TResponse).Name);
+                        }
 
                         tcs.SetResult(message);
                     }
@@ -144,10 +147,13 @@ namespace Slate.Networking.RabbitMQ
                 basicProperties: props,
                 body: memoryStream.GetBuffer().AsMemory(..(int)memoryStream.Length));
 
-            var logger = _rabbitSettings.IncludeMessageContentsInLogs
-                ? _logger.ForContext("MessageBody", request, true)
-                : _logger;
-            logger.Verbose("Sent a message {MessageType}", typeof(TRequest).Name);
+            if (!silent)
+            {
+                var logger = _rabbitSettings.IncludeMessageContentsInLogs
+                    ? _logger.ForContext("MessageBody", request, true)
+                    : _logger;
+                logger.Verbose("Sent a message {MessageType}", typeof(TRequest).Name);
+            }
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var firstResponse = await Task.WhenAny(tcs.Task, timeoutTask);
@@ -157,7 +163,15 @@ namespace Slate.Networking.RabbitMQ
                 throw new TimeoutException();
             }
 
-            return await tcs.Task;
+            var result = await tcs.Task;
+            if (!silent)
+            {
+                var logger = _rabbitSettings.IncludeMessageContentsInLogs
+                    ? _logger.ForContext("MessageBody", result, true)
+                    : _logger;
+                logger.Verbose("{MessageType} RPC Call has completed", typeof(TRequest).Name);
+            }
+            return result;
         }
 
 

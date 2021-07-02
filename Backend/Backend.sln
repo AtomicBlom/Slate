@@ -31,12 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Extensions.Grp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A19A16A3-3D78-405F-99FC-2DD0B47233AD}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		..\docker-compose.yml = ..\docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Backend.Shared", "Slate.Backend.Shared\Slate.Backend.Shared.csproj", "{73B3AF17-B53A-4AF4-8956-DF48D247523A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slate.Networking.Shared.Protocol", "..\Shared\Slate.Networking.Shared.Protocol\Slate.Networking.Shared.Protocol.csproj", "{2297D985-FA73-406A-A07D-5FFC7AD8E506}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Networking.Shared.Protocol", "..\Shared\Slate.Networking.Shared.Protocol\Slate.Networking.Shared.Protocol.csproj", "{2297D985-FA73-406A-A07D-5FFC7AD8E506}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,13 +5,11 @@ using Slate.Networking.Shared.Protocol;
 namespace Slate.Networking.Internal.Protocol.Cell
 {
     [ProtoContract]
-    public partial class NotifyCellServerAwake
+    public class NotifyCellServerAwake
     {
-        [ProtoMember(1)]
-        public Uuid Id { get; set; }
+        [ProtoMember(1)] public Uuid Id { get; set; } = null!;
 
-        [ProtoMember(2)]
-        public Endpoint Endpoint { get; set; }
+        [ProtoMember(2)] public Endpoint Endpoint { get; set; } = null!;
 
     }
 }

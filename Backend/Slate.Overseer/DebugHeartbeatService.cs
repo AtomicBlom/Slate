@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Slate.Networking.Internal.Protocol;
 using Slate.Networking.Internal.Protocol.Shared;
 using Slate.Networking.RabbitMQ;
 
@@ -20,7 +19,7 @@ namespace Slate.Overseer
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _serviceToken = _rpcServer.Serve<HeartbeatRequest, HeartbeatResponse>(ProcessHeartbeat);
+            _serviceToken = _rpcServer.Serve<HeartbeatRequest, HeartbeatResponse>(ProcessHeartbeat, silent: true);
             return Task.CompletedTask;
         }
 
