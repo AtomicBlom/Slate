@@ -46,8 +46,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
-		<PackageReference Include="EmptyKeysUI_MonoGame" Version="3.3.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
+		<PackageReference Include="MLEM.Ui" Version="5.0.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.1983-develop" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
@@ -58,6 +58,5 @@
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
 		<ProjectReference Include="..\..\Tools\BinaryVibrance.NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="..\Slate.Client.Networking\Slate.Client.Networking.csproj" />
-		<ProjectReference Include="..\Slate.Client.UI.Common\Slate.Client.UI.Common.csproj" />
 	</ItemGroup>
 </Project>

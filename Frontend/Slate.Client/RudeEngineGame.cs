@@ -1,22 +1,16 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using EmptyKeys.UserInterface;
-using EmptyKeys.UserInterface.Debug;
-using EmptyKeys.UserInterface.Input;
-using EmptyKeys.UserInterface.Media;
-using EmptyKeys.UserInterface.Media.Effects;
-using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MLEM.Font;
+using MLEM.Misc;
+using MLEM.Textures;
+using MLEM.Ui;
+using MLEM.Ui.Elements;
+using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
-using Slate.Client.Networking;
-using Slate.Client.UI.ViewModels;
-using Slate.Client.UI.Views;
-using GameUI = Slate.Client.UI.Views.GameUI;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 
 namespace Slate.Client
@@ -31,9 +25,9 @@ namespace Slate.Client
         private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
         private DeviceModelCollection _testModel;
         private readonly ModelInstance[] _test = new ModelInstance[5 * 5];
-        private GameUI _gameUi;
-        private DebugViewModel _debugUi;
         private readonly GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+        private UiSystem _uiSystem;
 
         public RudeEngineGame(Options options)
         {
@@ -42,7 +36,6 @@ namespace Slate.Client
             _graphics.PreferredBackBufferWidth = 1366;
             _graphics.PreferredBackBufferHeight = 768;
             _graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            _graphics.DeviceCreated += graphics_DeviceCreated;
             Window.ClientSizeChanged += Window_ClientSizeChanged;
 
             Content.RootDirectory = "Content";
@@ -51,16 +44,7 @@ namespace Slate.Client
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
-            if (_gameUi != null)
-            {
-                Viewport viewPort = GraphicsDevice.Viewport;
-                _gameUi.Resize(viewPort.Width, viewPort.Height);
-            }
-        }
 
-        void graphics_DeviceCreated(object? sender, EventArgs e)
-        {
-            Engine engine = new MonoGameEngine(GraphicsDevice, _nativeScreenWidth, _nativeScreenHeight);
         }
 
         private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
@@ -80,63 +64,89 @@ namespace Slate.Client
             this.IsMouseVisible = true;
 
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
-            FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-            Viewport viewport = GraphicsDevice.Viewport;
-            _gameUi = new GameUI(viewport.Width, viewport.Height);
-
-            var loginViewModel = new LoginViewModel(_options.AuthServer)
+            //Viewport viewport = GraphicsDevice.Viewport;
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            var uiText = Content.Load<Texture2D>("UI/RPG_GUI_v1");
+            var background = Content.Load<Texture2D>("UI/Paper_Background");
+            var uiStyle = new UntexturedStyle(_spriteBatch)
             {
-                Username = "atomicblom",
-                Password = "password"
+                Font = new GenericSpriteFont(font),
+                TextFieldTexture = new NinePatch(new TextureRegion(uiText, 812, 612, 168, 34), 12, NinePatchMode.Tile),
+                PanelTexture = new NinePatch(background, 0, NinePatchMode.Tile)
             };
 
-            _gameUi.CurrentScreen.Children.Add(
-                new LoginScreen()
-                {
-                    DataContext = loginViewModel
-                });
-            loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
-            Task.Run(loginViewModel.OnNavigatedTo);
-            
-            _debugUi = new DebugViewModel(_gameUi);
+            uiStyle.Font = new GenericSpriteFont(font);
+            _uiSystem = new UiSystem(this, uiStyle);
+            MlemPlatform.Current = new MlemPlatform.DesktopGl<TextInputEventArgs>((w, c) => w.TextInput += c);
 
-            FontManager.Instance.LoadFonts(Content);
-            ImageManager.Instance.LoadImages(Content);
-            SoundManager.Instance.LoadSounds(Content);
-            EffectManager.Instance.LoadEffects(Content);
+            var panel = new Panel(Anchor.Center, new Vector2(400, 100), Vector2.Zero, setHeightBasedOnChildren: true);
+            panel.DrawColor.Set(Color.AliceBlue);
+            _uiSystem.Add("LoginUI", panel);
+
+            panel.AddChild(new Paragraph(Anchor.TopLeft, 100, "Username: "));
+            panel.AddChild(new Paragraph(Anchor.AutoLeft, 100, "Password: ")
+            {
+                PositionOffset = new Vector2(0, 40)
+            });
+
+            var usernameField = new TextField(Anchor.TopRight, new Vector2(200, 48));
+            usernameField.SetText("atomicblom");
+            usernameField.TextOffsetX = 12;
+            panel.AddChild(usernameField);
+            
+            var passwordField = new TextField(Anchor.AutoRight, new Vector2(200, 48));
+            passwordField.SetText("password");
+            passwordField.TextOffsetX = 12;
+            panel.AddChild(passwordField);
+
+            panel.AddChild(new Button(Anchor.AutoCenter, new Vector2(200, 48), "Log in")
+            {
+                OnPressed = (a) =>
+                {
+                    Console.WriteLine("Beep");
+                }
+            });
+
+            //var loginViewModel = new LoginViewModel(_options.AuthServer)
+            //{
+            //    Username = "atomicblom",
+            //    Password = "password"
+            //};
+            //loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
+            //Task.Run(loginViewModel.OnNavigatedTo);
 
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
         }
 
-        private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
-        {
-            //_gameUi.Visibility = Visibility.Collapsed;
-            var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
-            var connectionResult = await gameConnection.Connect(e.AccessToken);
+        //private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
+        //{
+        //    //_gameUi.Visibility = Visibility.Collapsed;
+        //    var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
+        //    var connectionResult = await gameConnection.Connect(e.AccessToken);
 
-            if (connectionResult.WasSuccessful)
-            {
-                var existingScreen = _gameUi.CurrentScreen.Children.FirstOrDefault();
-                if (existingScreen != null)
-                {
-                    existingScreen.Visibility = Visibility.Collapsed; // Animate off?
-                }
+        //    if (connectionResult.WasSuccessful)
+        //    {
+        //        var existingScreen = _gameUi.CurrentScreen.Children.FirstOrDefault();
+        //        if (existingScreen != null)
+        //        {
+        //            existingScreen.Visibility = Visibility.Collapsed; // Animate off?
+        //        }
 
-                _gameUi.CurrentScreen.Children.Remove(existingScreen);
-                var characterListViewModel = new CharacterListViewModel(gameConnection)
-                {
-                };
-                _gameUi.CurrentScreen.Children.Add(
-                    new CharacterListScreen()
-                    {
-                        DataContext = characterListViewModel
-                    });
+        //        _gameUi.CurrentScreen.Children.Remove(existingScreen);
+        //        var characterListViewModel = new CharacterListViewModel(gameConnection)
+        //        {
+        //        };
+        //        _gameUi.CurrentScreen.Children.Add(
+        //            new CharacterListScreen()
+        //            {
+        //                DataContext = characterListViewModel
+        //            });
 
-                await Task.Run(characterListViewModel.OnNavigatedTo);
-            }
+        //        await Task.Run(characterListViewModel.OnNavigatedTo);
+        //    }
 
-        }
+        //}
 
         protected override void UnloadContent()
         {
@@ -150,10 +160,8 @@ namespace Slate.Client
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            _debugUi.Update();
-            _gameUi.UpdateInput(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _gameUi.UpdateLayout(gameTime.ElapsedGameTime.TotalMilliseconds);
+            
+            _uiSystem.Update(gameTime);
 
             for (int z = 0; z < 5; ++z)
             {
@@ -170,6 +178,8 @@ namespace Slate.Client
 
         protected override void Draw(GameTime gameTime)
         {
+            _uiSystem.DrawEarly(gameTime, _spriteBatch);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             
             var camPos = new Vector3(0, 25, 0);
@@ -186,9 +196,8 @@ namespace Slate.Client
             
             dc.DrawSceneInstances(_lightsAndFog,
                 _test);
-
-            _gameUi.Draw(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _debugUi.Draw();
+            
+            this._uiSystem.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);
         }

@@ -1,6 +1,3 @@
 [submodule "Dependencies/MonoScene"]
 	path = Dependencies/MonoScene
 	url = https://github.com/AtomicBlom/MonoScene.git
-[submodule "Dependencies/UI_Generator"]
-	path = Dependencies/UI_Generator
-	url = https://github.com/AtomicBlom/UI_Generator.git
