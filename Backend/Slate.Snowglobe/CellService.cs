@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using MessagePipe;
 using ProtoBuf.Grpc;
 using Serilog;
+using Slate.Events.InMemory;
 using Slate.Networking.Internal.Protocol.Cell;
 using Slate.Networking.Internal.Protocol.Cell.Services;
 
@@ -11,14 +12,12 @@ namespace Slate.Snowglobe
 {
     public class CellService : ICellService
     {
-        private readonly IBufferedAsyncSubscriber<MessageToGameWarden> _sendMessageBus;
-        private readonly IBufferedPublisher<MessageToSnowglobe> _receivedMessagesBus;
+        private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _logger;
 
-        public CellService(ILogger logger, IBufferedAsyncSubscriber<MessageToGameWarden> sendMessageBus, IBufferedPublisher<MessageToSnowglobe> receivedMessagesBus)
+        public CellService(IEventAggregator eventAggregator, ILogger logger)
         {
-            _sendMessageBus = sendMessageBus;
-            _receivedMessagesBus = receivedMessagesBus;
+            _eventAggregator = eventAggregator;
             _logger = logger.ForContext<CellService>();
         }
 
@@ -30,7 +29,9 @@ namespace Slate.Snowglobe
 
         private async IAsyncEnumerable<MessageToGameWarden> SendMessagesFromSnowglobe()
         {
-            await foreach (var message in _sendMessageBus.AsAsyncEnumerable())
+            var observable = _eventAggregator
+                .GetEvent<MessageToGameWarden>();
+            await foreach (var message in observable.ToAsyncEnumerable())
             {
                 _logger.Information("Sending message {MessageType} to GameWarden", message.GetType().FullName);
                 yield return message;
@@ -44,7 +45,7 @@ namespace Slate.Snowglobe
                 try
                 {
                     _logger.Information("Received message {MessageType} from GameWarden", message.GetType().FullName);
-                    _receivedMessagesBus.Publish(message);
+                    _eventAggregator.Publish(message);
                 }
                 catch (Exception e)
                 {

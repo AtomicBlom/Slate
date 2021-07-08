@@ -6,6 +6,7 @@ namespace Slate.Networking.Internal.Protocol.Cell
 {
     [ProtoContract(SkipConstructor = true)]
     [ProtoInclude(20000, typeof(ConnectPlayerMessage))]
+    [ProtoInclude(20001, typeof(CellRequestMove))]
     public abstract class MessageToSnowglobe
     {
         protected MessageToSnowglobe(Uuid instanceId)
@@ -26,6 +27,21 @@ namespace Slate.Networking.Internal.Protocol.Cell
         {
             CharacterId = characterId;
             Position = position;
+        }
+    }
+
+    [ProtoContract(SkipConstructor = true)]
+    public class CellRequestMove : MessageToSnowglobe
+    {
+        public Uuid CharacterId { get; }
+        public Vector3 Position { get; }
+        public Vector3 Direction { get; }
+
+        public CellRequestMove(Uuid instanceId, Uuid characterId, Vector3 position, Vector3 direction) : base(instanceId)
+        {
+            CharacterId = characterId;
+            Position = position;
+            Direction = direction;
         }
     }
 }

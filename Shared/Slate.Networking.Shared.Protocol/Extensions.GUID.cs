@@ -9,7 +9,7 @@ namespace Slate.Networking.Shared.Protocol
             Span<byte> guidBytes = guid.ToByteArray();
             var a = BitConverter.ToUInt64(guidBytes[..8]);
             var b = BitConverter.ToUInt64(guidBytes[8..16]);
-            return new Uuid { A = a, B = b };
+            return new Uuid(a, b);
         }
     }
 }

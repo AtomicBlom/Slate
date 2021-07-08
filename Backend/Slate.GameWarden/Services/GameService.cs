@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ProtoBuf.Grpc;
 using Serilog;
 using Slate.GameWarden.Game;
-using Slate.Networking.External.Protocol;
 using Slate.Networking.External.Protocol.ClientToServer;
 using Slate.Networking.External.Protocol.ServerToClient;
 using Slate.Networking.External.Protocol.Services;

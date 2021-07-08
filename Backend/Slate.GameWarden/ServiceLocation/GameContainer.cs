@@ -1,10 +1,8 @@
 ﻿using System;
-using MessagePipe;
-using Microsoft.Extensions.DependencyInjection;
 using Slate.Backend.Shared;
+using Slate.Events.InMemory;
 using Slate.GameWarden.Game;
 using Slate.GameWarden.Services;
-using Slate.Networking.External.Protocol;
 using Slate.Networking.External.Protocol.Services;
 using StrongInject;
 
@@ -14,6 +12,8 @@ namespace Slate.GameWarden.ServiceLocation
     [Register(typeof(PlayerCellService), typeof(IPlayerService))]
     [Register(typeof(PlayerConnection))]
     [Register(typeof(CellConnectionManager), Scope.SingleInstance, typeof(ICellConnectionManager))]
+    [Register(typeof(EventAggregator), Scope.SingleInstance, typeof(IEventAggregator))]
+    [Register(typeof(MonitorEventBus), Scope.SingleInstance)]
     [RegisterModule(typeof(GrpcServicesModule))]
     internal partial class GameContainer : CoreServicesModule, 
         IContainer<IAccountService>, 
@@ -21,25 +21,12 @@ namespace Slate.GameWarden.ServiceLocation
         IContainer<IAuthorizationService>, 
         IContainer<Func<CharacterIdentifier, PlayerConnection>>, 
         IContainer<HeartbeatService>,
-        IContainer<GracefulShutdownService>
+        IContainer<GracefulShutdownService>,
+        IContainer<MonitorEventBus>
     {
-        private readonly IServiceProvider _serviceProvider;
 
         public GameContainer(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _serviceProvider = serviceProvider;
         }
-
-        [Factory(Scope.SingleInstance)]
-        EventFactory ResolveEventFactory() => _serviceProvider.GetRequiredService<EventFactory>();
-
-        [Factory(Scope.SingleInstance)]
-        IBufferedPublisher<T> ResolveBufferedPublisherOfT<T>() => _serviceProvider.GetRequiredService<IBufferedPublisher<T>>();
-
-        [Factory(Scope.SingleInstance)]
-        IBufferedAsyncPublisher<T> ResolveBufferedAsyncPublisherOfT<T>() => _serviceProvider.GetRequiredService<IBufferedAsyncPublisher<T>>();
-
-        [Factory(Scope.SingleInstance)]
-        IBufferedAsyncSubscriber<T> ResolveBufferedAsyncSubscriberOfT<T>() => _serviceProvider.GetRequiredService<IBufferedAsyncSubscriber<T>>();
     }
 }

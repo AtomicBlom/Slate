@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Grpc.Net.Client;
-using MessagePipe;
 using Nito.AsyncEx;
 using ProtoBuf.Grpc.Client;
 using Serilog;
 using Slate.Backend.Shared;
+using Slate.Events.InMemory;
 using Slate.Networking.Internal.Protocol.Cell;
 using Slate.Networking.Internal.Protocol.Cell.Services;
 using Slate.Networking.Internal.Protocol.Model;
@@ -19,16 +22,15 @@ namespace Slate.GameWarden.Game
 {
     public class CellConnectionManager : ICellConnectionManager
     {
-        private readonly EventFactory _eventFactory;
-        private readonly IBufferedPublisher<MessageToGameWarden> _snowglobePublisher;
+        private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _logger;
         private readonly Dictionary<Guid, Task> _knownCells = new();
         private readonly AsyncReaderWriterLock _knownCellLock = new();
+        private IDisposable bleah;
 
-        public CellConnectionManager(EventFactory eventFactory, IBufferedPublisher<MessageToGameWarden> snowglobePublisher, ILogger logger)
+        public CellConnectionManager(IEventAggregator eventAggregator, ILogger logger)
         {
-            _eventFactory = eventFactory;
-            _snowglobePublisher = snowglobePublisher;
+            _eventAggregator = eventAggregator;
             _logger = logger.ForContext<CellConnectionManager>();
         }
 
@@ -71,66 +73,60 @@ namespace Slate.GameWarden.Game
 
             var cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = cancellationTokenSource.Token;
+            bleah = cancellationTokenSource;
 
-            var messagesFromSnowglobe = cellService.SubscribeAsync(SendMessagesToSnowglobe(guid, cancellationToken));
-            var _ = Task.Run(() => ProcessMessagesFromSnowglobe(guid, messagesFromSnowglobe, cancellationToken));
-            
+            var sendReady = new TaskCompletionSource();
+            var receiveReady = new TaskCompletionSource();
+
+            var messagesFromSnowglobe = cellService.SubscribeAsync(SendMessagesToSnowglobe(guid, sendReady, cancellationToken));
+            var _ = Task.Run(() => ProcessMessagesFromSnowglobe(guid, messagesFromSnowglobe, receiveReady, cancellationToken));
+
+            await Task.WhenAll(sendReady.Task, receiveReady.Task);
+
             tcs.SetResult();
             return tcs.Task;
         }
 
-        private async Task ProcessMessagesFromSnowglobe(Guid instanceId, IAsyncEnumerable<MessageToGameWarden> messagesFromSnowglobe, CancellationToken cancellationToken)
+        private async Task ProcessMessagesFromSnowglobe(
+            Guid instanceId,
+            IAsyncEnumerable<MessageToGameWarden> messagesFromSnowglobe, 
+            TaskCompletionSource receiveReady,
+            CancellationToken cancellationToken)
         {
             using var cellInstanceContext = CommonLogContexts.ApplicationInstanceId(instanceId);
             _logger.Information("Ready to receive messages from Cell");
+
+            receiveReady.SetResult();
             await foreach (var message in messagesFromSnowglobe.WithCancellation(cancellationToken))
             {
-                _snowglobePublisher.Publish(message);
+                _eventAggregator.Publish(message);
             }
         }
 
-        async IAsyncEnumerable<MessageToSnowglobe> SendMessagesToSnowglobe(Guid instanceId, [EnumeratorCancellation] CancellationToken cancellationToken)
+        async IAsyncEnumerable<MessageToSnowglobe> SendMessagesToSnowglobe(
+            Guid instanceId,
+            TaskCompletionSource sendReady, 
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            using var CellInstanceContext = CommonLogContexts.ApplicationInstanceId(instanceId);
-            var (subscription, events) = _eventFactory
-                .CreateAsyncEvent<MessageToSnowglobe>();
+            var networkInstanceId = instanceId.ToUuid();
 
-            cancellationToken.Register(() =>
-            {
-                subscription.Dispose();
-            });
+            var buffer = new BufferBlock<MessageToSnowglobe>();
             
-            var messages = events
-                .AsAsyncEnumerable(new SnowglobeInstanceFilter(instanceId))
-                .WithCancellation(cancellationToken);
+            using var cellInstanceContext = CommonLogContexts.ApplicationInstanceId(instanceId);
+
+            _eventAggregator.GetEvent<MessageToSnowglobe>()
+                .Where(m => m.InstanceId is null || m.InstanceId.Equals(networkInstanceId))
+                .Subscribe(t => buffer.Post(t), cancellationToken);
 
             _logger.Information("Ready to send messages to Cell");
+            sendReady.SetResult();
             
-            await foreach (var message in messages)
+            await foreach (var message in buffer.ReceiveAllAsync(cancellationToken))
             {
-                if (cancellationToken.IsCancellationRequested) break;
+                _logger.Information("Sending a {MessageType} to Snowglobe", message.GetType().FullName);
 
                 yield return message;
             }
-        }
-    }
-
-    public class SnowglobeInstanceFilter : AsyncMessageHandlerFilter<MessageToSnowglobe>
-    {
-        private readonly Uuid _instanceId;
-
-        public SnowglobeInstanceFilter(Guid instanceId)
-        {
-            _instanceId = instanceId.ToUuid();
-        }
-
-        public override ValueTask HandleAsync(MessageToSnowglobe message, CancellationToken cancellationToken, Func<MessageToSnowglobe, CancellationToken, ValueTask> next)
-        {
-            if (message.InstanceId == _instanceId)
-            {
-                next(message, cancellationToken);
-            }
-            return ValueTask.CompletedTask;
         }
     }
 }

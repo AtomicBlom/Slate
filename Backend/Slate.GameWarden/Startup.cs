@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using MessagePipe;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,6 @@ using Serilog;
 using Slate.Backend.Shared;
 using Slate.GameWarden.Middleware;
 using Slate.GameWarden.ServiceLocation;
-using Slate.Networking.External.Protocol;
 using Slate.Networking.External.Protocol.Services;
 
 namespace Slate.GameWarden
@@ -33,10 +31,6 @@ namespace Slate.GameWarden
             Log.Logger.Information("GameWarden Starting");
 
             services.UseStrongInjectForGrpcServiceResolution();
-            services.AddMessagePipe(config =>
-            {
-                config.InstanceLifetime = InstanceLifetime.Singleton;
-            });
             services.AddCodeFirstGrpc(config =>
             {
                 config.ResponseCompressionLevel = CompressionLevel.Optimal;
@@ -61,7 +55,7 @@ namespace Slate.GameWarden
             services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IAccountService>();
             services.ReplaceWithSingletonServiceUsingContainer<GameContainer, IGameService>();
 
-            //services.AddSingleton<IContainer<Func<Guid, PlayerConnection>>>(sp => sp.GetRequiredService<GameContainer>());
+            services.AddHostedServiceUsingContainer<GameContainer, MonitorEventBus>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)

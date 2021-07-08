@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using MessagePipe;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +30,6 @@ namespace Slate.Snowglobe
             Log.Logger.Information("Snowglobe Starting");
 
             services.UseStrongInjectForGrpcServiceResolution();
-            services.AddMessagePipe();
             services.AddCodeFirstGrpc(config =>
             {
                 config.ResponseCompressionLevel = CompressionLevel.Optimal;

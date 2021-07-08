@@ -10,7 +10,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MessagePipe" Version="1.6.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0-preview.4.21253.5" />
 		<PackageReference Include="Nito.AsyncEx" Version="5.1.0" />
 		<PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
@@ -23,6 +22,7 @@
 		<ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
 		<ProjectReference Include="..\..\Shared\StrongInject.Extensions.Grpc\StrongInject.Extensions.Grpc.csproj" />
 		<ProjectReference Include="..\Slate.Backend.Shared\Slate.Backend.Shared.csproj" />
+		<ProjectReference Include="..\Slate.EventAggregator\Slate.Events.InMemory.csproj" />
 		<ProjectReference Include="..\Slate.Networking.Internal.Protocol\Slate.Networking.Internal.Protocol.csproj" />
 	</ItemGroup>
 
