@@ -38,6 +38,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmptyKeys.UserInterface.Generator", "..\Dependencies\UI_Generator\UIGenerator\EmptyKeys.UserInterface.Generator.csproj", "{F0F78B47-FADA-4EE0-9D94-FCD94F555166}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.UI", "Slate.Client.UI\Slate.Client.UI.csproj", "{CF40B351-77F1-43BB-B24E-C9C8D44D92AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}
+	EndProjectSection
 	ProjectSection(Project..\Dependencies) = postProject
 		{EEE55E35-FD1E-4970-9C0A-0A2F04A9997D} = {EEE55E35-FD1E-4970-9C0A-0A2F04A9997D}
 	EndProjectSection

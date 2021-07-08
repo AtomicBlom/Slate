@@ -60,7 +60,4 @@
 		<ProjectReference Include="..\Slate.Client.Networking\Slate.Client.Networking.csproj" />
 		<ProjectReference Include="..\Slate.Client.UI.Common\Slate.Client.UI.Common.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="UI\Content\" />
-	</ItemGroup>
 </Project>
