@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using CommandLine;
+using Microsoft.Xna.Framework;
+using MLEM.Misc;
 
 namespace Slate.Client
 {
@@ -9,6 +11,8 @@ namespace Slate.Client
         [STAThread]
         static void Main(string[] args)
         {
+            MlemPlatform.Current = new MlemPlatform.DesktopGl<TextInputEventArgs>((w, c) => w.TextInput += c);
+
             Options? options = null;
 
             Parser.Default.ParseArguments<Options>(args)

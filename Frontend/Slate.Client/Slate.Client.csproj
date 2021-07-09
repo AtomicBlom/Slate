@@ -47,13 +47,13 @@
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
-		<PackageReference Include="MLEM.Ui" Version="5.0.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.1983-develop" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
 		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\Dependencies\MLEM\MLEM.Ui\MLEM.Ui.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
 		<ProjectReference Include="..\..\Tools\BinaryVibrance.NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

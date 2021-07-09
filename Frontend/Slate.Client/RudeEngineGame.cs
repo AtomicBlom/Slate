@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,6 +14,8 @@ using MLEM.Ui.Elements;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
+using Slate.Client.UI.ViewModels;
+using Slate.Client.UI.Views;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 
 namespace Slate.Client
@@ -77,50 +82,32 @@ namespace Slate.Client
 
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem = new UiSystem(this, uiStyle);
-            MlemPlatform.Current = new MlemPlatform.DesktopGl<TextInputEventArgs>((w, c) => w.TextInput += c);
 
-            var panel = new Panel(Anchor.Center, new Vector2(400, 100), Vector2.Zero, setHeightBasedOnChildren: true);
-            panel.DrawColor.Set(Color.AliceBlue);
-            _uiSystem.Add("LoginUI", panel);
+            //var panel = new Panel(Anchor.Center, new Vector2(400, 100), Vector2.Zero, setHeightBasedOnChildren: true);
+            //panel.DrawColor.Set(Color.AliceBlue);
+            //_uiSystem.Add("LoginUI", panel);
 
-            panel.AddChild(new Paragraph(Anchor.TopLeft, 100, "Username: "));
-            panel.AddChild(new Paragraph(Anchor.AutoLeft, 100, "Password: ")
+
+
+
+
+
+            var loginViewModel = new LoginViewModel(_options.AuthServer)
             {
-                PositionOffset = new Vector2(0, 40)
-            });
+                Username = "atomicblom",
+                Password = "password"
+            };
+            loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
+            Task.Run(loginViewModel.OnNavigatedTo);
 
-            var usernameField = new TextField(Anchor.TopRight, new Vector2(200, 48));
-            usernameField.SetText("atomicblom");
-            usernameField.TextOffsetX = 12;
-            panel.AddChild(usernameField);
-            
-            var passwordField = new TextField(Anchor.AutoRight, new Vector2(200, 48));
-            passwordField.SetText("password");
-            passwordField.TextOffsetX = 12;
-            panel.AddChild(passwordField);
-
-            panel.AddChild(new Button(Anchor.AutoCenter, new Vector2(200, 48), "Log in")
-            {
-                OnPressed = (a) =>
-                {
-                    Console.WriteLine("Beep");
-                }
-            });
-
-            //var loginViewModel = new LoginViewModel(_options.AuthServer)
-            //{
-            //    Username = "atomicblom",
-            //    Password = "password"
-            //};
-            //loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
-            //Task.Run(loginViewModel.OnNavigatedTo);
+            _uiSystem.Add("LoginView", LoginView.CreateView(loginViewModel));
 
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
         }
 
-        //private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
-        //{
+        private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
+        {
         //    //_gameUi.Visibility = Visibility.Collapsed;
         //    var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
         //    var connectionResult = await gameConnection.Connect(e.AccessToken);
@@ -146,7 +133,7 @@ namespace Slate.Client
         //        await Task.Run(characterListViewModel.OnNavigatedTo);
         //    }
 
-        //}
+        }
 
         protected override void UnloadContent()
         {
@@ -160,6 +147,13 @@ namespace Slate.Client
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            if (Keyboard.GetState().IsKeyDown(Keys.F3))
+            {
+                foreach (var reloadablePanel in _uiSystem.GetRootElements().Select(re => re.Element).OfType<ReloadablePanel>())
+                {
+                    reloadablePanel.Rebuild();
+                }
+            }
             
             _uiSystem.Update(gameTime);
 
