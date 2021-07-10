@@ -1,6 +1,6 @@
 [submodule "Dependencies/MonoScene"]
 	path = Dependencies/MonoScene
 	url = https://github.com/AtomicBlom/MonoScene.git
-[submodule "Dependencies\\MLEM"]
+[submodule "Dependencies/MLEM"]
 	path = Dependencies\\MLEM
-	url = https://github.com/AtomicBlom/MLEM
+	url = https://github.com/AtomicBlom/MLEM.git
