@@ -14,6 +14,7 @@ using MLEM.Ui.Elements;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
+using Slate.Client.Networking;
 using Slate.Client.UI.ViewModels;
 using Slate.Client.UI.Views;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
@@ -82,16 +83,7 @@ namespace Slate.Client
 
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem = new UiSystem(this, uiStyle);
-
-            //var panel = new Panel(Anchor.Center, new Vector2(400, 100), Vector2.Zero, setHeightBasedOnChildren: true);
-            //panel.DrawColor.Set(Color.AliceBlue);
-            //_uiSystem.Add("LoginUI", panel);
-
-
-
-
-
-
+            
             var loginViewModel = new LoginViewModel(_options.AuthServer)
             {
                 Username = "atomicblom",
@@ -100,7 +92,7 @@ namespace Slate.Client
             loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
             Task.Run(loginViewModel.OnNavigatedTo);
 
-            _uiSystem.Add("LoginView", LoginView.CreateView(loginViewModel));
+            _uiSystem.Add(nameof(LoginView), LoginView.CreateView(loginViewModel));
 
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
@@ -108,31 +100,15 @@ namespace Slate.Client
 
         private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
-        //    //_gameUi.Visibility = Visibility.Collapsed;
-        //    var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
-        //    var connectionResult = await gameConnection.Connect(e.AccessToken);
-
-        //    if (connectionResult.WasSuccessful)
-        //    {
-        //        var existingScreen = _gameUi.CurrentScreen.Children.FirstOrDefault();
-        //        if (existingScreen != null)
-        //        {
-        //            existingScreen.Visibility = Visibility.Collapsed; // Animate off?
-        //        }
-
-        //        _gameUi.CurrentScreen.Children.Remove(existingScreen);
-        //        var characterListViewModel = new CharacterListViewModel(gameConnection)
-        //        {
-        //        };
-        //        _gameUi.CurrentScreen.Children.Add(
-        //            new CharacterListScreen()
-        //            {
-        //                DataContext = characterListViewModel
-        //            });
-
-        //        await Task.Run(characterListViewModel.OnNavigatedTo);
-        //    }
-
+	        var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
+	        var connectionResult = await gameConnection.Connect(e.AccessToken);
+	        if (connectionResult.WasSuccessful)
+	        {
+                _uiSystem.Remove(nameof(LoginView));
+                var characterListViewModel = new CharacterListViewModel(gameConnection);
+                _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
+                await Task.Run(characterListViewModel.OnNavigatedTo);
+            }
         }
 
         protected override void UnloadContent()

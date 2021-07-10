@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using MLEM.Misc;
 using MLEM.Ui;
 using MLEM.Ui.Elements;
@@ -7,34 +6,7 @@ using Slate.Client.UI.ViewModels;
 
 namespace Slate.Client.UI.Views
 {
-    public class ReloadablePanel : Panel
-    {
-        private bool _constructed;
-
-        public ReloadablePanel(Anchor anchor, Vector2 size, Vector2 positionOffset,
-            bool setHeightBasedOnChildren = false, bool scrollOverflow = false, Point? scrollerSize = null,
-            bool autoHideScrollbar = true) : base(anchor, size, positionOffset, setHeightBasedOnChildren,
-            scrollOverflow, scrollerSize, autoHideScrollbar)
-        {
-        }
-
-        public Action<Panel>? Build { get; init; }
-
-        public override void Update(GameTime time)
-        {
-            if (!_constructed) Rebuild();
-            base.Update(time);
-        }
-
-        public void Rebuild()
-        {
-            RemoveChildren(e => true);
-            Build?.Invoke(this);
-            _constructed = true;
-        }
-    }
-
-    internal class LoginView
+	internal class LoginView
     {
         public static Element CreateView(LoginViewModel viewModel)
         {
@@ -76,7 +48,7 @@ namespace Slate.Client.UI.Views
                     )
                 ,
                 new Button(Anchor.AutoCenter, new Vector2(200, 48), "Log in")
-                    .BindClick(viewModel.LoginCommand)
+                    .BindPressed(viewModel.LoginCommand)
             );
         }
     }

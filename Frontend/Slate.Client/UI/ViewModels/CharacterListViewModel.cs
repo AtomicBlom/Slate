@@ -1,19 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
-using EmptyKeys.UserInterface.Input;
 using Slate.Client.Networking;
-using Slate.Client.UI.Common.Model;
+using Slate.Client.UI.MVVM;
 
 namespace Slate.Client.UI.ViewModels
 {
+
+	public record GameCharacter(Guid Id, string Name)
+	{
+		public string IdAsString => Id.ToString();
+	}
+
     public partial class CharacterListViewModel
     {
         private readonly GameConnection _gameConnection;
 
         [ImplementNotifyPropertyChanged] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
-        [ImplementNotifyPropertyChanged] private ICommand? _playAsCharacterCommand = null;
+        [ImplementNotifyPropertyChanged] private RelayCommand _playAsCharacterCommand;
 
         private GameCharacter? _selectedCharacter;
         public GameCharacter? SelectedCharacter
@@ -24,7 +31,7 @@ namespace Slate.Client.UI.ViewModels
                 if (SetField(ref _selectedCharacter, value))
                 {
                     RaisePropertyChanged(nameof(CanEnterGame));
-                    RaisePropertyChanged(nameof(PlayAsCharacterCommand));
+                    _playAsCharacterCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -39,8 +46,8 @@ namespace Slate.Client.UI.ViewModels
             PlayAsCharacterCommand = new RelayCommand(Execute, CanExecute);
         }
 
-        void Execute(object o) => _gameConnection.PlayAsCharacter(SelectedCharacter.Id);
-        bool CanExecute(object o) => CanEnterGame;
+        void Execute() => _gameConnection.PlayAsCharacter(SelectedCharacter.Id);
+        bool CanExecute() => CanEnterGame;
 
         public async Task OnNavigatedTo()
         {
