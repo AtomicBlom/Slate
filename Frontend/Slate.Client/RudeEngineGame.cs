@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Sources;
 using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,6 +24,9 @@ namespace Slate.Client
 {
     public class RudeEngineGame : Microsoft.Xna.Framework.Game
     {
+	    public static Task<GameTime> NextUpdate;
+	    private TaskCompletionSource<GameTime> ThisUpdateSource = new();
+        
         private readonly Options _options;
         
         private int _nativeScreenWidth;
@@ -46,6 +50,7 @@ namespace Slate.Client
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            NextUpdate = ThisUpdateSource.Task;
         }
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
@@ -104,6 +109,9 @@ namespace Slate.Client
 	        var connectionResult = await gameConnection.Connect(e.AccessToken);
 	        if (connectionResult.WasSuccessful)
 	        {
+		        _uiSystem.Get(nameof(LoginView))
+			        .FadeOut(duration: TimeSpan.FromSeconds(5), remove: true);
+
                 _uiSystem.Remove(nameof(LoginView));
                 var characterListViewModel = new CharacterListViewModel(gameConnection);
                 _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
@@ -121,6 +129,11 @@ namespace Slate.Client
 
         protected override void Update(GameTime gameTime)
         {
+	        var thisUpdate = ThisUpdateSource;
+	        ThisUpdateSource = new();
+	        NextUpdate = ThisUpdateSource.Task;
+            thisUpdate.SetResult(gameTime);
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.F3))

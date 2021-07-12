@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
 using Slate.Client.Networking;
 using Slate.Client.UI.MVVM;
@@ -10,12 +9,9 @@ using Slate.Client.UI.MVVM;
 namespace Slate.Client.UI.ViewModels
 {
 
-	public record GameCharacter(Guid Id, string Name)
-	{
-		public string IdAsString => Id.ToString();
-	}
+	public record GameCharacter(Guid Id, string Name);
 
-    public partial class CharacterListViewModel
+	public partial class CharacterListViewModel
     {
         private readonly GameConnection _gameConnection;
 
