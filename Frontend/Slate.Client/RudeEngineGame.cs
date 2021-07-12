@@ -2,27 +2,31 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EmptyKeys.UserInterface;
-using EmptyKeys.UserInterface.Debug;
-using EmptyKeys.UserInterface.Input;
-using EmptyKeys.UserInterface.Media;
-using EmptyKeys.UserInterface.Media.Effects;
+using System.Threading.Tasks.Sources;
 using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MLEM.Font;
+using MLEM.Misc;
+using MLEM.Textures;
+using MLEM.Ui;
+using MLEM.Ui.Elements;
+using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Slate.Client.Networking;
 using Slate.Client.UI.ViewModels;
 using Slate.Client.UI.Views;
-using GameUI = Slate.Client.UI.Views.GameUI;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 
 namespace Slate.Client
 {
     public class RudeEngineGame : Microsoft.Xna.Framework.Game
     {
+	    public static Task<GameTime> NextUpdate;
+	    private TaskCompletionSource<GameTime> ThisUpdateSource = new();
+        
         private readonly Options _options;
         
         private int _nativeScreenWidth;
@@ -31,9 +35,9 @@ namespace Slate.Client
         private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
         private DeviceModelCollection _testModel;
         private readonly ModelInstance[] _test = new ModelInstance[5 * 5];
-        private GameUI _gameUi;
-        private DebugViewModel _debugUi;
         private readonly GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+        private UiSystem _uiSystem;
 
         public RudeEngineGame(Options options)
         {
@@ -42,25 +46,16 @@ namespace Slate.Client
             _graphics.PreferredBackBufferWidth = 1366;
             _graphics.PreferredBackBufferHeight = 768;
             _graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            _graphics.DeviceCreated += graphics_DeviceCreated;
             Window.ClientSizeChanged += Window_ClientSizeChanged;
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            NextUpdate = ThisUpdateSource.Task;
         }
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
-            if (_gameUi != null)
-            {
-                Viewport viewPort = GraphicsDevice.Viewport;
-                _gameUi.Resize(viewPort.Width, viewPort.Height);
-            }
-        }
 
-        void graphics_DeviceCreated(object? sender, EventArgs e)
-        {
-            Engine engine = new MonoGameEngine(GraphicsDevice, _nativeScreenWidth, _nativeScreenHeight);
         }
 
         private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
@@ -80,30 +75,29 @@ namespace Slate.Client
             this.IsMouseVisible = true;
 
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
-            FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-            Viewport viewport = GraphicsDevice.Viewport;
-            _gameUi = new GameUI(viewport.Width, viewport.Height);
+            //Viewport viewport = GraphicsDevice.Viewport;
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            var uiText = Content.Load<Texture2D>("UI/RPG_GUI_v1");
+            var background = Content.Load<Texture2D>("UI/Paper_Background");
+            var uiStyle = new UntexturedStyle(_spriteBatch)
+            {
+                Font = new GenericSpriteFont(font),
+                TextFieldTexture = new NinePatch(new TextureRegion(uiText, 812, 612, 168, 34), 12, NinePatchMode.Tile),
+                PanelTexture = new NinePatch(background, 0, NinePatchMode.Tile)
+            };
 
+            uiStyle.Font = new GenericSpriteFont(font);
+            _uiSystem = new UiSystem(this, uiStyle);
+            
             var loginViewModel = new LoginViewModel(_options.AuthServer)
             {
                 Username = "atomicblom",
                 Password = "password"
             };
-
-            _gameUi.CurrentScreen.Children.Add(
-                new LoginScreen()
-                {
-                    DataContext = loginViewModel
-                });
             loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
             Task.Run(loginViewModel.OnNavigatedTo);
-            
-            _debugUi = new DebugViewModel(_gameUi);
 
-            FontManager.Instance.LoadFonts(Content);
-            ImageManager.Instance.LoadImages(Content);
-            SoundManager.Instance.LoadSounds(Content);
-            EffectManager.Instance.LoadEffects(Content);
+            _uiSystem.Add(nameof(LoginView), LoginView.CreateView(loginViewModel));
 
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
@@ -111,31 +105,18 @@ namespace Slate.Client
 
         private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
-            //_gameUi.Visibility = Visibility.Collapsed;
-            var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
-            var connectionResult = await gameConnection.Connect(e.AccessToken);
+	        var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
+	        var connectionResult = await gameConnection.Connect(e.AccessToken);
+	        if (connectionResult.WasSuccessful)
+	        {
+		        _uiSystem.Get(nameof(LoginView))
+			        .FadeOut(duration: TimeSpan.FromSeconds(5), remove: true);
 
-            if (connectionResult.WasSuccessful)
-            {
-                var existingScreen = _gameUi.CurrentScreen.Children.FirstOrDefault();
-                if (existingScreen != null)
-                {
-                    existingScreen.Visibility = Visibility.Collapsed; // Animate off?
-                }
-
-                _gameUi.CurrentScreen.Children.Remove(existingScreen);
-                var characterListViewModel = new CharacterListViewModel(gameConnection)
-                {
-                };
-                _gameUi.CurrentScreen.Children.Add(
-                    new CharacterListScreen()
-                    {
-                        DataContext = characterListViewModel
-                    });
-
+                _uiSystem.Remove(nameof(LoginView));
+                var characterListViewModel = new CharacterListViewModel(gameConnection);
+                _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
                 await Task.Run(characterListViewModel.OnNavigatedTo);
             }
-
         }
 
         protected override void UnloadContent()
@@ -148,12 +129,22 @@ namespace Slate.Client
 
         protected override void Update(GameTime gameTime)
         {
+	        var thisUpdate = ThisUpdateSource;
+	        ThisUpdateSource = new();
+	        NextUpdate = ThisUpdateSource.Task;
+            thisUpdate.SetResult(gameTime);
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            _debugUi.Update();
-            _gameUi.UpdateInput(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _gameUi.UpdateLayout(gameTime.ElapsedGameTime.TotalMilliseconds);
+            if (Keyboard.GetState().IsKeyDown(Keys.F3))
+            {
+                foreach (var reloadablePanel in _uiSystem.GetRootElements().Select(re => re.Element).OfType<ReloadablePanel>())
+                {
+                    reloadablePanel.Rebuild();
+                }
+            }
+            
+            _uiSystem.Update(gameTime);
 
             for (int z = 0; z < 5; ++z)
             {
@@ -170,6 +161,8 @@ namespace Slate.Client
 
         protected override void Draw(GameTime gameTime)
         {
+            _uiSystem.DrawEarly(gameTime, _spriteBatch);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             
             var camPos = new Vector3(0, 25, 0);
@@ -186,9 +179,8 @@ namespace Slate.Client
             
             dc.DrawSceneInstances(_lightsAndFog,
                 _test);
-
-            _gameUi.Draw(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _debugUi.Draw();
+            
+            this._uiSystem.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);
         }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
-using EmptyKeys.UserInterface.Input;
 using IdentityModel.Client;
+using Slate.Client.UI.MVVM;
 
 namespace Slate.Client.UI.ViewModels
 {
@@ -18,7 +19,7 @@ namespace Slate.Client.UI.ViewModels
         [ImplementNotifyPropertyChanged]
         private string _errorMessage = string.Empty;
         [ImplementNotifyPropertyChanged]
-        private ICommand _loginCommand;
+        private RelayCommand _loginCommand;
 
         public event EventHandler<TokenResponse>? LoggedIn;
 
@@ -29,7 +30,7 @@ namespace Slate.Client.UI.ViewModels
             {
                 if (SetField(ref _username, value))
                 {
-                    RaisePropertyChanged(nameof(LoginCommand));
+                    LoginCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -41,7 +42,7 @@ namespace Slate.Client.UI.ViewModels
             {
                 if (SetField(ref _password, value))
                 {
-                    RaisePropertyChanged(nameof(LoginCommand));
+                    LoginCommand.RaiseCanExecuteChanged();
                 };
             }
         }
@@ -53,11 +54,11 @@ namespace Slate.Client.UI.ViewModels
             _client = new HttpClient();
         }
 
-        private bool CanLogin(object obj) => true; /*_disco != null && 
+        private bool CanLogin() => true; /*_disco != null && 
                                              !string.IsNullOrWhiteSpace(Username) && 
                                              !string.IsNullOrWhiteSpace(Password);*/
 
-        private async void OnLogin(object obj)
+        private async void OnLogin()
         {
             if (_disco == null) return;
 
@@ -107,8 +108,7 @@ namespace Slate.Client.UI.ViewModels
                 }
 
                 Console.WriteLine($"discovery document Successfully retrieved");
-
-
+                
                 return disco;
             }
             catch (Exception e)
