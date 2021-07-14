@@ -3,11 +3,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
+using BinaryVibrance.MLEM.Binding;
 using IdentityModel.Client;
 using Slate.Client.UI.MVVM;
 
 namespace Slate.Client.UI.ViewModels
 {
+    [Bind]
     public partial class LoginViewModel
     {
         private readonly Uri _authServer;

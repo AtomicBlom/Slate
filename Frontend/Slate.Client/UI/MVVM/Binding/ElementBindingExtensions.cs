@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using MLEM.Ui.Elements;
+using BinaryVibrance.MLEM.Binding;
 
 namespace Slate.Client.UI.Views
 {

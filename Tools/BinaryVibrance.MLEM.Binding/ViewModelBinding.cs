@@ -1,6 +1,7 @@
-﻿using MLEM.Ui.Elements;
+﻿#nullable enable
+using MLEM.Ui.Elements;
 
-namespace Slate.Client.UI.Views
+namespace BinaryVibrance.MLEM.Binding
 {
     public record ViewModelBinding<TElement, TViewModel>(TElement Element, TViewModel ViewModel)
         where TElement : Element;

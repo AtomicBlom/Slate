@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using MLEM.Ui.Elements;
 using Slate.Client.UI.ViewModels;
+using BinaryVibrance.MLEM.Binding;
 
 namespace Slate.Client.UI.Views
 {

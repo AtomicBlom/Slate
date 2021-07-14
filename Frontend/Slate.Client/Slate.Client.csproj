@@ -57,6 +57,7 @@
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
 		<ProjectReference Include="..\..\Tools\BinaryVibrance.NotifyPropertyChangedSourceGenerator\BinaryVibrance.INPCSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\Tools\BinaryVibrance.MLEM.Binding\BinaryVibrance.MLEM.Binding.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="..\Slate.Client.Networking\Slate.Client.Networking.csproj" />
 	</ItemGroup>
 </Project>

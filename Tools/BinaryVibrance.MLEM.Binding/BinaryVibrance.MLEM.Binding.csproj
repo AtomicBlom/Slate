@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.10.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="PropertyBinding.cs" />
+		<Compile Remove="ViewModelBinding.cs" />
+		<EmbeddedResource Include="BindAttribute.cs" />
+		<EmbeddedResource Include="PropertyBinding.cs" />
+		<EmbeddedResource Include="ViewModelBinding.cs" />
+	</ItemGroup>
+
+</Project>

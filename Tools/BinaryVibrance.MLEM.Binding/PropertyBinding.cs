@@ -1,7 +1,8 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using MLEM.Ui.Elements;
 
-namespace Slate.Client.UI.Views
+namespace BinaryVibrance.MLEM.Binding
 {
     public class PropertyBinding<TNativePropertyType, TElement>
         where TElement : Element
