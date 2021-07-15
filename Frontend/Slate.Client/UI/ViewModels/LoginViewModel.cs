@@ -16,10 +16,10 @@ namespace Slate.Client.UI.ViewModels
         private string _username = string.Empty;
         private string _password = string.Empty;
 
-        [ImplementNotifyPropertyChanged]
+        [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)]
         private string _errorMessage = string.Empty;
-        [ImplementNotifyPropertyChanged]
-        private RelayCommand _loginCommand;
+        [ImplementNotifyPropertyChanged(ExposedType = typeof(ICommand))]
+        private readonly RelayCommand _loginCommand;
 
         public event EventHandler<TokenResponse>? LoggedIn;
 
@@ -30,7 +30,7 @@ namespace Slate.Client.UI.ViewModels
             {
                 if (SetField(ref _username, value))
                 {
-                    LoginCommand.RaiseCanExecuteChanged();
+                    _loginCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -42,7 +42,7 @@ namespace Slate.Client.UI.ViewModels
             {
                 if (SetField(ref _password, value))
                 {
-                    LoginCommand.RaiseCanExecuteChanged();
+                    _loginCommand.RaiseCanExecuteChanged();
                 };
             }
         }

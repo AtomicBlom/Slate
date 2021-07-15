@@ -6,7 +6,7 @@ using Slate.Client.UI.ViewModels;
 
 namespace Slate.Client.UI.Views
 {
-	internal class LoginView
+    internal class LoginView
     {
         public static Element CreateView(LoginViewModel viewModel)
         {
@@ -30,7 +30,7 @@ namespace Slate.Client.UI.Views
                                 TextOffsetX = 12,
                                 Padding = new Padding(0, 0, 2, 0)
                             }
-                            .BindText(viewModel, vm => vm.Username)
+                            .Bind(viewModel).Username().ToText()
                     ),
                 new Group(Anchor.AutoLeft, new Vector2(400))
                     {
@@ -44,11 +44,11 @@ namespace Slate.Client.UI.Views
                                 Padding = new Padding(0, 0, 8, 0),
                                 MaskingCharacter = '*'
                             }
-                            .BindText(viewModel, vm => vm.Password)
+                            .Bind(viewModel).Password().ToText()
                     )
                 ,
                 new Button(Anchor.AutoCenter, new Vector2(200, 48), "Log in")
-                    .BindPressed(viewModel.LoginCommand)
+                    .Bind(viewModel).LoginCommand().ToPressedEvent()
             );
         }
     }
