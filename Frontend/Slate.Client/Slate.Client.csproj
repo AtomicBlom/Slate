@@ -48,6 +48,7 @@
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.1983-develop" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
 		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
+		<PackageReference Include="stateless" Version="5.11.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Dependencies\MLEM\MLEM.Ui\MLEM.Ui.csproj" />

@@ -23,7 +23,7 @@ namespace Slate.Client.UI.Views
             panel.AddChildren(
                 new Group(Anchor.AutoLeft, new Vector2(400))
                     {
-                        ChildPadding = new Padding(8, 0)
+                        ChildPadding = new Padding(16, 16, 12, 0)
                     }
                     .AddChildren(
                         new Paragraph(Anchor.TopLeft, 0.3f, "Username: "),
@@ -36,7 +36,7 @@ namespace Slate.Client.UI.Views
                     ),
                 new Group(Anchor.AutoLeft, new Vector2(400))
                     {
-                        ChildPadding = new Padding(8, 0)
+                        ChildPadding = new Padding(16, 12)
                     }
                     .AddChildren(
                         new Paragraph(Anchor.TopLeft, 0.3f, "Password: "),

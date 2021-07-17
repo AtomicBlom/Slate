@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MLEM.Font;
+using MLEM.Misc;
 using MLEM.Textures;
 using MLEM.Ui;
 using MLEM.Ui.Style;
@@ -15,6 +16,7 @@ using MonoScene.Graphics.Pipeline;
 using Slate.Client.Networking;
 using Slate.Client.Services;
 using Slate.Client.UI.Views;
+using Stateless;
 using CharacterListViewModel = Slate.Client.ViewModel.MainMenu.CharacterListViewModel;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 using LoginViewModel = Slate.Client.ViewModel.MainMenu.LoginViewModel;
@@ -70,18 +72,20 @@ namespace Slate.Client
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             //Viewport viewport = GraphicsDevice.Viewport;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            var uiText = Content.Load<Texture2D>("UI/RPG_GUI_v1");
-            var background = Content.Load<Texture2D>("UI/Paper_Background");
+            var uiTexture = Content.Load<Texture2D>("UI/MockUI");
             var uiStyle = new UntexturedStyle(_spriteBatch)
             {
                 Font = new GenericSpriteFont(font),
-                TextFieldTexture = new NinePatch(new TextureRegion(uiText, 812, 612, 168, 34), 12, NinePatchMode.Tile),
-                PanelTexture = new NinePatch(background, 0, NinePatchMode.Tile)
+                TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8, NinePatchMode.Stretch),
+                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20, NinePatchMode.Tile),
+                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8, NinePatchMode.Stretch)
             };
 
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem = new UiSystem(this, uiStyle);
 
+            var gameStateMachine = new StateMachine<GameState, GameTrigger>(GameState.NotLoggedIn);
+            
             var authService = new AuthService(_options.AuthServer);
 
             var loginViewModel = new LoginViewModel(authService)
@@ -105,7 +109,7 @@ namespace Slate.Client
 	        if (connectionResult.WasSuccessful)
 	        {
 		        _uiSystem.Get(nameof(LoginView))
-			        .FadeOut(duration: TimeSpan.FromSeconds(5), remove: true);
+			        .FadeOut(TimeSpan.FromMilliseconds(500), remove: true);
 
                 var characterService = new CharacterService(gameConnection);
                 var characterListViewModel = new CharacterListViewModel(characterService);
@@ -179,5 +183,21 @@ namespace Slate.Client
 
             base.Draw(gameTime);
         }
+    }
+
+    public enum GameState
+    {
+        NotLoggedIn,
+        LoggingIn,
+        SelectingCharacter,
+        InGame
+    }
+
+    public enum GameTrigger
+    {
+        ReadyToLogIn,
+        Error,
+        LoggedIn,
+        RequestGameStart
     }
 }

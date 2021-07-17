@@ -8,32 +8,43 @@ namespace Slate.Client.UI.Views
 {
     public static class RootElementExtensions
     {
-        public static RootElement FadeOut(this RootElement element, TimeSpan? duration = null, Easings.Easing? easing = null, bool remove = false)
+        public static RootElement FadeOut(this RootElement rootElement, TimeSpan? duration = null, Easings.Easing? easing = null, bool remove = false, bool disable = true)
         {
-            var time = duration ?? TimeSpan.FromSeconds(1);
+            if (disable)
+            {
+                rootElement.Element.CanBeMoused = false;
+                rootElement.Element.CanBePressed = false;
+                rootElement.Element.CanBeSelected = false;
+            }
+
+            var time = duration ?? TimeSpan.FromMilliseconds(500);
             easing ??= Easings.InCubic;
 
-            var startOpacity = element.Element.DrawAlpha;
+            var startOpacity = rootElement.Element.DrawAlpha;
             var sw = Stopwatch.StartNew();
             Task.Run(async () =>
             {
                 while (sw.ElapsedMilliseconds < time.TotalMilliseconds)
                 {
-                    var progress = (float)(sw.ElapsedMilliseconds / time.TotalMilliseconds);
+                    var progress = 1 - (float)(sw.ElapsedMilliseconds / time.TotalMilliseconds);
 
                     var easedProgress = easing(progress);
                     var opacity = startOpacity * easedProgress;
 
-                    element.Element.DrawAlpha = opacity;
+                    rootElement.Element.DrawAlpha = opacity;
                     await RudeEngineGame.NextUpdate;
                 }
 
                 if (remove)
                 {
-                    element.System.Remove(element.Name);
+                    rootElement.System.Remove(rootElement.Name);
+                }
+                else
+                {
+
                 }
             });
-            return element;
+            return rootElement;
         }
     }
 }
