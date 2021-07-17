@@ -20,36 +20,38 @@ namespace Slate.Client.UI.Views
 
         private static void RebuildView(Panel panel, LoginViewModel viewModel)
         {
+            panel.ChildPadding = new Padding(32, 32);
             panel.AddChildren(
                 new Group(Anchor.AutoLeft, new Vector2(400))
                     {
-                        ChildPadding = new Padding(16, 16, 12, 0)
-                    }
+                    ChildPadding = new Padding(0, 64, 0, 8)
+                }
                     .AddChildren(
                         new Paragraph(Anchor.TopLeft, 0.3f, "Username: "),
-                        new TextField(Anchor.AutoInlineIgnoreOverflow, new Vector2(0.7f, 48))
+                        new TextField(Anchor.AutoInlineIgnoreOverflow, new Vector2(0.7f, 40))
                             {
                                 TextOffsetX = 12,
-                                Padding = new Padding(0, 0, 2, 0)
                             }
                             .Bind(viewModel).Username().ToText()
                     ),
                 new Group(Anchor.AutoLeft, new Vector2(400))
                     {
-                        ChildPadding = new Padding(16, 12)
-                    }
+                    ChildPadding = new Padding(0, 64, 0, 8)
+                }
                     .AddChildren(
                         new Paragraph(Anchor.TopLeft, 0.3f, "Password: "),
-                        new TextField(Anchor.AutoInlineIgnoreOverflow, new Vector2(0.7f, 48))
+                        new TextField(Anchor.AutoInlineIgnoreOverflow, new Vector2(0.7f, 40))
                             {
                                 TextOffsetX = 12,
-                                Padding = new Padding(0, 0, 8, 0),
                                 MaskingCharacter = '*'
                             }
                             .Bind(viewModel).Password().ToText()
                     )
                 ,
                 new Button(Anchor.AutoCenter, new Vector2(200, 48), "Log in")
+                    {
+                        Padding = new Padding(0, 0, 0, 0)
+                    }
                     .Bind(viewModel).LoginCommand().ToPressedEvent()
             );
         }

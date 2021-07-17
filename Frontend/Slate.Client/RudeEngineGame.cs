@@ -77,8 +77,10 @@ namespace Slate.Client
             {
                 Font = new GenericSpriteFont(font),
                 TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8, NinePatchMode.Stretch),
-                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20, NinePatchMode.Tile),
-                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8, NinePatchMode.Stretch)
+                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20, NinePatchMode.Stretch),
+                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8, NinePatchMode.Stretch),
+                RadioTexture = new NinePatch(new TextureRegion(uiTexture, 128, 172, 32, 32), 0),
+                RadioCheckmark = new TextureRegion(uiTexture, 192, 172, 32, 32)
             };
 
             uiStyle.Font = new GenericSpriteFont(font);
