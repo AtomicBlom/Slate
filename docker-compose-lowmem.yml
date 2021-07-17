@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+    slate-message-bus:
+        image: rabbitmq:3.8-management
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+    
+    slate-auth-db:
+        image: mongo:5.0-rc
+        ports:
+            - "27017:27017"
+
+    slate-character-db:
+        image: mongo:5.0-rc
+        ports:
+            - "27018:27017"
