@@ -33,15 +33,14 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             if (!(context.SyntaxContextReceiver is BindingSyntaxReceiver receiver))
                 return;
 
-            // group the fields by class, and generate the source
-            foreach (var group in receiver.Properties.GroupBy<IPropertySymbol, INamedTypeSymbol>(f => f.ContainingType, SymbolEqualityComparer.Default))
+            foreach (var receiverClass in receiver.Classes)
             {
                 var generator = new BindingClassGenerator(context);
-                var classSource = generator.GenerateClassSource(group.Key, group.ToList());
+                var classSource = generator.GenerateClassSource(receiverClass);
                 if (classSource is null) continue;
 
                 var sourceText = SourceText.From(classSource.NormalizeWhitespace().ToFullString(), Encoding.UTF8);
-                context.AddSource($"{group.Key.Name}_BindingExtensions.g.cs", sourceText);
+                context.AddSource($"{receiverClass}_BindingExtensions.g.cs", sourceText);
             }
         }
     }

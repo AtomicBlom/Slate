@@ -1,49 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BinaryVibrance.MLEM.Binding.Generator
 {
     public class BindingSyntaxReceiver : ISyntaxContextReceiver
     {
-        public List<IPropertySymbol> Properties { get; } = new();
-
+        public HashSet<INamedTypeSymbol> Classes { get; } = new(SymbolEqualityComparer.Default);
+        
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            var attributeName = typeof(BindAttribute).FullName;
-
-            if (context.Node is ClassDeclarationSyntax { AttributeLists: { Count: > 0 } } classDeclaration)
+            if (context.Node is InvocationExpressionSyntax ies &&
+                ies.Expression is MemberAccessExpressionSyntax maes &&
+                maes.Name.ToFullString() == "Bind" &&
+                context.SemanticModel.GetSymbolInfo(ies.Expression).Symbol is IMethodSymbol bindMethodSymbol &&
+                bindMethodSymbol.ContainingType.Name == "ElementBindingExtensions")
             {
-                var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration)
-                    ?? throw new Exception("Could not find the class being visited.");
-                var matchesAttribute = classSymbol
-                    .GetAttributes()
-                    .Any(ad => ad.AttributeClass?.ToDisplayString() == attributeName);
-
-                if (matchesAttribute)
+                var namedTypeSymbol = (INamedTypeSymbol)bindMethodSymbol.TypeArguments[1];
+                if (!Classes.Contains(namedTypeSymbol))
                 {
-                    foreach (var member in classDeclaration.Members)
-                    {
-                        if (context.SemanticModel.GetDeclaredSymbol(member) is not IPropertySymbol propertySymbol)
-                            continue;
-                        Properties.Add(propertySymbol);
-                    }
-                }
-            }
-
-            if (context.Node is PropertyDeclarationSyntax { AttributeLists: { Count: > 0 } } propertyDeclaration)
-            {
-                var propertySymbol = context.SemanticModel.GetDeclaredSymbol(propertyDeclaration) as IPropertySymbol
-                                     ?? throw new Exception("Could not find the property being visited.");
-
-                var matchesAttribute = propertySymbol
-                    .GetAttributes()
-                    .Any(ad => ad.AttributeClass?.ToDisplayString() == attributeName);
-                if (matchesAttribute)
-                {
-                    Properties.Add(propertySymbol);
+                    Classes.Add(namedTypeSymbol);
                 }
             }
         }

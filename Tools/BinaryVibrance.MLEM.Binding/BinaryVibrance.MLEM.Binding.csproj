@@ -14,7 +14,6 @@
 	<ItemGroup>
 		<Compile Remove="PropertyBinding.cs" />
 		<Compile Remove="ViewModelBinding.cs" />
-		<EmbeddedResource Include="BindAttribute.cs" />
 		<EmbeddedResource Include="PropertyBinding.cs" />
 		<EmbeddedResource Include="ViewModelBinding.cs" />
 	</ItemGroup>

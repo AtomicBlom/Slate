@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BinaryVibrance.INPCSourceGenerator;
-using Slate.Client.Networking;
 using Slate.Client.UI.MVVM;
+using Slate.Client.ViewModel.Services;
 
-namespace Slate.Client.UI.ViewModels
+namespace Slate.Client.ViewModel.MainMenu
 {
-
-	public record GameCharacter(Guid Id, string Name);
-
+    
 	public partial class CharacterListViewModel
     {
-        private readonly GameConnection _gameConnection;
+        private readonly ICharacterService _characterService;
 
         [ImplementNotifyPropertyChanged] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
         [ImplementNotifyPropertyChanged] private RelayCommand _playAsCharacterCommand;
@@ -35,20 +31,19 @@ namespace Slate.Client.UI.ViewModels
         public bool CanEnterGame => SelectedCharacter?.Id is not null;
 
 
-        public CharacterListViewModel(GameConnection gameConnection)
+        public CharacterListViewModel(ICharacterService characterService)
         {
-            _gameConnection = gameConnection;
+            _characterService = characterService;
 
             PlayAsCharacterCommand = new RelayCommand(Execute, CanExecute);
         }
 
-        void Execute() => _gameConnection.PlayAsCharacter(SelectedCharacter.Id);
+        void Execute() => _characterService.PlayAsCharacter(SelectedCharacter.Id);
         bool CanExecute() => CanEnterGame;
 
         public async Task OnNavigatedTo()
         {
-            var characters = await _gameConnection.GetCharacters();
-            Characters = characters.Select(c => new GameCharacter(c.Id.ToGuid(), c.Name)).ToList();
+            Characters = await _characterService.GetCharacters();
         }
     }
 }

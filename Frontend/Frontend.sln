@@ -46,7 +46,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MLEM", "..\Dependencies\MLE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MLEM", "MLEM", "{63B0CFC3-D6D3-4F4B-B73C-740A4BE22DB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryVibrance.MLEM.Binding", "..\Tools\BinaryVibrance.MLEM.Binding\BinaryVibrance.MLEM.Binding.csproj", "{B1EEA619-3361-4D8A-A1C9-C950FD2890AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryVibrance.MLEM.Binding", "..\Tools\BinaryVibrance.MLEM.Binding\BinaryVibrance.MLEM.Binding.csproj", "{B1EEA619-3361-4D8A-A1C9-C950FD2890AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slate.Client.ViewModel", "Slate.Client.ViewModel\Slate.Client.ViewModel.csproj", "{5E6E7046-78E7-4A43-BE1F-0734F696C11E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slate.Client.MVVM", "Slate.Client.MVVM\Slate.Client.MVVM.csproj", "{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -316,6 +320,38 @@ Global
 		{B1EEA619-3361-4D8A-A1C9-C950FD2890AC}.Release|x64.Build.0 = Release|Any CPU
 		{B1EEA619-3361-4D8A-A1C9-C950FD2890AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{B1EEA619-3361-4D8A-A1C9-C950FD2890AC}.Release|x86.Build.0 = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|arm64.Build.0 = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|x64.Build.0 = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Debug|x86.Build.0 = Debug|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|arm64.ActiveCfg = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|arm64.Build.0 = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|x64.ActiveCfg = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|x64.Build.0 = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E6E7046-78E7-4A43-BE1F-0734F696C11E}.Release|x86.Build.0 = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|arm64.Build.0 = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|x64.Build.0 = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|arm64.ActiveCfg = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|arm64.Build.0 = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|x64.ActiveCfg = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|x64.Build.0 = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

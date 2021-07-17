@@ -2,36 +2,32 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
 using IdentityModel.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MLEM.Font;
-using MLEM.Misc;
 using MLEM.Textures;
 using MLEM.Ui;
-using MLEM.Ui.Elements;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Slate.Client.Networking;
-using Slate.Client.UI.ViewModels;
+using Slate.Client.Services;
 using Slate.Client.UI.Views;
+using CharacterListViewModel = Slate.Client.ViewModel.MainMenu.CharacterListViewModel;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
+using LoginViewModel = Slate.Client.ViewModel.MainMenu.LoginViewModel;
 
 namespace Slate.Client
 {
     public class RudeEngineGame : Microsoft.Xna.Framework.Game
     {
-	    public static Task<GameTime> NextUpdate;
 	    private TaskCompletionSource<GameTime> ThisUpdateSource = new();
-        
+        public static Task<GameTime> NextUpdate;
+
         private readonly Options _options;
         
-        private int _nativeScreenWidth;
-        private int _nativeScreenHeight;
-
         private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
         private DeviceModelCollection _testModel;
         private readonly ModelInstance[] _test = new ModelInstance[5 * 5];
@@ -60,9 +56,6 @@ namespace Slate.Client
 
         private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
         {
-            _nativeScreenWidth = _graphics.PreferredBackBufferWidth;
-            _nativeScreenHeight = _graphics.PreferredBackBufferHeight;
-
             _graphics.PreferMultiSampling = true;
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             _graphics.SynchronizeWithVerticalRetrace = true;
@@ -88,13 +81,15 @@ namespace Slate.Client
 
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem = new UiSystem(this, uiStyle);
-            
-            var loginViewModel = new LoginViewModel(_options.AuthServer)
+
+            var authService = new AuthService(_options.AuthServer);
+
+            var loginViewModel = new LoginViewModel(authService)
             {
                 Username = "atomicblom",
                 Password = "password"
             };
-            loginViewModel.LoggedIn += LoginViewModelOnLoggedIn;
+            authService.LoggedIn += LoginViewModelOnLoggedIn;
             Task.Run(loginViewModel.OnNavigatedTo);
 
             _uiSystem.Add(nameof(LoginView), LoginView.CreateView(loginViewModel));

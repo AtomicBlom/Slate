@@ -2,7 +2,8 @@
 using MLEM.Misc;
 using MLEM.Ui;
 using MLEM.Ui.Elements;
-using Slate.Client.UI.ViewModels;
+using Slate.Client.ViewModel.MainMenu;
+using BinaryVibrance.MLEM.Binding;
 
 namespace Slate.Client.UI.Views
 {

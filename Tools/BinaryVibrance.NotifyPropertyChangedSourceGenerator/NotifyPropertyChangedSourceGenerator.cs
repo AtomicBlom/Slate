@@ -103,7 +103,7 @@ namespace {typeof(NotifyPropertyChangedSourceGenerator).Namespace}
                 var classSource = ProcessClass(group.Key, group.ToList(), attributeSymbol, notifySymbol, context);
                 if (classSource is null) continue;
 
-                context.AddSource($"{group.Key.Name}_autoNotify.cs", SourceText.From(classSource, Encoding.UTF8));
+                context.AddSource($"{group.Key.Name}_INPC.g.cs", SourceText.From(classSource, Encoding.UTF8));
             }
         }
 

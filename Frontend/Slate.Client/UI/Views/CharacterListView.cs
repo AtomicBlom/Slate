@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using MLEM.Textures;
 using MLEM.Ui;
 using MLEM.Ui.Elements;
 using MLEM.Ui.Style;
-using Slate.Client.UI.ViewModels;
+using BinaryVibrance.MLEM.Binding;
+using Slate.Client.ViewModel.MainMenu;
 
 namespace Slate.Client.UI.Views
 {
@@ -35,14 +35,14 @@ namespace Slate.Client.UI.Views
 						}
 					}.AddChildren(
 						new Paragraph(Anchor.AutoLeft, 1.0f, string.Empty)
-							.BindParagraph(item, character => character.Name),
+                            .Bind(item).Name().ToParagraph(),
 						new Paragraph(Anchor.AutoLeft, 1.0f, string.Empty)
-							.BindParagraph(item, character => character.Id, new ToStringConverter())
+                            .Bind(item).Id(new ToStringConverter()).ToParagraph()
 					);
 				}),
 				new Button(Anchor.BottomRight, new Vector2(200, 48), "Select Character")
-					.BindPressed(viewModel.PlayAsCharacterCommand)
-			);
+                    .Bind(viewModel).PlayAsCharacterCommand().ToPressedEvent()
+            );
 		}
 	}
 }

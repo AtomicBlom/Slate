@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Windows.Input;
 using MLEM.Ui.Elements;
-using BinaryVibrance.MLEM.Binding;
 
-namespace Slate.Client.UI.Views
+namespace BinaryVibrance.MLEM.Binding
 {
-    public static class ElementBindingExtensions
+    public static partial class ElementBindingExtensions
     {
-        public static ViewModelBinding<TElement, TViewModel> Bind<TElement, TViewModel>(this TElement element,
-            TViewModel viewModel)
-            where TElement : Element
-        {
-            return new ViewModelBinding<TElement, TViewModel>(element, viewModel);
-        }
-
         public static TElement ToText<TElement>(this PropertyBinding<string, TElement> propertyBinding)
             where TElement : TextField
         {
