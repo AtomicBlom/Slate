@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -22,7 +24,15 @@ namespace BinaryVibrance.MLEM.Binding.Generator
         {
             var properties = classSymbol.GetMembers().OfType<IPropertySymbol>();
 
-            var members = properties.Select(p => GeneratePropertyExtensionMethod(classSymbol, p)).ToArray();
+            var parentClassName = $"{classSymbol.Name}BindingExtensions";
+            var members = properties
+                .Where(p => !classSymbol.IsRecord || p.Name != "EqualityContract")
+                .SelectMany(p => new[]
+                {
+                    GeneratePropertyExtensionMethod(classSymbol, p),
+                    GeneratePropertyIdentityExtensionMethod(parentClassName, classSymbol, p)
+                } )
+                .ToArray();
             
             var file = CompilationUnit()
                 .WithUsings(
@@ -39,7 +49,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                         NamespaceDeclaration(IdentifierName(classSymbol.ContainingNamespace.ToDisplayString()))
                             .WithMembers(
                                 SingletonList<MemberDeclarationSyntax>(
-                                    ClassDeclaration($"{classSymbol.Name}BindingExtensions")
+                                    ClassDeclaration(parentClassName)
                                         .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
                                         .WithMembers(List(members))
                                 )
@@ -49,16 +59,20 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             return file;
         }
 
-        private MemberDeclarationSyntax GeneratePropertyExtensionMethod(INamedTypeSymbol classSymbol, IPropertySymbol propertySymbol)
+        private MemberDeclarationSyntax GeneratePropertyIdentityExtensionMethod(
+            string parentName,
+            INamedTypeSymbol classSymbol,
+            IPropertySymbol propertySymbol)
         {
             var propertyBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.PropertyBinding`2")
                                   ?? throw new Exception("Could not locate PropertyBinding<,> in workspace, it should have been added by adding this analyzer.");
-            var viewModelBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.ViewModelBinding`2") 
+            var viewModelBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.ViewModelBinding`2")
                                    ?? throw new Exception("Could not locate ViewModelBinding<,> in workspace, it should have been added by adding this analyzer.");
             var element = _context.Compilation.GetTypeByMetadataName("MLEM.Ui.Elements.Element")
                 ?? throw new Exception("Could not locate MLEM.Ui.Elements.Element, is Mlem.Ui referenced?");
-            var tElementGenericTypeIdentifier = IdentifierName("TElement");
             
+            var tElementGenericTypeIdentifier = IdentifierName("TElement");
+
             //Create the method definition
             var viewModelBindingParameter = "viewModelBinding";
             var method = MethodDeclaration(
@@ -67,7 +81,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                         MakeTypeArgumentList(
                             IdentifierName(propertySymbol.Type.ToDisplayString()),
                             tElementGenericTypeIdentifier
-                            )), 
+                            )),
                 Identifier(propertySymbol.Name)
                 )
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
@@ -86,6 +100,110 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                                 IdentifierName(classSymbol.Name)
                                             ))
                                     )
+                            )
+                        )
+                    .WithConstraintClauses(
+                        MakeTypeConstraintParameterList(
+                            TypeParameterConstraintClause(tElementGenericTypeIdentifier)
+                                .WithConstraints(
+                                    MakeTypeParameterConstraintList(
+                                        TypeConstraint(IdentifierName(element.Name))
+                                        )
+                                    )
+                            ))
+                    .WithBody(
+                        Block(
+                            ReturnStatement(
+                                InvocationExpression(
+                                        MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName(parentName),
+                                            IdentifierName(propertySymbol.Name)))
+                                    .WithArgumentList(
+                                        MakeArgumentList(
+                                            Argument(IdentifierName("viewModelBinding")),
+                                            Argument(ObjectCreationExpression(
+                                                    GenericName(Identifier("IdentityConverter"))
+                                                        .WithTypeArgumentList(
+                                                            MakeTypeArgumentList(
+                                                                IdentifierName(propertySymbol.Type.ToDisplayString())
+                                                            )
+                                                        ))
+                                                .WithArgumentList(
+                                                    ArgumentList())
+                                            ))
+                                        ))
+                                        
+                            )
+                        )
+                
+                ;
+
+
+
+            return method;
+        }
+
+        private MemberDeclarationSyntax GeneratePropertyExtensionMethod(INamedTypeSymbol classSymbol, IPropertySymbol propertySymbol)
+        {
+            var propertyBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.PropertyBinding`2")
+                                  ?? throw new Exception("Could not locate PropertyBinding<,> in workspace, it should have been added by adding this analyzer.");
+            var viewModelBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.ViewModelBinding`2") 
+                                   ?? throw new Exception("Could not locate ViewModelBinding<,> in workspace, it should have been added by adding this analyzer.");
+            var converterInterfaceBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.IConverter`2")
+                                   ?? throw new Exception("Could not locate IConverter<,> in workspace, it should have been added by adding this analyzer.");
+            var element = _context.Compilation.GetTypeByMetadataName("MLEM.Ui.Elements.Element")
+                ?? throw new Exception("Could not locate MLEM.Ui.Elements.Element, is Mlem.Ui referenced?");
+
+            var propertyChangedInterface = _context.Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)
+                          ?? throw new Exception("Could not locate INotifyPropertyChanged, wut?");
+
+            var tElementGenericTypeIdentifier = IdentifierName("TElement");
+
+            var canNotify = classSymbol.AllInterfaces.Any(t => t.Equals(propertyChangedInterface, SymbolEqualityComparer.Default));
+
+            //Create the method definition
+            var viewModelBindingParameter = "viewModelBinding";
+            var converterParameter = "converter";
+
+            var method = MethodDeclaration(
+                GenericName(propertyBinding.Name)
+                    .WithTypeArgumentList(
+                        MakeTypeArgumentList(
+                            IdentifierName("TOut"),
+                            tElementGenericTypeIdentifier
+                            )), 
+                Identifier(propertySymbol.Name)
+                )
+                    .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
+                    .WithTypeParameterList(
+                        MakeTypeParameterList(
+                            TypeParameter(Identifier("TElement")),
+                            TypeParameter(Identifier("TOut"))
+                            )
+                        )
+                    .WithParameterList(
+                        MakeParameterList(
+                            Parameter(Identifier(viewModelBindingParameter))
+                                .WithModifiers(TokenList(Token(SyntaxKind.ThisKeyword)))
+                                .WithType(
+                                    GenericName(viewModelBinding.Name)
+                                        .WithTypeArgumentList(
+                                            MakeTypeArgumentList(
+                                                tElementGenericTypeIdentifier,
+                                                IdentifierName(classSymbol.Name)
+                                            ))
+                                    ),
+                                Parameter(Identifier(converterParameter))
+                                    .WithType(
+                                        GenericName(converterInterfaceBinding.Name)
+                                            .WithTypeArgumentList(
+                                                MakeTypeArgumentList(
+                                                    IdentifierName(propertySymbol.Type.ToDisplayString()),
+                                                    IdentifierName("TOut")
+                                                    )
+                                                )
+                                        )
                             )
                         )
                     .WithConstraintClauses(
@@ -130,55 +248,59 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                 body = body.AddStatements(
                     LocalDeclarationStatement(
                         VariableDeclaration(
-                                GenericName(
-                                        Identifier("Func"))
+                                GenericName(Identifier("Func"))
                                     .WithTypeArgumentList(
-                                        TypeArgumentList(
-                                            SingletonSeparatedList<TypeSyntax>(
-                                                IdentifierName(propertySymbol.Type.ToDisplayString())
+                                        MakeTypeArgumentList(
+                                            IdentifierName("TOut")
                                             )
-                                        )))
+                                        ))
                             .WithVariables(
                                 SingletonSeparatedList(
-                                    VariableDeclarator(
-                                            Identifier("getViewModel"))
+                                    VariableDeclarator(Identifier("getViewModel"))
                                         .WithInitializer(
                                             EqualsValueClause(
                                                 ParenthesizedLambdaExpression()
                                                     .WithExpressionBody(
-                                                        MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName("viewModel"),
-                                                            IdentifierName(propertySymbol.Name))))))))
+                                                        InvocationExpression(
+                                                                MemberAccessExpression(
+                                                                    SyntaxKind.SimpleMemberAccessExpression,
+                                                                    IdentifierName("converter"),
+                                                                    IdentifierName("ConvertTo")))
+                                                            .WithArgumentList(
+                                                                MakeArgumentList(
+                                                                    Argument(
+                                                                        MemberAccessExpression(
+                                                                            SyntaxKind.SimpleMemberAccessExpression,
+                                                                            IdentifierName("viewModel"),
+                                                                            IdentifierName(propertySymbol.Name)))))
+                                                                    )
+                                                                )))))
                 );
                 propertyBindingConstructorArguments.Add(Argument(IdentifierName("getViewModel")));
             }
 
-            if (!propertySymbol.IsReadOnly)
+            if (!propertySymbol.IsReadOnly && propertySymbol.SetMethod is not null && !propertySymbol.SetMethod.IsInitOnly)
             {
                 //Create setter method
                 body = body.AddStatements(
                     LocalDeclarationStatement(
                         VariableDeclaration(
-                                GenericName(
-                                        Identifier("Action"))
+                                GenericName(Identifier("Action"))
                                     .WithTypeArgumentList(
-                                        TypeArgumentList(
-                                            SingletonSeparatedList<TypeSyntax>(
-                                                IdentifierName(propertySymbol.Type.ToDisplayString())
-                                            ))))
+                                        MakeTypeArgumentList(
+                                            IdentifierName("TOut")
+                                            )
+                                        ))
                             .WithVariables(
                                 SingletonSeparatedList(
-                                    VariableDeclarator(
-                                            Identifier("setViewModel"))
+                                    VariableDeclarator(Identifier("setViewModel"))
                                         .WithInitializer(
                                             EqualsValueClause(
                                                 ParenthesizedLambdaExpression()
                                                     .WithParameterList(
                                                         ParameterList(
                                                             SingletonSeparatedList(
-                                                                Parameter(
-                                                                    Identifier("value")))))
+                                                                Parameter(Identifier("value")))))
                                                     .WithExpressionBody(
                                                         AssignmentExpression(
                                                             SyntaxKind.SimpleAssignmentExpression,
@@ -186,7 +308,16 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                                                 SyntaxKind.SimpleMemberAccessExpression,
                                                                 IdentifierName("viewModel"),
                                                                 IdentifierName(propertySymbol.Name)),
-                                                            IdentifierName("value"))))))))
+                                                            InvocationExpression(
+                                                                    MemberAccessExpression(
+                                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                                        IdentifierName("converter"),
+                                                                        IdentifierName("ConvertFrom")))
+                                                                .WithArgumentList(
+                                                                    MakeArgumentList(
+                                                                        Argument(IdentifierName("value")))
+                                                                    )
+                                                            )))))))
                 );
                 propertyBindingConstructorArguments.Add(Argument(IdentifierName("setViewModel")));
             }
@@ -204,7 +335,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                                     GenericName(Identifier("PropertyBinding"))
                                                         .WithTypeArgumentList(
                                                             MakeTypeArgumentList(
-                                                                IdentifierName(propertySymbol.Type.ToDisplayString()),
+                                                                IdentifierName("TOut"),
                                                                 IdentifierName("TElement")
                                                                 )
                                                             ))
@@ -218,63 +349,84 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             
             //Define Local Method - OnDisposed
             var onDisposedMethodBody = Block();
-            (body, onDisposedMethodBody) = AddDisposedEvent(body, onDisposedMethodBody, IdentifierName("element"), IdentifierName("OnDisposed"), IdentifierName("OnDisposed"));
-            (body, onDisposedMethodBody) = AddDisposedEvent(body, onDisposedMethodBody, IdentifierName("viewModel"), IdentifierName("PropertyChanged"), IdentifierName("ViewModelOnPropertyChanged"));
+            
+            if (canNotify)
+            {
+                (body, onDisposedMethodBody) = AddDisposedEvent(
+                    body, onDisposedMethodBody, 
+                    IdentifierName("viewModel"), 
+                    IdentifierName("PropertyChanged"), 
+                    IdentifierName("ViewModelOnPropertyChanged"));
+            }
+
+
+            var hasThingsToDispose = onDisposedMethodBody.Statements.Count > 0;
+            if (hasThingsToDispose)
+            {
+                (body, onDisposedMethodBody) = AddDisposedEvent(
+                    body, onDisposedMethodBody,
+                    IdentifierName("element"),
+                    IdentifierName("OnDisposed"),
+                    IdentifierName("OnDisposed"));
+
+                body = body.AddStatements(LocalFunctionStatement(
+                        PredefinedType(
+                            Token(SyntaxKind.VoidKeyword)),
+                        Identifier("OnDisposed"))
+                    .WithParameterList(
+                        ParameterList(
+                            SingletonSeparatedList<ParameterSyntax>(
+                                Parameter(
+                                        Identifier("_"))
+                                    .WithType(
+                                        IdentifierName("Element")))))
+                    .WithBody(onDisposedMethodBody));
+            }
+
+            if (canNotify)
+            {
+                body = body.AddStatements(LocalFunctionStatement(
+                        PredefinedType(
+                            Token(SyntaxKind.VoidKeyword)),
+                        Identifier("ViewModelOnPropertyChanged"))
+                    .WithParameterList(
+                        MakeParameterList(
+                            Parameter(Identifier("sender"))
+                                .WithType(NullableType(PredefinedType(Token(SyntaxKind.ObjectKeyword)))),
+                            Parameter(Identifier("e"))
+                                .WithType(IdentifierName("PropertyChangedEventArgs"))
+                        ))
+                    .WithBody(
+                        Block(
+                            IfStatement(
+                                BinaryExpression(
+                                    SyntaxKind.NotEqualsExpression,
+                                    MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        IdentifierName("e"),
+                                        IdentifierName("PropertyName")),
+                                    InvocationExpression(IdentifierName("nameof"))
+                                        .WithArgumentList(
+                                            ArgumentList(
+                                                SingletonSeparatedList(
+                                                    Argument(
+                                                        MemberAccessExpression(
+                                                            SyntaxKind.SimpleMemberAccessExpression,
+                                                            IdentifierName(classSymbol.Name),
+                                                            IdentifierName(propertySymbol.Name))))))),
+                                ReturnStatement()),
+                            ExpressionStatement(
+                                InvocationExpression(
+                                    MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        IdentifierName("propertyBinding"),
+                                        IdentifierName("NotifyViewModelPropertyChanged"))))))
+                );
+            }
 
             body = body.AddStatements(
                 ReturnStatement(
                     IdentifierName("propertyBinding")));
-
-            body = body.AddStatements(LocalFunctionStatement(
-                    PredefinedType(
-                        Token(SyntaxKind.VoidKeyword)),
-                    Identifier("OnDisposed"))
-                .WithParameterList(
-                    ParameterList(
-                        SingletonSeparatedList<ParameterSyntax>(
-                            Parameter(
-                                    Identifier("_"))
-                                .WithType(
-                                    IdentifierName("Element")))))
-                .WithBody(onDisposedMethodBody));
-
-            body = body.AddStatements(LocalFunctionStatement(
-                    PredefinedType(
-                        Token(SyntaxKind.VoidKeyword)),
-                    Identifier("ViewModelOnPropertyChanged"))
-                .WithParameterList(
-                    MakeParameterList(
-                        Parameter(Identifier("sender"))
-                            .WithType(NullableType(PredefinedType(Token(SyntaxKind.ObjectKeyword)))),
-                        Parameter(Identifier("e"))
-                            .WithType(IdentifierName("PropertyChangedEventArgs"))
-                    ))
-                .WithBody(
-                    Block(
-                        IfStatement(
-                            BinaryExpression(
-                                SyntaxKind.NotEqualsExpression,
-                                MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("e"),
-                                    IdentifierName("PropertyName")),
-                                InvocationExpression(IdentifierName("nameof"))
-                                    .WithArgumentList(
-                                        ArgumentList(
-                                            SingletonSeparatedList(
-                                                Argument(
-                                                    MemberAccessExpression(
-                                                        SyntaxKind.SimpleMemberAccessExpression,
-                                                        IdentifierName(classSymbol.Name),
-                                                        IdentifierName(propertySymbol.Name))))))),
-                            ReturnStatement()),
-                        ExpressionStatement(
-                            InvocationExpression(
-                                MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("propertyBinding"),
-                                    IdentifierName("NotifyViewModelPropertyChanged"))))))
-            );
 
             return method
                 .WithBody(body);

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
 using Slate.Client.UI.MVVM;
 using Slate.Client.ViewModel.Services;
@@ -11,8 +12,8 @@ namespace Slate.Client.ViewModel.MainMenu
     {
         private readonly ICharacterService _characterService;
 
-        [ImplementNotifyPropertyChanged] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
-        [ImplementNotifyPropertyChanged] private RelayCommand _playAsCharacterCommand;
+        [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
+        [ImplementNotifyPropertyChanged(ExposedType = typeof(ICommand))] private RelayCommand _playAsCharacterCommand;
 
         private GameCharacter? _selectedCharacter;
         public GameCharacter? SelectedCharacter
@@ -35,7 +36,7 @@ namespace Slate.Client.ViewModel.MainMenu
         {
             _characterService = characterService;
 
-            PlayAsCharacterCommand = new RelayCommand(Execute, CanExecute);
+            _playAsCharacterCommand = new RelayCommand(Execute, CanExecute);
         }
 
         void Execute() => _characterService.PlayAsCharacter(SelectedCharacter.Id);

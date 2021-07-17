@@ -101,14 +101,14 @@ namespace Slate.Client
         private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
 	        var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
-	        var connectionResult = await gameConnection.Connect(e.AccessToken);
+            var connectionResult = await gameConnection.Connect(e.AccessToken);
 	        if (connectionResult.WasSuccessful)
 	        {
 		        _uiSystem.Get(nameof(LoginView))
 			        .FadeOut(duration: TimeSpan.FromSeconds(5), remove: true);
 
-                _uiSystem.Remove(nameof(LoginView));
-                var characterListViewModel = new CharacterListViewModel(gameConnection);
+                var characterService = new CharacterService(gameConnection);
+                var characterListViewModel = new CharacterListViewModel(characterService);
                 _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
                 await Task.Run(characterListViewModel.OnNavigatedTo);
             }
