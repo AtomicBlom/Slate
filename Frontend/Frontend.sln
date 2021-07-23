@@ -26,8 +26,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client", "Slate.Clien
 		{CF40B351-77F1-43BB-B24E-C9C8D44D92AC} = {CF40B351-77F1-43BB-B24E-C9C8D44D92AC}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.Networking", "Slate.Client.Networking\Slate.Client.Networking.csproj", "{E6899054-DEB7-4093-867D-9FE10F39134D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{E94A7E73-7D87-4FB6-A818-B014CD127704}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{9403E16B-0BB3-4D80-80E9-4C35CE483B80}"
@@ -48,9 +46,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MLEM", "MLEM", "{63B0CFC3-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryVibrance.MLEM.Binding", "..\Tools\BinaryVibrance.MLEM.Binding\BinaryVibrance.MLEM.Binding.csproj", "{B1EEA619-3361-4D8A-A1C9-C950FD2890AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slate.Client.ViewModel", "Slate.Client.ViewModel\Slate.Client.ViewModel.csproj", "{5E6E7046-78E7-4A43-BE1F-0734F696C11E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.ViewModel", "Slate.Client.ViewModel\Slate.Client.ViewModel.csproj", "{5E6E7046-78E7-4A43-BE1F-0734F696C11E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slate.Client.MVVM", "Slate.Client.MVVM\Slate.Client.MVVM.csproj", "{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.MVVM", "Slate.Client.MVVM\Slate.Client.MVVM.csproj", "{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,22 +206,6 @@ Global
 		{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}.Release|x64.Build.0 = Release|Any CPU
 		{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{F2BD3C80-4B84-45DD-B02C-8B4014D112E4}.Release|x86.Build.0 = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|arm64.Build.0 = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|x64.Build.0 = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Debug|x86.Build.0 = Debug|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|arm64.ActiveCfg = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|arm64.Build.0 = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|x64.ActiveCfg = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|x64.Build.0 = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|x86.ActiveCfg = Release|Any CPU
-		{E6899054-DEB7-4093-867D-9FE10F39134D}.Release|x86.Build.0 = Release|Any CPU
 		{6B84871F-F241-421C-838F-0C9FE10FD382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B84871F-F241-421C-838F-0C9FE10FD382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B84871F-F241-421C-838F-0C9FE10FD382}.Debug|arm64.ActiveCfg = Debug|Any CPU

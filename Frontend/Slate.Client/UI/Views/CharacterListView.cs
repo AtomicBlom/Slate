@@ -40,7 +40,14 @@ namespace Slate.Client.UI.Views
                                 ChildPadding = new Padding(0, 4)
                             }
                             .AddChildren(
-                                new RadioButton(Anchor.AutoLeft, new Vector2(32, 32), string.Empty, @group: "Characters"),
+                                new RadioButton(Anchor.AutoLeft, new Vector2(32, 32), string.Empty, @group: "Characters")
+                                {
+                                    OnCheckStateChange = (_, isChecked) =>
+                                    {
+                                        if (isChecked) viewModel.SelectedCharacter = item;
+                                    }
+                                }
+                                    ,
                                 new Group(Anchor.AutoInlineIgnoreOverflow, new Vector2(1.0f, 50), false)
                                     {
                                         ChildPadding = new Padding(8, 0, 0, 0)

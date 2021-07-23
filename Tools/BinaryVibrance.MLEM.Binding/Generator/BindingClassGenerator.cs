@@ -144,7 +144,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             return method;
         }
 
-        private MemberDeclarationSyntax GeneratePropertyExtensionMethod(INamedTypeSymbol classSymbol, IPropertySymbol propertySymbol)
+        private MemberDeclarationSyntax? GeneratePropertyExtensionMethod(INamedTypeSymbol classSymbol, IPropertySymbol propertySymbol)
         {
             var propertyBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.PropertyBinding`2")
                                   ?? throw new Exception("Could not locate PropertyBinding<,> in workspace, it should have been added by adding this analyzer.");
@@ -241,7 +241,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             {
                 Argument(IdentifierName("element"))
             };
-
+            
             if (!propertySymbol.IsWriteOnly)
             {
                 //Create getter method

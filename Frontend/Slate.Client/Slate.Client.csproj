@@ -49,13 +49,14 @@
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
 		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
 		<PackageReference Include="stateless" Version="5.11.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.37.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Dependencies\MLEM\MLEM.Ui\MLEM.Ui.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
+		<ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
 		<ProjectReference Include="..\..\Tools\BinaryVibrance.MLEM.Binding\BinaryVibrance.MLEM.Binding.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="..\Slate.Client.Networking\Slate.Client.Networking.csproj" />
 		<ProjectReference Include="..\Slate.Client.ViewModel\Slate.Client.ViewModel.csproj" />
 	</ItemGroup>
 </Project>

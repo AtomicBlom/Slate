@@ -9,12 +9,12 @@ using Slate.Client.ViewModel.Services;
 
 namespace Slate.Client.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : IAuthService, IProvideAuthToken
     {
         private DiscoveryDocumentResponse? _disco;
         private readonly Uri _authServer;
 
-        public event EventHandler<TokenResponse>? LoggedIn;
+        public event Action? LoggedIn;
         private readonly HttpClient _client;
 
         public AuthService(Uri authServer)
@@ -39,10 +39,10 @@ namespace Slate.Client.Services
                     Scope = "account offline_access",
 
                     UserName = username,
-                    Password = password,
+                    Password = password
                 });
 
-                LoggedIn?.Invoke(this, result);
+                LoggedIn?.Invoke();
 
                 Console.WriteLine(result.Raw);
                 return null;
@@ -52,6 +52,8 @@ namespace Slate.Client.Services
                 return $"Failed to log in...\n{e.Message}";
             }
         }
+
+        public string? AuthToken { get; }
 
         public async Task<string?> DiscoverAuthServer()
         {
@@ -78,5 +80,10 @@ namespace Slate.Client.Services
                 return e.Message;
             }
         }
+    }
+
+    public interface IProvideAuthToken
+    {
+        string? AuthToken { get; }
     }
 }

@@ -13,8 +13,9 @@ using MLEM.Ui;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
-using Slate.Client.Networking;
 using Slate.Client.Services;
+using Slate.Client.UI;
+using Slate.Client.UI.Elements;
 using Slate.Client.UI.Views;
 using Stateless;
 using CharacterListViewModel = Slate.Client.ViewModel.MainMenu.CharacterListViewModel;
@@ -25,8 +26,8 @@ namespace Slate.Client
 {
     public class RudeEngineGame : Microsoft.Xna.Framework.Game
     {
-	    private TaskCompletionSource<GameTime> ThisUpdateSource = new();
-        public static Task<GameTime> NextUpdate;
+	    private TaskCompletionSource<GameTime> _thisUpdateSource = new();
+        public static Task<GameTime> NextUpdate = null!; //static will be initialized in constructor
 
         private readonly Options _options;
         
@@ -36,6 +37,7 @@ namespace Slate.Client
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private UiSystem _uiSystem;
+        private GameLifecycle _gameLifecycle;
 
         public RudeEngineGame(Options options)
         {
@@ -48,7 +50,7 @@ namespace Slate.Client
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            NextUpdate = ThisUpdateSource.Task;
+            NextUpdate = _thisUpdateSource.Task;
         }
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
@@ -86,38 +88,22 @@ namespace Slate.Client
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem = new UiSystem(this, uiStyle);
 
-            var gameStateMachine = new StateMachine<GameState, GameTrigger>(GameState.NotLoggedIn);
-            
             var authService = new AuthService(_options.AuthServer);
+            var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort, authService);
+            _gameLifecycle = new GameLifecycle(_uiSystem, authService, gameConnection);
+            _gameLifecycle.Start();
 
-            var loginViewModel = new LoginViewModel(authService)
-            {
-                Username = "atomicblom",
-                Password = "password"
-            };
-            authService.LoggedIn += LoginViewModelOnLoggedIn;
-            Task.Run(loginViewModel.OnNavigatedTo);
 
-            _uiSystem.Add(nameof(LoginView), LoginView.CreateView(loginViewModel));
 
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
         }
 
+        
+
         private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
         {
-	        var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort);
-            var connectionResult = await gameConnection.Connect(e.AccessToken);
-	        if (connectionResult.WasSuccessful)
-	        {
-		        _uiSystem.Get(nameof(LoginView))
-			        .FadeOut(TimeSpan.FromMilliseconds(500), remove: true);
-
-                var characterService = new CharacterService(gameConnection);
-                var characterListViewModel = new CharacterListViewModel(characterService);
-                _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
-                await Task.Run(characterListViewModel.OnNavigatedTo);
-            }
+	        
         }
 
         protected override void UnloadContent()
@@ -130,9 +116,9 @@ namespace Slate.Client
 
         protected override void Update(GameTime gameTime)
         {
-	        var thisUpdate = ThisUpdateSource;
-	        ThisUpdateSource = new();
-	        NextUpdate = ThisUpdateSource.Task;
+	        var thisUpdate = _thisUpdateSource;
+	        _thisUpdateSource = new();
+	        NextUpdate = _thisUpdateSource.Task;
             thisUpdate.SetResult(gameTime);
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -185,21 +171,5 @@ namespace Slate.Client
 
             base.Draw(gameTime);
         }
-    }
-
-    public enum GameState
-    {
-        NotLoggedIn,
-        LoggingIn,
-        SelectingCharacter,
-        InGame
-    }
-
-    public enum GameTrigger
-    {
-        ReadyToLogIn,
-        Error,
-        LoggedIn,
-        RequestGameStart
     }
 }

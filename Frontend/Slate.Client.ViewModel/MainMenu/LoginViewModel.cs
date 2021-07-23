@@ -10,7 +10,8 @@ namespace Slate.Client.ViewModel.MainMenu
     public partial class LoginViewModel
     {
         private readonly IAuthService _authService;
-        
+        private readonly Action _loggedInAction;
+
         private string _username = string.Empty;
         private string _password = string.Empty;
 
@@ -19,9 +20,10 @@ namespace Slate.Client.ViewModel.MainMenu
         [ImplementNotifyPropertyChanged(ExposedType = typeof(ICommand))]
         private readonly RelayCommand _loginCommand;
 
-        public LoginViewModel(IAuthService authService)
+        public LoginViewModel(IAuthService authService, Action loggedInAction)
         {
             _authService = authService;
+            _loggedInAction = loggedInAction;
             _loginCommand = new RelayCommand(OnLogin, CanLogin);
         }
 
@@ -29,6 +31,7 @@ namespace Slate.Client.ViewModel.MainMenu
         {
             try
             {
+                _authService.LoggedIn += AuthServiceOnLoggedIn;
                 var failureMessage = await _authService.Login(Username, Password);
                 ErrorMessage = failureMessage;
             }
@@ -36,6 +39,15 @@ namespace Slate.Client.ViewModel.MainMenu
             {
                 //FIXME: Log this
             }
+            finally
+            {
+                _authService.LoggedIn -= AuthServiceOnLoggedIn;
+            }
+        }
+
+        private void AuthServiceOnLoggedIn()
+        {
+            _loggedInAction?.Invoke();
         }
 
         public string Username

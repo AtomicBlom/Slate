@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Slate.Client.Networking;
 using Slate.Client.ViewModel.Services;
 
 namespace Slate.Client.Services

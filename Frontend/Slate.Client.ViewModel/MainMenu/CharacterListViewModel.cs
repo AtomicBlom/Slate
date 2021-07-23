@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
@@ -11,6 +12,7 @@ namespace Slate.Client.ViewModel.MainMenu
 	public partial class CharacterListViewModel
     {
         private readonly ICharacterService _characterService;
+        private readonly Action _characterSelectedAction;
 
         [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
         [ImplementNotifyPropertyChanged(ExposedType = typeof(ICommand))] private RelayCommand _playAsCharacterCommand;
@@ -32,14 +34,20 @@ namespace Slate.Client.ViewModel.MainMenu
         public bool CanEnterGame => SelectedCharacter?.Id is not null;
 
 
-        public CharacterListViewModel(ICharacterService characterService)
+        public CharacterListViewModel(ICharacterService characterService, Action characterSelectedAction)
         {
             _characterService = characterService;
+            _characterSelectedAction = characterSelectedAction;
 
             _playAsCharacterCommand = new RelayCommand(Execute, CanExecute);
         }
 
-        void Execute() => _characterService.PlayAsCharacter(SelectedCharacter.Id);
+        void Execute()
+        {
+            _characterService.PlayAsCharacter(SelectedCharacter.Id);
+            _characterSelectedAction();
+        }
+
         bool CanExecute() => CanEnterGame;
 
         public async Task OnNavigatedTo()

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Slate.Client.ViewModel.Services
 {
@@ -6,5 +7,6 @@ namespace Slate.Client.ViewModel.Services
     {
         Task<string?> DiscoverAuthServer();
         Task<string?> Login(string username, string password);
+        event Action? LoggedIn;
     }
 }

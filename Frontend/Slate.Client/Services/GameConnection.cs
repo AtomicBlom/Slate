@@ -5,32 +5,35 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
+using Slate.Client.ViewModel.Services;
 using Slate.Networking.External.Protocol.ClientToServer;
 using Slate.Networking.External.Protocol.Model;
 using Slate.Networking.External.Protocol.Services;
 using Slate.Networking.Shared.Protocol;
 
-namespace Slate.Client.Networking
+namespace Slate.Client.Services
 {
     public class GameConnection
     {
         private readonly string _serverHost;
         private readonly int _serverPort;
+        private readonly IProvideAuthToken _authService;
         private GrpcChannel? _channel;
 
-        public GameConnection(string serverHost, int serverPort)
+        public GameConnection(string serverHost, int serverPort, IProvideAuthToken authService)
         {
             _serverHost = serverHost;
             _serverPort = serverPort;
+            _authService = authService;
         }
 
-        public async Task<(bool WasSuccessful, string? ErrorMessage)> Connect(string authToken)
+        public async Task<(bool WasSuccessful, string? ErrorMessage)> Connect()
         {
             _channel = GrpcChannel.ForAddress($"http://{_serverHost}:{_serverPort}", new GrpcChannelOptions()
             {
-                HttpClient = new HttpClient()
+                HttpClient = new HttpClient
                 {
-                    DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", authToken)}
+                    DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", _authService.AuthToken)}
                 }
             });
             
@@ -63,7 +66,7 @@ namespace Slate.Client.Networking
 
         public async IAsyncEnumerable<ClientToServerMessage> PublishClientMessages(Guid characterId)
         {
-            yield return new ConnectToRequest()
+            yield return new ConnectToRequest
             {
                 CharacterId = characterId.ToUuid()
             };
@@ -73,8 +76,8 @@ namespace Slate.Client.Networking
                 await Task.Delay(1000);
                 yield return new ClientRequestMove
                 {
-                    Location = new Vector3() { X = 0, Y = 0, Z = 0 },
-                    Velocity = new Vector3() { X = 0, Y = 0, Z = 0 }
+                    Location = new Vector3 { X = 0, Y = 0, Z = 0 },
+                    Velocity = new Vector3 { X = 0, Y = 0, Z = 0 }
                 };
                 Console.WriteLine($"Sent message type ClientRequestMove");
             }
