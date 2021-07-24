@@ -30,9 +30,11 @@ namespace Slate.Client.UI.Framework
             return result;
         }
 
-        protected override RectangleF ArrangeOverride(RectangleF size)
+        protected override Rectangle ArrangeOverride(Rectangle size)
         {
-            var childSize = new RectangleF(size.Location, size.Size);
+
+
+            var childSize = new Rectangle(size.Location, size.Size);
             childSize.Inflate(-(Margin.Width + Padding.Width), -(Margin.Height - Padding.Height));
             content?.Arrange(childSize);
 

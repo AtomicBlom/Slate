@@ -18,7 +18,7 @@ namespace Slate.Client.UI.Framework
             if (valueStorage is not UIPropertyValue<T> typedStorage) throw new Exception("Stored key did not have the expected type!");
             var previousValue = typedStorage.ValueIsSet ? typedStorage.Value :
                 typedStorage.DefaultIsSet ? typedStorage.DefaultValue :
-                property.GetDefaultValue();
+                default;
 
             typedStorage.Value = value;
 
@@ -48,6 +48,7 @@ namespace Slate.Client.UI.Framework
             if (!typedStorage.DefaultIsSet)
             {
                 typedStorage.DefaultValue = property.GetDefaultValue();
+                property.Notify(this, default, typedStorage.DefaultValue);
             }
 
             return typedStorage.DefaultValue;

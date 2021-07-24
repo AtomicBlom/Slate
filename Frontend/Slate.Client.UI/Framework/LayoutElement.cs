@@ -1,19 +1,38 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Microsoft.Xna.Framework;
 
 namespace Slate.Client.UI.Framework
 {
-    public record Rectangle(float Left, float Top, float Width, float Height)
+    public record Rectangle(float Left = 0, float Top = 0, float Width = 0, float Height = 0)
     {
         public Rectangle(Vector2 location, Vector2 size) : this(location.X, location.Y, size.X, size.Y) { }
 
         public Vector2 Location => new(Left, Top);
         public Vector2 Size => new(Width, Height);
 
+        public float Right => Left + Width;
+        public float Bottom => Top + Height;
+
+        [Pure]
         public Rectangle Inflate(float x, float y)
         {
-            return new Rectangle(Left - x, Top - y, Width - x - x, Height - y - y);
+            return new Rectangle(Left - x, Top - y, Width + x + x, Height + y + y);
         }
+
+        [Pure]
+        public Rectangle Inflate(Thickness thickness)
+        {
+            return new Rectangle(Left - thickness.Left, Top - thickness.Top, Width + thickness.Width, Height + thickness.Height);
+        }
+
+        [Pure]
+        public Rectangle Deflate(Thickness thickness)
+        {
+            return new Rectangle(Left + thickness.Left, Top + thickness.Top, Width - thickness.Width, Height - thickness.Height);
+        }
+
+        public static Rectangle Zero { get; } = new Rectangle(0, 0, 0, 0);
     }
 
     public abstract class LayoutElement : UIElement
@@ -134,7 +153,16 @@ namespace Slate.Client.UI.Framework
         protected virtual void InvalidateMeasuringChildren() { }
 
         public Vector2 DesiredSize { get; private set; } = Vector2.Zero;
-    
+
+
+        public UIElement? Parent { get; private set; }
+
+        public void SetParent(UIElement? element)
+        {
+            Parent = element;
+            InvalidateMeasure();
+        }
+
         /// <summary>
         /// Calculates the minimum amount of space an element wishes to take up
         /// </summary>
@@ -170,8 +198,8 @@ namespace Slate.Client.UI.Framework
 
         protected virtual Vector2 MeasureOverride() => new Vector2(float.NaN, float.NaN);
 
-        public Vector2 RenderOffset { get; private set; } = Vector2.Zero;
-        public Vector2 ActualSize { get; private set; } = Vector2.Zero;
+        public Vector2 VisualOffset { get; protected set; } = Vector2.Zero;
+        public Vector2 ActualSize { get; protected set; } = Vector2.Zero;
 
         public void Arrange(Rectangle size)
         {
@@ -181,20 +209,47 @@ namespace Slate.Client.UI.Framework
             var overridenArrangement = ArrangeOverride(size);
             if (!float.IsNaN(overridenArrangement.Width) && !float.IsNaN(overridenArrangement.Height))
             {
-                RenderOffset = overridenArrangement.Location;
+                VisualOffset = overridenArrangement.Location;
                 ActualSize = overridenArrangement.Size;
+                return;
             }
+
+            var horizontalAlignment = HorizontalAlignment;
+            var verticalAlignment = VerticalAlignment;
             
-            RenderOffset = new Vector2(
-                size.Left + Margin.Left,
-                size.Top + Margin.Top);
-            ActualSize = new Vector2(
-                HorizontalAlignment == HorizontalAlignment.Stretch ? size.Width - Margin.Width : DesiredSize.X,
-                VerticalAlignment == VerticalAlignment.Stretch ? size.Height - Margin.Height : DesiredSize.Y
-            );
+            var width = horizontalAlignment switch
+            {
+                HorizontalAlignment.Stretch => size.Width,
+                _ => DesiredSize.X
+            } - Margin.Width;
+            var height = verticalAlignment switch
+            {
+                VerticalAlignment.Stretch => size.Height,
+                _ => DesiredSize.Y
+            } - Margin.Height;
+
+            var elementWidth = (DesiredSize.X - Margin.Width);
+            var elementHeight = (DesiredSize.Y - Margin.Height);
+            var offsetX = horizontalAlignment switch
+            {
+                HorizontalAlignment.Right => size.Width - elementWidth - Margin.Right,
+                HorizontalAlignment.Center => size.Width / 2 - (elementWidth + Margin.Left) / 2,
+                _ => Margin.Left
+            };
+
+            var offsetY = verticalAlignment switch
+            {
+                VerticalAlignment.Bottom => size.Height - elementHeight - Margin.Bottom,
+                VerticalAlignment.Center => size.Height / 2 - (elementHeight + Margin.Top) / 2,
+                _ => Margin.Top
+            };
+            var area = new Rectangle(offsetX, offsetY, width, height);
+
+            VisualOffset = area.Location;
+            ActualSize = area.Size;
         }
 
-        protected readonly Rectangle DefaultArrangeBehaviour = new Rectangle(float.NaN, float.NaN, float.NaN, float.NaN);
+        protected static readonly Rectangle DefaultArrangeBehaviour = new(float.NaN, float.NaN, float.NaN, float.NaN);
         protected virtual Rectangle ArrangeOverride(Rectangle size) => DefaultArrangeBehaviour;
 
         protected bool SetValue<T>(ref T field, T value)

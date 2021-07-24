@@ -40,7 +40,7 @@ namespace Slate.Client.UI.Framework
             return DefaultValue();
         }
 
-        public void Notify(UIElement uiElement, T previousValue, T newValue)
+        public void Notify(UIElement uiElement, T? previousValue, T newValue)
         {
             _onChangedAction?.Invoke(uiElement, previousValue, newValue);
         }
