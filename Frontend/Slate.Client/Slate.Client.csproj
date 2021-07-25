@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
@@ -43,6 +43,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
+		<PackageReference Include="Dpdt.Injector" Version="0.7.3-alpha" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
@@ -50,7 +51,7 @@
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
 		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
 		<PackageReference Include="stateless" Version="5.11.0" />
-		<PackageReference Include="Grpc.Net.Client" Version="2.37.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.38.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Dependencies\MLEM\MLEM.Ui\MLEM.Ui.csproj" />

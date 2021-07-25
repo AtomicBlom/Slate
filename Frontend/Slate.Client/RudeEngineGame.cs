@@ -1,8 +1,8 @@
+using System;
 using System.IO;
 using System.Linq;
 using CastIron.Engine;
 using CastIron.Engine.Debugging;
-using CastIron.Engine.Graphics.Camera;
 using CastIron.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,61 +11,23 @@ using MLEM.Font;
 using MLEM.Textures;
 using MLEM.Ui;
 using MLEM.Ui.Style;
-using MonoGame.Extended;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
+using SharpGLTF.Schema2;
 using Slate.Client.Services;
 using Slate.Client.UI;
 using Slate.Client.UI.Views;
+using Camera = CastIron.Engine.Graphics.Camera.Camera;
+using ICamera = CastIron.Engine.Graphics.Camera.ICamera;
 
 namespace Slate.Client
 {
-    internal class DebugMovementComponent : SimpleGameComponent
-    {
-        private readonly IInputBindingManager<GameInputState> _inputManager;
-        private readonly ICamera _camera;
-        private readonly FreeRoamingCamera _debugCameraBehaviour;
-
-        public DebugMovementComponent(IInputBindingManager<GameInputState> inputManager, ICamera camera)
-        {
-            _inputManager = inputManager;
-            _camera = camera;
-            _debugCameraBehaviour = new FreeRoamingCamera();
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            if (_inputManager.Button(MainMenuAction.EnterDebugMode).Released)
-            {
-                _inputManager.CurrentState = GameInputState.Debug;
-                _camera.CameraBehaviour = _debugCameraBehaviour;
-            }
-
-            if (_inputManager.Button(DebugControls.ExitDebugMode).Released)
-            {
-                _inputManager.CurrentState = GameInputState.MainMenu;
-                _camera.CameraBehaviour = null;
-            }
-
-            if (_inputManager.CurrentState == GameInputState.Debug)
-            {
-                _debugCameraBehaviour.MoveLeftRight(_inputManager.GetAxis(DebugControls.MoveLeftRightAxis).Value, gameTime);
-                _debugCameraBehaviour.MoveForwardBackward(_inputManager.GetAxis(DebugControls.MoveForwardBackAxis).Value, gameTime);
-                _debugCameraBehaviour.MoveUpDown(_inputManager.GetAxis(DebugControls.MoveUpDownAxis).Value, gameTime);
-
-                _debugCameraBehaviour.RotateUpOrDown(_inputManager.GetAxis(DebugControls.PitchAxis).Value, gameTime);
-                _debugCameraBehaviour.RotateLeftOrRight(_inputManager.GetAxis(DebugControls.YawAxis).Value, gameTime);
-                _debugCameraBehaviour.RotateSideToSide(_inputManager.GetAxis(DebugControls.RollAxis).Value, gameTime);
-            }
-        }
-    }
-
     public class RudeEngineGame : Game
     {
         private readonly Options _options;
         
         private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
-        private readonly ModelInstance[] _test = new ModelInstance[5 * 5];
+        private readonly ModelInstance[] _cells = new ModelInstance[5 * 5];
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch = null!;
         private UiSystem _uiSystem = null!;
@@ -73,6 +35,10 @@ namespace Slate.Client
         private DeviceModelCollection _testModel = null!;
         private InputBindingManager<GameInputState> _playerInput = null!;
         private ICamera _camera = null!;
+        private ModelInstance _characterModel;
+        private MeshCollection _meshCollection;
+        private ModelInstance _test;
+        private ModelInstance _box;
 
         public RudeEngineGame(Options options)
         {
@@ -130,6 +96,11 @@ namespace Slate.Client
             
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
+            _characterModel = gltfFactory.LoadModel(Path.Combine("Content", "MaleElfNew.glb")).DefaultModel.CreateInstance();
+            _box = gltfFactory.LoadModel(Path.Combine("Content", "BoxAnimated.glb")).DefaultModel.CreateInstance();
+            
+
+
         }
 
         protected override void UnloadContent()
@@ -159,11 +130,25 @@ namespace Slate.Client
                 for (int x = 0; x < 5; ++x)
                 {
                     var index = z * 5 + x;
-                    _test[index] = _testModel.DefaultModel.CreateInstance();
-                    _test[index].WorldMatrix = Matrix.CreateTranslation(x * 100, -25, z * 100);
+                    _cells[index] = _testModel.DefaultModel.CreateInstance();
+                    _cells[index].WorldMatrix = Matrix.CreateTranslation(x * 100, -25, z * 100);
                 }
             }
 
+            var delta = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            _characterModel.WorldMatrix = _cells[13].WorldMatrix
+                                          + Matrix.CreateTranslation(new Vector3(5, 25, 5))
+                                          + Matrix.CreateScale(0.5f + MathF.Sin(delta) * 1.5f)
+                                          ;
+
+            var mouseX = Mouse.GetState().X / (float)Window.ClientBounds.Width;
+            var mouseY = Mouse.GetState().Y / (float)Window.ClientBounds.Height;
+
+            var angle = MathF.Tan(mouseY / mouseX);
+            _characterModel.Armature.SetAnimationFrame((0, 0.5f, 0.5f), (1, 0.5f, 0.5f));
+            _characterModel.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
+            _box.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
             base.Update(gameTime);
         }
 
@@ -173,6 +158,7 @@ namespace Slate.Client
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            var modelPosition = _cells[13].WorldMatrix.Translation;
             var dc = new ModelDrawingContext(this.GraphicsDevice)
             {
                 NearPlane = 0.1f
@@ -182,7 +168,8 @@ namespace Slate.Client
             dc.SetCamera(_camera.View);
             dc.SetProjectionMatrix(_camera.Projection);
             
-            dc.DrawSceneInstances(_lightsAndFog, _test);
+            dc.DrawSceneInstances(_lightsAndFog, _cells);
+            dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);
             
             _uiSystem.Draw(gameTime, _spriteBatch);
 

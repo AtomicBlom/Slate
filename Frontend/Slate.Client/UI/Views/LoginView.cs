@@ -14,7 +14,8 @@ namespace Slate.Client.UI.Views
         {
             return new ReloadablePanel(Anchor.Center, new Vector2(400, 100), Vector2.Zero, true)
             {
-                Build = p => RebuildView(p, viewModel)
+                Build = p => RebuildView(p, viewModel),
+                DrawAlpha = 0.5f
             };
         }
 
