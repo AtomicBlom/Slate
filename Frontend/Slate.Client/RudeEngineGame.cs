@@ -71,8 +71,8 @@ namespace Slate.Client
         private UiSystem _uiSystem = null!;
         private GameLifecycle _gameLifecycle = null!;
         private DeviceModelCollection _testModel = null!;
-        private InputBindingManager<GameInputState> _playerInput;
-        private ICamera _camera;
+        private InputBindingManager<GameInputState> _playerInput = null!;
+        private ICamera _camera = null!;
 
         public RudeEngineGame(Options options)
         {
@@ -182,10 +182,9 @@ namespace Slate.Client
             dc.SetCamera(_camera.View);
             dc.SetProjectionMatrix(_camera.Projection);
             
-            dc.DrawSceneInstances(_lightsAndFog,
-                _test);
+            dc.DrawSceneInstances(_lightsAndFog, _test);
             
-            this._uiSystem.Draw(gameTime, _spriteBatch);
+            _uiSystem.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);
         }
