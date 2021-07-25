@@ -1,6 +1,6 @@
-﻿using BinaryVibrance.MonoGame.Input.Binding.Button;
+﻿using CastIron.Engine.Input.Binding.Button;
 
-namespace BinaryVibrance.MonoGame.Input.Keyboard
+namespace CastIron.Engine.Input.Keyboard
 {
 	public interface IKeyboardButtonBindingOrNewButtonBindingDefinition : IStartButtonBindingDefinition
 	{

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace BinaryVibrance.MonoGame.Input.Binding
+namespace CastIron.Engine.Input.Binding
 {
 	internal interface IBinding
 	{

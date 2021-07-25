@@ -1,6 +1,6 @@
-﻿using BinaryVibrance.MonoGame.Input.Binding.Axis;
+﻿using CastIron.Engine.Input.Binding.Axis;
 
-namespace BinaryVibrance.MonoGame.Input.Keyboard
+namespace CastIron.Engine.Input.Keyboard
 {
 	internal class KeyboardAxisBindingDefinition : AxisBindingDefinition, IKeyboardAxisBindingOrNewAxisBindingDefinition
 	{

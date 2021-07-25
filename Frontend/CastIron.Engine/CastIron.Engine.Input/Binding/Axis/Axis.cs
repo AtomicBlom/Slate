@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace BinaryVibrance.MonoGame.Input.Binding.Axis
+namespace CastIron.Engine.Input.Binding.Axis
 {
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public enum Axis

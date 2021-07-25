@@ -1,8 +1,8 @@
-﻿using BinaryVibrance.MonoGame.Input.Keyboard;
-using BinaryVibrance.MonoGame.Input.Mouse;
+﻿using CastIron.Engine.Input.Keyboard;
+using CastIron.Engine.Input.Mouse;
 using Microsoft.Xna.Framework.Input;
 
-namespace BinaryVibrance.MonoGame.Input.Binding.Axis
+namespace CastIron.Engine.Input.Binding.Axis
 {
 	public interface IStartAxisBindingDefinition
 	{

@@ -1,4 +1,4 @@
-﻿namespace BinaryVibrance.MonoGame.Input.Binding.Button
+﻿namespace CastIron.Engine.Input.Binding.Button
 {
 	public struct ButtonResult
 	{

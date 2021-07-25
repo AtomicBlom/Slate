@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace CastIron.Engine.Camera
+namespace CastIron.Engine.Graphics.Camera
 {
     /// <summary>
     /// This is a camera i basically remade to make it work. 
@@ -67,7 +67,7 @@ namespace CastIron.Engine.Camera
             set
             {
                 _camerasWorld = Matrix.CreateWorld(_camerasWorld.Translation, value, _up);
-                // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
+                // since we know here that a change has occurred to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
             }
             get => _camerasWorld.Forward;

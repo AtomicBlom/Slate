@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using BinaryVibrance.MonoGame.Input.Binding;
-using BinaryVibrance.MonoGame.Input.Binding.Axis;
-using BinaryVibrance.MonoGame.Input.Binding.Button;
+using CastIron.Engine.Input.Binding;
+using CastIron.Engine.Input.Binding.Axis;
+using CastIron.Engine.Input.Binding.Button;
 using Microsoft.Xna.Framework;
 
-namespace BinaryVibrance.MonoGame.Input
+namespace CastIron.Engine.Input
 {
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach", Justification = "This code gets called lots. Enumerators have been removed to save on allocations.")]
     internal class InputBindingState<TAction> : IInputBindingGameState<TAction> where TAction: struct, Enum

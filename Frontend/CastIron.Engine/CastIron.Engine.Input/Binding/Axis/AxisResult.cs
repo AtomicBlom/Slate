@@ -1,4 +1,4 @@
-﻿namespace BinaryVibrance.MonoGame.Input.Binding.Axis
+﻿namespace CastIron.Engine.Input.Binding.Axis
 {
 	public struct AxisResult
 	{

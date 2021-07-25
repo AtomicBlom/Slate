@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace CastIron.Engine.Camera
+namespace CastIron.Engine.Graphics.Camera
 {
     public interface ICameraBehaviour
     {

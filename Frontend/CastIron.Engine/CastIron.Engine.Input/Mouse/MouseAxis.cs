@@ -1,4 +1,4 @@
-﻿namespace BinaryVibrance.MonoGame.Input.Mouse
+﻿namespace CastIron.Engine.Input.Mouse
 {
     public enum MouseAxis
     {

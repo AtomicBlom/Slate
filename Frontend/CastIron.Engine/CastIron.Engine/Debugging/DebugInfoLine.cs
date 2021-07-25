@@ -5,7 +5,7 @@ namespace CastIron.Engine.Debugging
 {
 	public class DebugInfoLine : IEnumerable<DebugItem>
 	{
-		private readonly List<DebugItem> _section = new List<DebugItem>();
+		private readonly List<DebugItem> _section = new();
 		public string? SectionHeader { get; }
 
 		public DebugInfoLine(string sectionHeader)
@@ -20,14 +20,12 @@ namespace CastIron.Engine.Debugging
 
 		public DebugInfoLine Add<T>(string header, T item)
 		{
-			if (!(item is string text))
+			if (item is not string text)
 			{
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                text = item?.ToString();
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+                text = item?.ToString() ?? string.Empty;
             }
 
-			_section.Add(new DebugItem(header, text ?? string.Empty));
+			_section.Add(new DebugItem(header, text));
 
 			return this;
 		}

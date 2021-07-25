@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace CastIron.Engine.Camera
+namespace CastIron.Engine.Graphics.Camera
 {
     public class Camera : UpdateableGameComponent, ICamera
     {
@@ -30,7 +30,10 @@ namespace CastIron.Engine.Camera
             set
             {
                 _cameraBehaviour = value;
-                _cameraBehaviour.SetGraphicsDevice(_graphicsDevice);
+                if (_cameraBehaviour is not null)
+                {
+                    _cameraBehaviour.SetGraphicsDevice(_graphicsDevice);
+                }
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace BinaryVibrance.MonoGame.Input
+namespace CastIron.Engine.Input
 {
 	[PublicAPI]
 	internal class InputBindingManagerActionMissingException<TAction> : Exception where TAction : struct, Enum

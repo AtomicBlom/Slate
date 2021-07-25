@@ -7,6 +7,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
 {
     public class BindingSyntaxReceiver : ISyntaxContextReceiver
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Compare symbols correctly", Justification = "This is reported incorrectly. SymbolEqualityComparer.Default is the correct way to do it.")]
         public HashSet<INamedTypeSymbol> Classes { get; } = new(SymbolEqualityComparer.Default);
         
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)

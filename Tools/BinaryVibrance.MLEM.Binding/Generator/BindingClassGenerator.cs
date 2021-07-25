@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -32,6 +31,8 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                     GeneratePropertyExtensionMethod(classSymbol, p),
                     GeneratePropertyIdentityExtensionMethod(parentClassName, classSymbol, p)
                 } )
+                .Where(x => x is not null)
+                .Cast<MemberDeclarationSyntax>()
                 .ToArray();
             
             var file = CompilationUnit()
@@ -133,10 +134,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                                     ArgumentList())
                                             ))
                                         ))
-                                        
-                            )
-                        )
-                
+                        ))
                 ;
 
 
@@ -374,12 +372,10 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                             Token(SyntaxKind.VoidKeyword)),
                         Identifier("OnDisposed"))
                     .WithParameterList(
-                        ParameterList(
-                            SingletonSeparatedList<ParameterSyntax>(
-                                Parameter(
-                                        Identifier("_"))
-                                    .WithType(
-                                        IdentifierName("Element")))))
+                        MakeParameterList(
+                            Parameter(Identifier("_"))
+                                .WithType(IdentifierName("Element"))
+                            ))
                     .WithBody(onDisposedMethodBody));
             }
 
@@ -407,13 +403,13 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                         IdentifierName("PropertyName")),
                                     InvocationExpression(IdentifierName("nameof"))
                                         .WithArgumentList(
-                                            ArgumentList(
-                                                SingletonSeparatedList(
-                                                    Argument(
-                                                        MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName(classSymbol.Name),
-                                                            IdentifierName(propertySymbol.Name))))))),
+                                            MakeArgumentList(
+                                                Argument(
+                                                    MemberAccessExpression(
+                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                        IdentifierName(classSymbol.Name),
+                                                        IdentifierName(propertySymbol.Name))
+                                                )))),
                                 ReturnStatement()),
                             ExpressionStatement(
                                 InvocationExpression(
@@ -425,8 +421,8 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             }
 
             body = body.AddStatements(
-                ReturnStatement(
-                    IdentifierName("propertyBinding")));
+                ReturnStatement(IdentifierName("propertyBinding"))
+                );
 
             return method
                 .WithBody(body);

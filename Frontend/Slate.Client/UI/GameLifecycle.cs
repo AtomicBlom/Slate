@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CastIron.Engine;
 using MLEM.Ui;
 using Slate.Client.Services;
 using Slate.Client.UI.Elements;
@@ -124,20 +125,22 @@ namespace Slate.Client.UI
 
         private void OnExitGameStateReadyToLogin()
         {
-            _uiSystem.Get(nameof(LoginView)).Element
-                .FadeOutAsync(remove:true);
+            TaskDispatcher.FireAndForget(async () => await 
+                _uiSystem.Get(nameof(LoginView)).Element
+                    .FadeOutAsync(remove:true)
+            );
         }
 
         private async Task OnEnterGameStateConnectToServer()
         {
-            var result = await _gameConnection.Connect();
-            if (result.WasSuccessful)
+            var (wasSuccessful, errorMessage) = await _gameConnection.Connect();
+            if (wasSuccessful)
             {
                 await _gameStateMachine.FireAsync(GameTrigger.ConnectionToServerEstablished);
             }
             else
             {
-                await _gameStateMachine.FireAsync(_connectionErrorTrigger, result.ErrorMessage ?? "Connection failed, but no error was reported");
+                await _gameStateMachine.FireAsync(_connectionErrorTrigger, errorMessage ?? "Connection failed, but no error was reported");
             }
         }
 

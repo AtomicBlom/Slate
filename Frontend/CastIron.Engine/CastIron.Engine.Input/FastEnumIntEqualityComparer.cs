@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace BinaryVibrance.MonoGame.Input
+namespace CastIron.Engine.Input
 {
 	/// <summary>
 	/// https://stackoverflow.com/a/26281533

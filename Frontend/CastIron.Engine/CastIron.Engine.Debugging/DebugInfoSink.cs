@@ -9,7 +9,7 @@ namespace CastIron.Engine.Debugging
 {
     public class DebugInfoSink : DrawableGameComponent, IDebugInfoSink, ILoadContent
     {
-        private readonly Dictionary<DebugInfoCorner, DebugInfoSection> _debugInfoCorner = new Dictionary<DebugInfoCorner, DebugInfoSection>
+        private readonly Dictionary<DebugInfoCorner, DebugInfoSection> _debugInfoCorner = new()
         {
             {DebugInfoCorner.TopLeft, new DebugInfoSection(false)},
             {DebugInfoCorner.TopRight, new DebugInfoSection(false)},

@@ -25,7 +25,7 @@ namespace CastIron.Engine.Debugging
 		    _debugInfoSink = game.Services.GetService<IDebugInfoSink>();
 	    }
 		
-        private readonly Queue<float> _timesPerFrame = new Queue<float>(MaxSamples);
+        private readonly Queue<float> _timesPerFrame = new(MaxSamples);
 		private float _totalFrameTimes;
 		private DateTime _nextUpdateTick;
 		public float ManagedMemory { get; private set; }

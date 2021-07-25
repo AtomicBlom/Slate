@@ -1,8 +1,8 @@
-﻿using BinaryVibrance.MonoGame.Input.Binding.Axis;
+﻿using CastIron.Engine.Input.Binding.Axis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace BinaryVibrance.MonoGame.Input.Keyboard
+namespace CastIron.Engine.Input.Keyboard
 {
 	internal class KeyboardAxisBinding : IAxisBinding
 	{

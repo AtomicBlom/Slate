@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using CastIron.Engine;
 using MLEM.Misc;
 using MLEM.Ui.Elements;
 
@@ -34,7 +35,7 @@ namespace Slate.Client.UI.Elements
                     var opacity = startOpacity * easedProgress;
 
                     element.DrawAlpha = opacity;
-                    await RudeEngineGame.NextUpdate;
+                    await TaskDispatcher.NextUpdate;
                 }
 
                 if (remove)
@@ -76,7 +77,7 @@ namespace Slate.Client.UI.Elements
                     var opacity = startOpacity * easedProgress;
 
                     element.DrawAlpha = opacity;
-                    await RudeEngineGame.NextUpdate;
+                    await TaskDispatcher.NextUpdate;
                 }
             });
         }

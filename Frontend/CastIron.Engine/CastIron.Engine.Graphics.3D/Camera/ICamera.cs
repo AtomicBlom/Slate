@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
-namespace CastIron.Engine.Camera
+namespace CastIron.Engine.Graphics.Camera
 {
     [PublicAPI]
     public interface ICamera

@@ -1,64 +1,95 @@
-using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using IdentityModel.Client;
+using CastIron.Engine;
+using CastIron.Engine.Debugging;
+using CastIron.Engine.Graphics.Camera;
+using CastIron.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MLEM.Font;
-using MLEM.Misc;
 using MLEM.Textures;
 using MLEM.Ui;
 using MLEM.Ui.Style;
+using MonoGame.Extended;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Slate.Client.Services;
 using Slate.Client.UI;
-using Slate.Client.UI.Elements;
 using Slate.Client.UI.Views;
-using Stateless;
-using CharacterListViewModel = Slate.Client.ViewModel.MainMenu.CharacterListViewModel;
-using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
-using LoginViewModel = Slate.Client.ViewModel.MainMenu.LoginViewModel;
 
 namespace Slate.Client
 {
-    public class RudeEngineGame : Microsoft.Xna.Framework.Game
+    internal class DebugMovementComponent : SimpleGameComponent
     {
-	    private TaskCompletionSource<GameTime> _thisUpdateSource = new();
-        public static Task<GameTime> NextUpdate = null!; //static will be initialized in constructor
+        private readonly IInputBindingManager<GameInputState> _inputManager;
+        private readonly ICamera _camera;
+        private readonly FreeRoamingCamera _debugCameraBehaviour;
 
+        public DebugMovementComponent(IInputBindingManager<GameInputState> inputManager, ICamera camera)
+        {
+            _inputManager = inputManager;
+            _camera = camera;
+            _debugCameraBehaviour = new FreeRoamingCamera();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (_inputManager.Button(MainMenuAction.EnterDebugMode).Released)
+            {
+                _inputManager.CurrentState = GameInputState.Debug;
+                _camera.CameraBehaviour = _debugCameraBehaviour;
+            }
+
+            if (_inputManager.Button(DebugControls.ExitDebugMode).Released)
+            {
+                _inputManager.CurrentState = GameInputState.MainMenu;
+                _camera.CameraBehaviour = null;
+            }
+
+            if (_inputManager.CurrentState == GameInputState.Debug)
+            {
+                _debugCameraBehaviour.MoveLeftRight(_inputManager.GetAxis(DebugControls.MoveLeftRightAxis).Value, gameTime);
+                _debugCameraBehaviour.MoveForwardBackward(_inputManager.GetAxis(DebugControls.MoveForwardBackAxis).Value, gameTime);
+                _debugCameraBehaviour.MoveUpDown(_inputManager.GetAxis(DebugControls.MoveUpDownAxis).Value, gameTime);
+
+                _debugCameraBehaviour.RotateUpOrDown(_inputManager.GetAxis(DebugControls.PitchAxis).Value, gameTime);
+                _debugCameraBehaviour.RotateLeftOrRight(_inputManager.GetAxis(DebugControls.YawAxis).Value, gameTime);
+                _debugCameraBehaviour.RotateSideToSide(_inputManager.GetAxis(DebugControls.RollAxis).Value, gameTime);
+            }
+        }
+    }
+
+    public class RudeEngineGame : Game
+    {
         private readonly Options _options;
         
         private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
-        private DeviceModelCollection _testModel;
         private readonly ModelInstance[] _test = new ModelInstance[5 * 5];
         private readonly GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-        private UiSystem _uiSystem;
-        private GameLifecycle _gameLifecycle;
+        private SpriteBatch _spriteBatch = null!;
+        private UiSystem _uiSystem = null!;
+        private GameLifecycle _gameLifecycle = null!;
+        private DeviceModelCollection _testModel = null!;
+        private InputBindingManager<GameInputState> _playerInput;
+        private ICamera _camera;
 
         public RudeEngineGame(Options options)
         {
             _options = options;
-            _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1366;
-            _graphics.PreferredBackBufferHeight = 768;
-            _graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            Window.ClientSizeChanged += Window_ClientSizeChanged;
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1366,
+                PreferredBackBufferHeight = 768
+            };
+            
+            _graphics.PreparingDeviceSettings += Graphics_OnPreparingDeviceSettings;
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            NextUpdate = _thisUpdateSource.Task;
         }
 
-        private void Window_ClientSizeChanged(object? sender, EventArgs e)
-        {
-
-        }
-
-        private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
+        private void Graphics_OnPreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
         {
             _graphics.PreferMultiSampling = true;
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
@@ -70,24 +101,21 @@ namespace Slate.Client
         protected override void LoadContent()
         {
             _playerInput = this.AddComponentAndService(GameInputBindings.CreateInputBindings(this));
-            this.AddComponentAndService<IDebugInfoSink>(new DebugInfoSink(this) { Enabled = true });
+            var debugInfoSink = this.AddComponentAndService<IDebugInfoSink>(new DebugInfoSink(this) { Enabled = true });
             Metrics.Install(this);
-            var camera = new Camera(GraphicsDevice, Services.GetService<IDebugInfoSink>());
-            Components.Add(camera);
-            
-            this.AddComponentAndService<CastIron.Engine.Camera.ICamera>(_camera);
+            _camera = this.AddComponentAndService<ICamera>(new Camera(GraphicsDevice, debugInfoSink));
             this.IsMouseVisible = true;
+            this.AddComponentAndService(new DebugMovementComponent(_playerInput, _camera));
 
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
-            //Viewport viewport = GraphicsDevice.Viewport;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             var uiTexture = Content.Load<Texture2D>("UI/MockUI");
             var uiStyle = new UntexturedStyle(_spriteBatch)
             {
                 Font = new GenericSpriteFont(font),
-                TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8, NinePatchMode.Stretch),
-                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20, NinePatchMode.Stretch),
-                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8, NinePatchMode.Stretch),
+                TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8),
+                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20),
+                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8),
                 RadioTexture = new NinePatch(new TextureRegion(uiTexture, 128, 172, 32, 32), 0),
                 RadioCheckmark = new TextureRegion(uiTexture, 192, 172, 32, 32)
             };
@@ -99,18 +127,9 @@ namespace Slate.Client
             var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort, authService);
             _gameLifecycle = new GameLifecycle(_uiSystem, authService, gameConnection);
             _gameLifecycle.Start();
-
-
-
+            
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
             _testModel = gltfFactory.LoadModel(Path.Combine($"Content", "Cell100.glb"));
-        }
-
-        
-
-        private async void LoginViewModelOnLoggedIn(object? sender, TokenResponse e)
-        {
-	        
         }
 
         protected override void UnloadContent()
@@ -123,11 +142,6 @@ namespace Slate.Client
 
         protected override void Update(GameTime gameTime)
         {
-	        var thisUpdate = _thisUpdateSource;
-	        _thisUpdateSource = new();
-	        NextUpdate = _thisUpdateSource.Task;
-            thisUpdate.SetResult(gameTime);
-
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.F3))
@@ -146,7 +160,7 @@ namespace Slate.Client
                 {
                     var index = z * 5 + x;
                     _test[index] = _testModel.DefaultModel.CreateInstance();
-                    _test[index].WorldMatrix = Matrix.CreateTranslation(x * 100, 0, z * 100);
+                    _test[index].WorldMatrix = Matrix.CreateTranslation(x * 100, -25, z * 100);
                 }
             }
 
@@ -158,18 +172,15 @@ namespace Slate.Client
             _uiSystem.DrawEarly(gameTime, _spriteBatch);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            
-            var camPos = new Vector3(0, 25, 0);
-            var modelPosition = new Vector3(50f, 0, 50f);
-
-            var camX = Matrix.CreateWorld(Vector3.UnitY * 10, modelPosition - camPos, Vector3.UnitY);
 
             var dc = new ModelDrawingContext(this.GraphicsDevice)
             {
                 NearPlane = 0.1f
             };
+
             
-            dc.SetCamera(camX);
+            dc.SetCamera(_camera.View);
+            dc.SetProjectionMatrix(_camera.Projection);
             
             dc.DrawSceneInstances(_lightsAndFog,
                 _test);

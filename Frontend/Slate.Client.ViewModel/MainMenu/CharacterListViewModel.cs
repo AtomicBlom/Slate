@@ -14,8 +14,9 @@ namespace Slate.Client.ViewModel.MainMenu
         private readonly ICharacterService _characterService;
         private readonly Action _characterSelectedAction;
 
-        [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)] private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
-        [ImplementNotifyPropertyChanged(ExposedType = typeof(ICommand))] private RelayCommand _playAsCharacterCommand;
+        [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)] 
+        private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
+        private readonly RelayCommand _playAsCharacterCommand;
 
         private GameCharacter? _selectedCharacter;
         public GameCharacter? SelectedCharacter
@@ -32,6 +33,7 @@ namespace Slate.Client.ViewModel.MainMenu
         }
 
         public bool CanEnterGame => SelectedCharacter?.Id is not null;
+        public ICommand PlayAsCharacterCommand => _playAsCharacterCommand;
 
 
         public CharacterListViewModel(ICharacterService characterService, Action characterSelectedAction)
@@ -44,7 +46,7 @@ namespace Slate.Client.ViewModel.MainMenu
 
         void Execute()
         {
-            _characterService.PlayAsCharacter(SelectedCharacter.Id);
+            _characterService.PlayAsCharacter(SelectedCharacter!.Id);
             _characterSelectedAction();
         }
 

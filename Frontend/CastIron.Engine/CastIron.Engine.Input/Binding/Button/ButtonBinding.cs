@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using BinaryVibrance.MonoGame.Input.Keyboard;
+using CastIron.Engine.Input.Keyboard;
 using Microsoft.Xna.Framework.Input;
 
-namespace BinaryVibrance.MonoGame.Input.Binding.Button
+namespace CastIron.Engine.Input.Binding.Button
 {
 	internal class ButtonBinding : IStartButtonBindingDefinition
 	{

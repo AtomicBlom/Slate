@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BinaryVibrance.MonoGame.Input.Binding.Axis;
-using BinaryVibrance.MonoGame.Input.Binding.Button;
-using CastIron.Engine;
+using CastIron.Engine.Input.Binding.Axis;
+using CastIron.Engine.Input.Binding.Button;
 using Microsoft.Xna.Framework;
 
-namespace BinaryVibrance.MonoGame.Input
+namespace CastIron.Engine.Input
 {
+    public static class InputBindingManager
+    {
+        public static InputBindingManager<TState> Create<TState>(Game game, TState globalState, Action<InputBindingManager<TState>>? definitions = null)
+            where TState : struct, Enum
+		{
+            var manager = new InputBindingManager<TState>(game, globalState);
+            definitions?.Invoke(manager);
+            return manager;
+        }
+	}
+
 	public class InputBindingManager<TState> : UpdateableGameComponent, IInputBindingManager<TState> where TState: struct, Enum
     {
 	    private readonly Game _game;
@@ -27,6 +37,8 @@ namespace BinaryVibrance.MonoGame.Input
 		    GlobalState = globalState;
 		    CurrentState = GlobalState;
 	    }
+
+        
         
         public override void Update(GameTime gameTime)
         {
@@ -38,10 +50,11 @@ namespace BinaryVibrance.MonoGame.Input
 	        }
         }
 
-        public IInputBindingGameState<TAction> DefineGameState<TAction>(TState state) where TAction: struct, Enum
+        public IInputBindingGameState<TAction> DefineGameState<TAction>(TState state, Action<IInputBindingGameState<TAction>>? definitions = null) where TAction: struct, Enum
         {
 	        var keyBindingState = new InputBindingState<TAction>(_game);
 	        _gameStateBindings[state] = keyBindingState;
+			definitions?.Invoke(keyBindingState);
 	        return keyBindingState;
         }
 

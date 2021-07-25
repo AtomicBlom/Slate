@@ -1,6 +1,6 @@
-﻿using BinaryVibrance.MonoGame.Input.Binding.Axis;
+﻿using CastIron.Engine.Input.Binding.Axis;
 
-namespace BinaryVibrance.MonoGame.Input.Mouse
+namespace CastIron.Engine.Input.Mouse
 {
 	internal class MouseAxisBindingDefinition : AxisBindingDefinition, IMouseAxisBindingOrNewAxisBindingDefinition
 	{

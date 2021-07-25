@@ -1,8 +1,8 @@
 ﻿using System;
-using BinaryVibrance.MonoGame.Input.Binding.Axis;
-using BinaryVibrance.MonoGame.Input.Binding.Button;
+using CastIron.Engine.Input.Binding.Axis;
+using CastIron.Engine.Input.Binding.Button;
 
-namespace BinaryVibrance.MonoGame.Input
+namespace CastIron.Engine.Input
 {
 	public interface IInputBindingGameState<in TAction>: IInputBindingGameState where TAction : struct, Enum
 	{
