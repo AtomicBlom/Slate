@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,6 +69,13 @@ namespace Slate.Client
 
         protected override void LoadContent()
         {
+            _playerInput = this.AddComponentAndService(GameInputBindings.CreateInputBindings(this));
+            this.AddComponentAndService<IDebugInfoSink>(new DebugInfoSink(this) { Enabled = true });
+            Metrics.Install(this);
+            var camera = new Camera(GraphicsDevice, Services.GetService<IDebugInfoSink>());
+            Components.Add(camera);
+            
+            this.AddComponentAndService<CastIron.Engine.Camera.ICamera>(_camera);
             this.IsMouseVisible = true;
 
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");

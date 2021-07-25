@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31320.298
@@ -49,6 +49,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.ViewModel", "Slate.Client.ViewModel\Slate.Client.ViewModel.csproj", "{5E6E7046-78E7-4A43-BE1F-0734F696C11E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slate.Client.MVVM", "Slate.Client.MVVM\Slate.Client.MVVM.csproj", "{EFBC752D-62A6-4D2F-84C3-0EE094D3BD05}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.Engine", "CastIron.Engine\CastIron.Engine\CastIron.Engine.csproj", "{F46D1EC3-3BC6-40E4-855C-A64999437776}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.Engine.Graphics.3D", "CastIron.Engine\CastIron.Engine.Graphics.3D\CastIron.Engine.Graphics.3D.csproj", "{30B628AF-9BFC-4605-9496-507BC5080606}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.Engine.Debugging", "CastIron.Engine\CastIron.Engine.Debugging\CastIron.Engine.Debugging.csproj", "{61798513-E52C-4EB7-B997-149E187B63DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.Engine.Input", "CastIron.Engine\CastIron.Engine.Input\CastIron.Engine.Input.csproj", "{B79C7172-351F-4ECE-AB7F-B5D20861B1A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
