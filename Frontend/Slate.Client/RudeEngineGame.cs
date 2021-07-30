@@ -2,9 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using CastIron.Engine;
-using CastIron.Engine.Debugging;
-using CastIron.Engine.Graphics.Camera;
-using CastIron.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -30,11 +27,8 @@ namespace Slate.Client
         private UiSystem _uiSystem = null!;
         private GameLifecycle _gameLifecycle = null!;
         private DeviceModelCollection _testModel = null!;
-        private InputBindingManager<GameInputState> _playerInput = null!;
         private ICamera _camera = null!;
         private ModelInstance _characterModel;
-        private MeshCollection _meshCollection;
-        private ModelInstance _test;
         private ModelInstance _box;
         private Container _container;
         private readonly Options _options;
@@ -66,13 +60,6 @@ namespace Slate.Client
 
         protected override void LoadContent()
         {
-            //_playerInput = this.AddComponentAndService(GameInputBindings.CreateInputBindings(this));
-            //var debugInfoSink = this.AddComponentAndService<IDebugInfoSink>(new DebugInfoSink(this) { Enabled = true });
-            //Metrics.Install(this);
-            //_camera = this.AddComponentAndService<ICamera>(new Camera(GraphicsDevice, debugInfoSink));
-            this.IsMouseVisible = true;
-            //this.AddComponentAndService(new DebugMovementComponent(_playerInput, _camera));
-
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             var uiTexture = Content.Load<Texture2D>("UI/MockUI");
@@ -92,14 +79,11 @@ namespace Slate.Client
             var gameComponents = _container.Resolve<IGameComponent[]>();
             foreach (var gameComponent in gameComponents.Value)
             {
-                this.AddComponentAndService(gameComponent);
+                Components.Add(gameComponent);
             }
-            _gameLifecycle = _container.Resolve<GameLifecycle>().Value;
             _camera = _container.Resolve<ICamera>().Value;
-
-            //var authService = new AuthService(_options.AuthServer);
-            //var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort, authService);
-            //_gameLifecycle = new GameLifecycle(_uiSystem, authService, gameConnection);
+            
+            _gameLifecycle = _container.Resolve<GameLifecycle>().Value;
             _gameLifecycle.Start();
             
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
