@@ -151,7 +151,7 @@ namespace Slate.Client
             };
 
             dc.SetProjectionMatrix(_camera.Projection);
-            dc.SetCamera(_camera.View);
+            dc.SetCamera(_camera.World);
 
             dc.DrawSceneInstances(_lightsAndFog, _cells);
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);
