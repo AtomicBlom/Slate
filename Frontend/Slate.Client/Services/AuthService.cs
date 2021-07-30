@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using Slate.Client.ViewModel.Services;
@@ -17,9 +14,9 @@ namespace Slate.Client.Services
         public event Action? LoggedIn;
         private readonly HttpClient _client;
 
-        public AuthService(Uri authServer)
+        public AuthService(Options options)
         {
-            _authServer = authServer;
+            _authServer = options.AuthServer;
             _client = new HttpClient();
         }
 

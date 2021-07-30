@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CastIron.Engine.Input.Binding.Axis;
 using CastIron.Engine.Input.Binding.Button;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace CastIron.Engine.Input
@@ -18,15 +19,17 @@ namespace CastIron.Engine.Input
         }
 	}
 
+	[PublicAPI]
 	public class InputBindingManager<TState> : UpdateableGameComponent, IInputBindingManager<TState> where TState: struct, Enum
     {
 	    private readonly Game _game;
-	    private static readonly FastEnumIntEqualityComparer<TState> FastEnumIntEqualityComparer = new FastEnumIntEqualityComparer<TState>();
+		//FIXME: Do I really need this now?
+	    private static readonly FastEnumIntEqualityComparer<TState> FastEnumIntEqualityComparer = new();
 
 		private TState GlobalState { get; }
         public TState CurrentState { get; set; }
         
-        private readonly Dictionary<TState, IInputBindingGameState> _gameStateBindings = new Dictionary<TState, IInputBindingGameState>(
+        private readonly Dictionary<TState, IInputBindingGameState> _gameStateBindings = new(
 	        Enumerable.Empty<KeyValuePair<TState, IInputBindingGameState>>(), 
 	        FastEnumIntEqualityComparer
 	        );
@@ -37,9 +40,7 @@ namespace CastIron.Engine.Input
 		    GlobalState = globalState;
 		    CurrentState = GlobalState;
 	    }
-
-        
-        
+		
         public override void Update(GameTime gameTime)
         {
 	        _gameStateBindings[GlobalState].UpdateStates();

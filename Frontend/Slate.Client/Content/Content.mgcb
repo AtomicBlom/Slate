@@ -13,6 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin CascadiaCode.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:CascadiaCode.spritefont
+
 #begin Segoe_UI_15_Bold.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

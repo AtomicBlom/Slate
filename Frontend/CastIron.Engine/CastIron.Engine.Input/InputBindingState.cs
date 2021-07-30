@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CastIron.Engine.Input.Binding;
 using CastIron.Engine.Input.Binding.Axis;
@@ -9,19 +8,18 @@ using Microsoft.Xna.Framework;
 
 namespace CastIron.Engine.Input
 {
-    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach", Justification = "This code gets called lots. Enumerators have been removed to save on allocations.")]
     internal class InputBindingState<TAction> : IInputBindingGameState<TAction> where TAction: struct, Enum
 	{
 		private readonly Game _game;
 
-		private readonly Dictionary<TAction, List<IBinding>> _bindings = new Dictionary<TAction, List<IBinding>>(
+		private readonly Dictionary<TAction, List<IBinding>> _bindings = new(
 			Enumerable.Empty<KeyValuePair<TAction, List<IBinding>>>(), 
 			new FastEnumIntEqualityComparer<TAction>()
 			);
 		
 		//We can improve on performance and allocations by just iterating over a single list.
-		private readonly List<IBinding> _flatBindings = new List<IBinding>();
-		private InputSettings Settings { get; set; } = new InputSettings();
+		private readonly List<IBinding> _flatBindings = new();
+		private InputSettings Settings { get; } = new();
 
 		public InputBindingState(Game game)
 		{

@@ -1,17 +1,53 @@
-﻿using DpdtInject.Injector.Src;
+﻿using System.Collections.Generic;
+using CastIron.Engine.Debugging;
+using CastIron.Engine.Graphics.Camera;
+using CastIron.Engine.Input;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MLEM.Ui;
 using Slate.Client.Services;
+using Slate.Client.UI;
 using Slate.Client.ViewModel.Services;
+using StrongInject;
 
 namespace Slate.Client
 {
-    public partial class Container : DefaultCluster
+    [Register(typeof(AuthService), Scope.SingleInstance, typeof(IAuthService), typeof(IProvideAuthToken))]
+    [Register(typeof(DebugInfoSink), Scope.SingleInstance, typeof(IDebugInfoSink), typeof(IGameComponent))]
+    [Register(typeof(Camera), Scope.SingleInstance, typeof(ICamera), typeof(IGameComponent))]
+    [Register(typeof(DebugMovementComponent), Scope.SingleInstance, typeof(IGameComponent))]
+    [Register(typeof(Metrics), Scope.SingleInstance, typeof(IGameComponent))]
+    [Register(typeof(GameLifecycle))]
+    public partial class Container : 
+        IContainer<GameScopeContainer>, 
+        IContainer<IGameComponent[]>, 
+        IContainer<GameLifecycle>,
+        IContainer<IProvideAuthToken>,
+        IContainer<ICamera>
     {
-        [DpdtBindingMethod]
-        public void Bind()
+        private readonly Game _game;
+        private readonly Options _options;
+        private readonly UiSystem _uiSystem;
+
+        public Container(Game game, Options options, UiSystem uiSystem)
         {
-            //Bind<IAuthService>().To<AuthService>().WithSingletonScope();
-            //Bind<GameConnection>().To<GameConnection>().WithSingletonScope();
-            //Bind<ICharacterService>().To<CharacterService>().WithTransientScope();
+            _game = game;
+            _options = options;
+            _uiSystem = uiSystem;
+            InputBindings = GameInputBindings.CreateInputBindings(_game);
         }
+
+        [Instance] private Game Game => _game;
+        [Instance] private UiSystem UI => _uiSystem;
+        [Instance] private Options StartupOptions => _options;
+        [Instance] private GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
+
+        [Instance(StrongInject.Options.AsImplementedInterfaces)]
+        private InputBindingManager<GameInputState> InputBindings { get; }
+
+        [Factory]
+        private GameScopeContainer CreateGameScope() => new GameScopeContainer(_options, this);
+
+
     }
 }

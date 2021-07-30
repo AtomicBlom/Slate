@@ -23,7 +23,7 @@ namespace Slate.Client
         EnterDebugMode
     }
 
-    internal enum GameInputState
+    public enum GameInputState
     {
         Global,
         MainMenu,
@@ -45,7 +45,7 @@ namespace Slate.Client
         RollAxis
     }
 
-    internal static class GameInputBindings
+    internal partial class GameInputBindings
     {
         internal static InputBindingManager<GameInputState> CreateInputBindings(Game game)
         {

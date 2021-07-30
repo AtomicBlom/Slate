@@ -10,19 +10,14 @@ namespace CastIron.Engine.Debugging
 	[PublicAPI]
     public class Metrics : DrawableGameComponent
     {
-	    public static void Install(Game game)
-	    {
-		    game.Components.Add(new Metrics(game));
-	    }
-
         private const int MaxSamples = 100;
 
         private GraphicsMetrics _lastMetrics;
 
-        private Metrics(Game game) : base(game)
+        public Metrics(Game game, IDebugInfoSink? debugInfoSink = null) : base(game)
 	    {
 		    Visible = false;
-		    _debugInfoSink = game.Services.GetService<IDebugInfoSink>();
+		    _debugInfoSink = debugInfoSink;
 	    }
 		
         private readonly Queue<float> _timesPerFrame = new(MaxSamples);
@@ -41,7 +36,7 @@ namespace CastIron.Engine.Debugging
         private float _minFPSLastTick = float.MaxValue;
 		
         private bool _lastKeyboardState;
-		private readonly IDebugInfoSink _debugInfoSink;
+		private readonly IDebugInfoSink? _debugInfoSink;
 
 		public override void Update(GameTime gameTime)
 		{
@@ -98,6 +93,7 @@ namespace CastIron.Engine.Debugging
 
         private void AddMetrics()
         {
+            if (_debugInfoSink == null) return;
 			const DebugInfoCorner corner = DebugInfoCorner.TopRight;
             _debugInfoSink.AddDebugInfo(corner, "FPS", string.Empty)
                 .Add("Current", $"{CurrentFPS:#0.00}")

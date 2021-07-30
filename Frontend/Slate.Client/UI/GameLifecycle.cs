@@ -9,6 +9,7 @@ using Slate.Client.UI.Views;
 using Slate.Client.ViewModel.MainMenu;
 using Slate.Client.ViewModel.Services;
 using Stateless;
+using StrongInject;
 
 namespace Slate.Client.UI
 {
@@ -42,17 +43,18 @@ namespace Slate.Client.UI
     {
         private readonly UiSystem _uiSystem;
         private readonly IAuthService _authService;
-        private readonly GameConnection _gameConnection;
+        private readonly Func<GameScopeContainer> _gameScopeFactory;
         private readonly StateMachine<GameState, GameTrigger> _gameStateMachine = new(GameState.BeforeUI);
-
         private readonly StateMachine<GameState, GameTrigger>.TriggerWithParameters<string> _connectionErrorTrigger =
             new(GameTrigger.ConnectionFailed);
 
-        public GameLifecycle(UiSystem uiSystem, IAuthService authService, GameConnection gameConnection)
+        private GameScopeContainer _gameScopeContainer;
+
+        public GameLifecycle(UiSystem uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory)
         {
             _uiSystem = uiSystem;
             _authService = authService;
-            _gameConnection = gameConnection;
+            _gameScopeFactory = gameScopeFactory;
 
             _gameStateMachine.OnTransitioned((s) => Console.WriteLine($"Lifecycle transitioned from {s.Source} to {s.Destination} because {s.Trigger}"));
             _gameStateMachine.Configure(GameState.BeforeUI)
@@ -73,9 +75,11 @@ namespace Slate.Client.UI
                 .OnExit(OnExitGameStateReadyToLogin);
             _gameStateMachine.Configure(GameState.ConnectToServer)
                 .OnEntryAsync(OnEnterGameStateConnectToServer)
+                .OnExit(OnExitGameStateConnectToServer)
                 .Permit(GameTrigger.ConnectionToServerEstablished, GameState.SelectingCharacter)
                 .Permit(GameTrigger.ConnectionFailed, GameState.ConnectionFailed);
             _gameStateMachine.Configure(GameState.SelectingCharacter)
+                .SubstateOf(GameState.ConnectToServer)
                 .OnEntryAsync(OnEnterGameStateSelectingCharacter)
                 .Permit(GameTrigger.CharacterSelected, GameState.InGame)
                 .Permit(GameTrigger.ConnectionFailed, GameState.ConnectionFailed)
@@ -84,6 +88,7 @@ namespace Slate.Client.UI
                 .OnEntryFrom(_connectionErrorTrigger, OnEnterGameStateConnectionFailed)
                 .Permit(GameTrigger.Reconnect, GameState.ReadyToLogin);
             _gameStateMachine.Configure(GameState.InGame)
+                .SubstateOf(GameState.ConnectToServer)
                 .OnEntry(OnEnterGameStateInGame)
                 .Permit(GameTrigger.ConnectionFailed, GameState.ConnectionFailed);
         }
@@ -133,7 +138,10 @@ namespace Slate.Client.UI
 
         private async Task OnEnterGameStateConnectToServer()
         {
-            var (wasSuccessful, errorMessage) = await _gameConnection.Connect();
+            _gameScopeContainer = _gameScopeFactory();
+            var gameConnection = _gameScopeContainer.Resolve<GameConnection>();
+
+            var (wasSuccessful, errorMessage) = await gameConnection.Value.Connect();
             if (wasSuccessful)
             {
                 await _gameStateMachine.FireAsync(GameTrigger.ConnectionToServerEstablished);
@@ -144,9 +152,14 @@ namespace Slate.Client.UI
             }
         }
 
+        private void OnExitGameStateConnectToServer()
+        {
+            _gameScopeContainer.Dispose();
+        }
+
         private async Task OnEnterGameStateSelectingCharacter()
         {
-            var characterService = new CharacterService(_gameConnection);
+            var characterService = _gameScopeContainer.Resolve<ICharacterService>().Value;
             var characterListViewModel = new CharacterListViewModel(characterService, () => _gameStateMachine.FireAsync(GameTrigger.CharacterSelected));
             _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
             await Task.Run(characterListViewModel.OnNavigatedTo);
@@ -156,7 +169,6 @@ namespace Slate.Client.UI
         {
             _uiSystem.Get(nameof(CharacterListView)).Element
                 .FadeOutAsync(remove: true);
-
         }
 
         private void OnEnterGameStateConnectionFailed(string message)

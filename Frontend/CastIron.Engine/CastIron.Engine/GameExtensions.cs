@@ -8,7 +8,7 @@ namespace CastIron.Engine
     {
         public static TServiceType AddComponentAndService<TServiceType>(this Game game, TServiceType service)
         {
-            game.Services.AddService(service);
+            game.Services.AddService(service.GetType(), service);
             if (service is IGameComponent component)
             {
                 game.Components.Add(component);

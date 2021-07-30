@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using CastIron.Engine;
 using CastIron.Engine.Debugging;
+using CastIron.Engine.Graphics.Camera;
 using CastIron.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,19 +14,15 @@ using MLEM.Ui;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
-using SharpGLTF.Schema2;
-using Slate.Client.Services;
 using Slate.Client.UI;
 using Slate.Client.UI.Views;
-using Camera = CastIron.Engine.Graphics.Camera.Camera;
+using StrongInject;
 using ICamera = CastIron.Engine.Graphics.Camera.ICamera;
 
 namespace Slate.Client
 {
     public class RudeEngineGame : Game
     {
-        private readonly Options _options;
-        
         private readonly PBREnvironment _lightsAndFog = PBREnvironment.CreateDefault();
         private readonly ModelInstance[] _cells = new ModelInstance[5 * 5];
         private readonly GraphicsDeviceManager _graphics;
@@ -39,6 +36,8 @@ namespace Slate.Client
         private MeshCollection _meshCollection;
         private ModelInstance _test;
         private ModelInstance _box;
+        private Container _container;
+        private readonly Options _options;
 
         public RudeEngineGame(Options options)
         {
@@ -53,6 +52,7 @@ namespace Slate.Client
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            
         }
 
         private void Graphics_OnPreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
@@ -66,12 +66,12 @@ namespace Slate.Client
 
         protected override void LoadContent()
         {
-            _playerInput = this.AddComponentAndService(GameInputBindings.CreateInputBindings(this));
-            var debugInfoSink = this.AddComponentAndService<IDebugInfoSink>(new DebugInfoSink(this) { Enabled = true });
-            Metrics.Install(this);
-            _camera = this.AddComponentAndService<ICamera>(new Camera(GraphicsDevice, debugInfoSink));
+            //_playerInput = this.AddComponentAndService(GameInputBindings.CreateInputBindings(this));
+            //var debugInfoSink = this.AddComponentAndService<IDebugInfoSink>(new DebugInfoSink(this) { Enabled = true });
+            //Metrics.Install(this);
+            //_camera = this.AddComponentAndService<ICamera>(new Camera(GraphicsDevice, debugInfoSink));
             this.IsMouseVisible = true;
-            this.AddComponentAndService(new DebugMovementComponent(_playerInput, _camera));
+            //this.AddComponentAndService(new DebugMovementComponent(_playerInput, _camera));
 
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -88,10 +88,18 @@ namespace Slate.Client
 
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem = new UiSystem(this, uiStyle);
+            _container = new Container(this, _options, _uiSystem);
+            var gameComponents = _container.Resolve<IGameComponent[]>();
+            foreach (var gameComponent in gameComponents.Value)
+            {
+                this.AddComponentAndService(gameComponent);
+            }
+            _gameLifecycle = _container.Resolve<GameLifecycle>().Value;
+            _camera = _container.Resolve<ICamera>().Value;
 
-            var authService = new AuthService(_options.AuthServer);
-            var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort, authService);
-            _gameLifecycle = new GameLifecycle(_uiSystem, authService, gameConnection);
+            //var authService = new AuthService(_options.AuthServer);
+            //var gameConnection = new GameConnection(_options.GameServer, _options.GameServerPort, authService);
+            //_gameLifecycle = new GameLifecycle(_uiSystem, authService, gameConnection);
             _gameLifecycle.Start();
             
             var gltfFactory = new GltfModelFactory(GraphicsDevice);
@@ -99,7 +107,7 @@ namespace Slate.Client
             _characterModel = gltfFactory.LoadModel(Path.Combine("Content", "MaleElfNew.glb")).DefaultModel.CreateInstance();
             _box = gltfFactory.LoadModel(Path.Combine("Content", "BoxAnimated.glb")).DefaultModel.CreateInstance();
             
-
+            this.LoadComponentContent(Content);
 
         }
 
@@ -139,13 +147,8 @@ namespace Slate.Client
 
             _characterModel.WorldMatrix = _cells[13].WorldMatrix
                                           + Matrix.CreateTranslation(new Vector3(5, 25, 5))
-                                          + Matrix.CreateScale(0.5f + MathF.Sin(delta) * 1.5f)
-                                          ;
-
-            var mouseX = Mouse.GetState().X / (float)Window.ClientBounds.Width;
-            var mouseY = Mouse.GetState().Y / (float)Window.ClientBounds.Height;
-
-            var angle = MathF.Tan(mouseY / mouseX);
+                                          + Matrix.CreateScale(0.5f + MathF.Sin(delta) * 1.5f);
+            
             _characterModel.Armature.SetAnimationFrame((0, 0.5f, 0.5f), (1, 0.5f, 0.5f));
             _characterModel.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
             _box.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
@@ -157,17 +160,15 @@ namespace Slate.Client
             _uiSystem.DrawEarly(gameTime, _spriteBatch);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            var modelPosition = _cells[13].WorldMatrix.Translation;
+            
             var dc = new ModelDrawingContext(this.GraphicsDevice)
             {
                 NearPlane = 0.1f
             };
 
-            
-            dc.SetCamera(_camera.View);
             dc.SetProjectionMatrix(_camera.Projection);
-            
+            dc.SetCamera(_camera.View);
+
             dc.DrawSceneInstances(_lightsAndFog, _cells);
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);
             

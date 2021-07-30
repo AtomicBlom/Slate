@@ -49,6 +49,7 @@ namespace CastIron.Engine.Debugging
         public DebugInfoSink(Game game) : base(game)
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Enabled = true;
         }
 
         public override void Draw(GameTime gameTime)
