@@ -9,7 +9,7 @@ namespace CastIron.Engine.Graphics.Camera
     public class ChaseCamera : ICameraBehaviour
     {
         private GraphicsDevice? _graphicsDevice;
-        private float _fieldOfViewDegrees = 80f;
+        private float _fieldOfViewDegrees = 45f;
         
         
         private float _nearClipPlane = .05f;
@@ -41,7 +41,7 @@ namespace CastIron.Engine.Graphics.Camera
                     MathF.Sin(_angle) * _followDistance
                     );
 
-                _view = Matrix.CreateLookAt(cameraPosition, cameraPosition + _targetLocation, Vector3.Up);
+                _view = Matrix.CreateLookAt(cameraPosition, _targetLocation, Vector3.Up);
 
                 return _view;
             }
@@ -70,7 +70,7 @@ namespace CastIron.Engine.Graphics.Camera
             {
                 if (!_worldDirty) return _world;
                 _worldDirty = false;
-                _world = Matrix.CreateWorld(_targetLocation, Vector3.Forward, Vector3.Up);
+                _world = Matrix.CreateWorld(Vector3.Zero, Vector3.Forward, Vector3.Up);
                 return _world;
             }
         }

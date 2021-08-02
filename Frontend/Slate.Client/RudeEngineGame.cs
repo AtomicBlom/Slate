@@ -167,10 +167,12 @@ namespace Slate.Client
                                           + Matrix.CreateScale(0.5f + MathF.Sin(delta) * 1.5f);
             
             _characterModel.Armature.SetAnimationFrame((0, 0.5f, 0.5f), (1, 0.5f, 0.5f));
-            _characterModel.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
-            _box.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
+            _characterModel.WorldMatrix = _camera.World * _cells[13].WorldMatrix * Matrix.CreateTranslation(Vector3.Up * 1);
+            //_box.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
+            _followCamera.FollowDistance = 5.0f;
+            _followCamera.VerticalOffset = 5.0f;
             _followCamera.TargetLocation = _characterModel.WorldMatrix.Translation;
-            _followCamera.Angle = (float)(MathF.PI * gameTime.TotalGameTime.TotalSeconds);
+            _followCamera.Angle = (float)(MathF.PI * gameTime.TotalGameTime.TotalSeconds * 0.05f) ;
             base.Update(gameTime);
         }
 
@@ -184,9 +186,10 @@ namespace Slate.Client
             {
                 NearPlane = 0.1f
             };
-
-            dc.SetProjectionMatrix(_camera.Projection);
-            dc.SetCamera(Matrix.Invert(_camera.View));
+            dc._View = _camera.View;
+            dc._Projection = _camera.Projection;
+            //dc.SetCamera(_camera.View);
+            //dc.SetProjectionMatrix(_camera.Projection);
 
             dc.DrawSceneInstances(_lightsAndFog, _cells);
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);
