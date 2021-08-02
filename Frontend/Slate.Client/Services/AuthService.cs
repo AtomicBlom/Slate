@@ -1,21 +1,28 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IdentityModel;
 using IdentityModel.Client;
+using Serilog;
 using Slate.Client.ViewModel.Services;
 
 namespace Slate.Client.Services
 {
     public class AuthService : IAuthService, IProvideAuthToken
     {
+        private readonly ILogger _logger;
+        private readonly IUserLogEnricher _userLogEnricher;
         private DiscoveryDocumentResponse? _disco;
         private readonly Uri _authServer;
 
         public event Action? LoggedIn;
         private readonly HttpClient _client;
 
-        public AuthService(Options options)
+        public AuthService(Options options, ILogger logger, IUserLogEnricher userLogEnricher)
         {
+            _logger = logger;
+            _userLogEnricher = userLogEnricher;
             _authServer = options.AuthServer;
             _client = new HttpClient();
         }
@@ -39,9 +46,15 @@ namespace Slate.Client.Services
                     Password = password
                 });
 
+                var jwtHandler = new JwtSecurityTokenHandler();
+                var jwt = jwtHandler.ReadJwtToken(result.AccessToken);
+                
+                _userLogEnricher.UserId = jwt.Subject;
+                
                 LoggedIn?.Invoke();
 
-                Console.WriteLine(result.Raw);
+                _logger.Information("Successfully Logged in as {Username}", username);
+
                 return null;
             }
             catch (Exception e)
@@ -54,26 +67,22 @@ namespace Slate.Client.Services
 
         public async Task<string?> DiscoverAuthServer()
         {
-            Console.WriteLine($"Getting Auth Server discovery document from {_authServer}...");
+            _logger.Information("Getting Auth Server discovery document from {AuthServer}", _authServer);
             try
             {
                 var disco = await _client.GetDiscoveryDocumentAsync(_authServer.ToString());
                 if (disco.IsError)
                 {
-                    Console.WriteLine($"Error retrieving discovery document");
-                    Console.WriteLine(disco.Error);
-                    return disco.Error;
+                    throw new Exception(disco.Error);
                 }
 
                 _disco = disco;
-                Console.WriteLine($"discovery document Successfully retrieved");
-
+                _logger.Information("discovery document Successfully retrieved");
                 return null;
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error retrieving discovery document");
-                Console.WriteLine(e);
+                _logger.Error(e, "Error retreiving discovery document");
                 return e.Message;
             }
         }

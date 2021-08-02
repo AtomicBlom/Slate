@@ -2,7 +2,7 @@
   "profiles": {
     "Client": {
       "commandName": "Project",
-      "commandLineArgs": "--AuthServer https://localhost:8001 --GameServer localhost --GameServerPort 4000",
+      "commandLineArgs": "--AuthServer https://localhost:8001 --GameServer localhost --GameServerPort 4000 --log-console --log-seq http://localhost:5341/",
       "hotReloadProfile": "aspnetcore"
     }
   }

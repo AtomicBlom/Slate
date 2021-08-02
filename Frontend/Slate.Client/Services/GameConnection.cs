@@ -5,7 +5,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
-using Slate.Client.ViewModel.Services;
 using Slate.Networking.External.Protocol.ClientToServer;
 using Slate.Networking.External.Protocol.Model;
 using Slate.Networking.External.Protocol.Services;

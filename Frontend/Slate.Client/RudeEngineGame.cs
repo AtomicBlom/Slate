@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using CastIron.Engine;
+using CastIron.Engine.Graphics.Camera;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,6 +12,7 @@ using MLEM.Ui;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
+using Serilog;
 using Slate.Client.UI;
 using Slate.Client.UI.Views;
 using StrongInject;
@@ -32,9 +34,12 @@ namespace Slate.Client
         private ModelInstance _box;
         private Container _container;
         private readonly Options _options;
+        private ChaseCamera _followCamera;
 
         public RudeEngineGame(Options options)
         {
+            Content.RootDirectory = "Content";
+
             _options = options;
             _graphics = new GraphicsDeviceManager(this)
             {
@@ -44,9 +49,32 @@ namespace Slate.Client
             
             _graphics.PreparingDeviceSettings += Graphics_OnPreparingDeviceSettings;
 
-            Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            
+
+            ConfigureLogging(options);
+        }
+
+        private (ILogger logger, IUserLogEnricher UserLogEnricher) ConfigureLogging(Options options)
+        {
+            var slateLocalDir =
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Slate");
+            if (!Directory.Exists(slateLocalDir))
+            {
+                Directory.CreateDirectory(slateLocalDir);
+            }
+
+            var userLogEnricher = new UserLogEnricher();
+            var logConfig = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithProperty("Application", "Slate Client")
+                .Enrich.With(userLogEnricher)
+                .WriteTo.File(Path.Combine(slateLocalDir, "log.txt"), rollingInterval: RollingInterval.Day);
+
+            if (options.LogToConsole) logConfig = logConfig.WriteTo.Console();
+            if (!string.IsNullOrWhiteSpace(options.SeqUrl)) logConfig = logConfig.WriteTo.Seq(options.SeqUrl);
+
+            var log = logConfig.CreateLogger();
+            return (log, userLogEnricher);
         }
 
         private void Graphics_OnPreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
@@ -60,28 +88,19 @@ namespace Slate.Client
 
         protected override void LoadContent()
         {
-            SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            var uiTexture = Content.Load<Texture2D>("UI/MockUI");
-            var uiStyle = new UntexturedStyle(_spriteBatch)
-            {
-                Font = new GenericSpriteFont(font),
-                TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8),
-                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20),
-                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8),
-                RadioTexture = new NinePatch(new TextureRegion(uiTexture, 128, 172, 32, 32), 0),
-                RadioCheckmark = new TextureRegion(uiTexture, 192, 172, 32, 32)
-            };
+            var (log, userLogEnricher) = ConfigureLogging(_options);
 
-            uiStyle.Font = new GenericSpriteFont(font);
-            _uiSystem = new UiSystem(this, uiStyle);
-            _container = new Container(this, _options, _uiSystem);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _uiSystem = new UiSystem(this, new UntexturedStyle(_spriteBatch));
+            _container = new Container(this, _options, _uiSystem, log, userLogEnricher);
+
             var gameComponents = _container.Resolve<IGameComponent[]>();
             foreach (var gameComponent in gameComponents.Value)
             {
                 Components.Add(gameComponent);
             }
             _camera = _container.Resolve<ICamera>().Value;
+            _camera.CameraBehaviour = _followCamera = new ChaseCamera();
             
             _gameLifecycle = _container.Resolve<GameLifecycle>().Value;
             _gameLifecycle.Start();
@@ -92,6 +111,20 @@ namespace Slate.Client
             _box = gltfFactory.LoadModel(Path.Combine("Content", "BoxAnimated.glb")).DefaultModel.CreateInstance();
             
             this.LoadComponentContent(Content);
+
+            SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
+            var uiTexture = Content.Load<Texture2D>("UI/MockUI");
+            var uiStyle = new UntexturedStyle(_spriteBatch)
+            {
+                Font = new GenericSpriteFont(font),
+                TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8),
+                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20),
+                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8),
+                RadioTexture = new NinePatch(new TextureRegion(uiTexture, 128, 172, 32, 32), 0),
+                RadioCheckmark = new TextureRegion(uiTexture, 192, 172, 32, 32)
+            };
+            uiStyle.Font = new GenericSpriteFont(font);
+            _uiSystem.Style = uiStyle;
 
         }
 
@@ -136,6 +169,8 @@ namespace Slate.Client
             _characterModel.Armature.SetAnimationFrame((0, 0.5f, 0.5f), (1, 0.5f, 0.5f));
             _characterModel.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
             _box.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
+            _followCamera.TargetLocation = _characterModel.WorldMatrix.Translation;
+            _followCamera.Angle = (float)(MathF.PI * gameTime.TotalGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 
@@ -151,7 +186,7 @@ namespace Slate.Client
             };
 
             dc.SetProjectionMatrix(_camera.Projection);
-            dc.SetCamera(_camera.World);
+            dc.SetCamera(Matrix.Invert(_camera.View));
 
             dc.DrawSceneInstances(_lightsAndFog, _cells);
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);

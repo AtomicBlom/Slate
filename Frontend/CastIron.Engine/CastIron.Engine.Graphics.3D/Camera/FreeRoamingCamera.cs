@@ -28,8 +28,8 @@ namespace CastIron.Engine.Graphics.Camera
         public void SetGraphicsDevice(GraphicsDevice graphicsDevice)
         {
             _graphicsDevice = graphicsDevice;
-            ReCreateWorldAndView();
             ReCreateThePerspectiveProjectionMatrix(FieldOfViewDegrees, NearClipPlane, FarClipPlane);
+            ReCreateWorldAndView();
         }
 
         /// <summary>
@@ -117,9 +117,9 @@ namespace CastIron.Engine.Graphics.Camera
         public void NotifyDebugInfo(IDebugInfoSink debugInfoSink)
         {
             World.Decompose(out _, out var rotation, out var translation);
-            debugInfoSink.AddDebugInfo(DebugInfoCorner.TopLeft, "Camera")
-                .Add("position", $"(x: {translation.X:0.000}, y: {translation.Y:0.000}, z: {translation.Z:0.000})")
-                .Add("rotation", $"(x: {rotation.X:0.000}, y: {rotation.Y:0.000}, z: {rotation.Z:0.000})");
+            debugInfoSink.AddDebugInfo(DebugInfoCorner.TopLeft, "Camera");
+            debugInfoSink.AddDebugInfo(DebugInfoCorner.TopLeft, "position", $"(x: {translation.X:0.000}, y: {translation.Y:0.000}, z: {translation.Z:0.000})");
+            debugInfoSink.AddDebugInfo(DebugInfoCorner.TopLeft, "rotation", $"(x: {rotation.X:0.000}, y: {rotation.Y:0.000}, z: {rotation.Z:0.000})");
         }
 
         /// <summary>

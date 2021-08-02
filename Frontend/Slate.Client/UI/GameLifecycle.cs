@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CastIron.Engine;
 using MLEM.Ui;
+using Serilog;
 using Slate.Client.Services;
 using Slate.Client.UI.Elements;
 using Slate.Client.UI.MVVM;
@@ -44,19 +45,21 @@ namespace Slate.Client.UI
         private readonly UiSystem _uiSystem;
         private readonly IAuthService _authService;
         private readonly Func<GameScopeContainer> _gameScopeFactory;
+        private readonly ILogger _logger;
         private readonly StateMachine<GameState, GameTrigger> _gameStateMachine = new(GameState.BeforeUI);
         private readonly StateMachine<GameState, GameTrigger>.TriggerWithParameters<string> _connectionErrorTrigger =
             new(GameTrigger.ConnectionFailed);
 
         private GameScopeContainer _gameScopeContainer;
 
-        public GameLifecycle(UiSystem uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory)
+        public GameLifecycle(UiSystem uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory, ILogger logger)
         {
             _uiSystem = uiSystem;
             _authService = authService;
             _gameScopeFactory = gameScopeFactory;
+            _logger = logger;
 
-            _gameStateMachine.OnTransitioned((s) => Console.WriteLine($"Lifecycle transitioned from {s.Source} to {s.Destination} because {s.Trigger}"));
+            _gameStateMachine.OnTransitioned((s) => _logger.Verbose("Lifecycle transitioned from {SourceState} to {DestinationState} because {Trigger}", s.Source, s.Destination, s.Trigger));
             _gameStateMachine.Configure(GameState.BeforeUI)
                 .Permit(GameTrigger.StateMachineStarted, GameState.IntroCards);
             _gameStateMachine.Configure(GameState.IntroCards)
