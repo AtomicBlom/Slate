@@ -4,19 +4,19 @@ namespace Slate.Client.UI.Framework
 {
     public class SingleChildElement : LayoutElement
     {
-        private LayoutElement content;
+        private LayoutElement? _content;
 
-        public LayoutElement Content
+        public LayoutElement? Content
         {
-            get => this.content;
+            get => this._content;
             set
             {
-                if (SetValue(ref this.content, value))
+                if (SetValue(ref this._content, value))
                 {
                     this.InvalidateMeasure();
-                    if (this.content != null)
+                    if (this._content != null)
                     {
-                        this.content.InvalidateMeasure();
+                        this._content.InvalidateMeasure();
                     }
                 }
             }
@@ -24,20 +24,16 @@ namespace Slate.Client.UI.Framework
 
         protected override Vector2 MeasureOverride()
         {
-            content?.Measure();
-            var result = (content?.DesiredSize ?? Vector2.Zero) +
+            _content?.Measure();
+            var result = (_content?.DesiredSize ?? Vector2.Zero) +
                          new Vector2(Margin.Width + Padding.Width, Margin.Height + Padding.Width);
             return result;
         }
 
         protected override Rectangle ArrangeOverride(Rectangle size)
         {
-
-
             var childSize = new Rectangle(size.Location, size.Size);
-            childSize.Inflate(-(Margin.Width + Padding.Width), -(Margin.Height - Padding.Height));
-            content?.Arrange(childSize);
-
+            _content?.Arrange(childSize.Deflate(Margin).Deflate(Padding));
             return DefaultArrangeBehaviour;
         }
     }

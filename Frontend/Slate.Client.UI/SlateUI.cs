@@ -1,4 +1,5 @@
-﻿using Slate.Client.UI.Framework;
+﻿using Serilog;
+using Slate.Client.UI.Framework;
 
 namespace Slate.Client.UI
 {
@@ -6,9 +7,9 @@ namespace Slate.Client.UI
     {
         private readonly Dispatcher _dispatcher;
 
-        public SlateUI()
+        public SlateUI(ILogger logger)
         {
-            _dispatcher = new Dispatcher();
+            _dispatcher = new Dispatcher(logger);
         }
 
 

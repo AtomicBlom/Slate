@@ -8,5 +8,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.1983-develop" />
+		<PackageReference Include="Serilog" Version="2.10.0" />
 	</ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ namespace Slate.Client.UI.Framework
     {
         private Dictionary<UIPropertyKey, UIPropertyValue> uiProperties = new();
 
-        public void SetProperty<T>(UIProperty<T> property, T value)
+        public UIElement SetProperty<T>(UIProperty<T> property, T value)
         {
             if (!uiProperties.TryGetValue(property.Key, out var valueStorage))
             {
@@ -23,6 +23,7 @@ namespace Slate.Client.UI.Framework
             typedStorage.Value = value;
 
             property.Notify(this, previousValue, value);
+            return this;
         }
 
         public void ClearProperty<T>(UIProperty<T> property)
