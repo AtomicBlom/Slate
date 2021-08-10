@@ -51,6 +51,8 @@ namespace Slate.Client.UI
             new(GameTrigger.ConnectionFailed);
 
         private GameScopeContainer _gameScopeContainer;
+        private Owned<GameConnection> _gameConnection;
+        private Owned<ICharacterService> _characterService;
 
         public GameLifecycle(UiSystem uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory, ILogger logger)
         {
@@ -142,9 +144,9 @@ namespace Slate.Client.UI
         private async Task OnEnterGameStateConnectToServer()
         {
             _gameScopeContainer = _gameScopeFactory();
-            var gameConnection = _gameScopeContainer.Resolve<GameConnection>();
+            _gameConnection = _gameScopeContainer.Resolve<GameConnection>();
 
-            var (wasSuccessful, errorMessage) = await gameConnection.Value.Connect();
+            var (wasSuccessful, errorMessage) = await _gameConnection.Value.Connect();
             if (wasSuccessful)
             {
                 await _gameStateMachine.FireAsync(GameTrigger.ConnectionToServerEstablished);
@@ -157,13 +159,14 @@ namespace Slate.Client.UI
 
         private void OnExitGameStateConnectToServer()
         {
+            _gameConnection.Dispose();
             _gameScopeContainer.Dispose();
         }
 
         private async Task OnEnterGameStateSelectingCharacter()
         {
-            var characterService = _gameScopeContainer.Resolve<ICharacterService>().Value;
-            var characterListViewModel = new CharacterListViewModel(characterService, () => _gameStateMachine.FireAsync(GameTrigger.CharacterSelected));
+            _characterService = _gameScopeContainer.Resolve<ICharacterService>();
+            var characterListViewModel = new CharacterListViewModel(_characterService, () => _gameStateMachine.FireAsync(GameTrigger.CharacterSelected));
             _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
             await Task.Run(characterListViewModel.OnNavigatedTo);
         }
@@ -172,6 +175,7 @@ namespace Slate.Client.UI
         {
             _uiSystem.Get(nameof(CharacterListView)).Element
                 .FadeOutAsync(remove: true);
+            _characterService.Dispose();
         }
 
         private void OnEnterGameStateConnectionFailed(string message)
