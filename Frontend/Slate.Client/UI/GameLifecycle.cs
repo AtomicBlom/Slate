@@ -73,6 +73,7 @@ namespace Slate.Client.UI
                 .Permit(GameTrigger.AssetsFinishedLoading, GameState.DownloadingDISCO);
             _gameStateMachine.Configure(GameState.DownloadingDISCO)
                 .OnEntry(OnEnterGameStateDownloadingDISCO)
+                .OnExit(OnExitGameStateDownloadingDISCO)
                 .Permit(GameTrigger.DiscoDownloadSucceeded, GameState.ReadyToLogin);
             _gameStateMachine.Configure(GameState.ReadyToLogin)
                 .OnEntry(OnEnterGameStateReadyToLogin)
@@ -100,13 +101,13 @@ namespace Slate.Client.UI
 
         private void OnEnterGameStateIntroCards()
         {
-
             var viewModel = new IntroCardsViewModel
             {
                 NextCommand = new RelayCommand(() => _gameStateMachine.Fire(GameTrigger.AssetsStartedLoading))
             };
             _uiSystem.Add(nameof(IntroCardsView), IntroCardsView.CreateView(viewModel));
         }
+
         private void OnExitGameStateIntroCards()
         {
             _uiSystem.Remove(nameof(IntroCardsView));
@@ -119,7 +120,18 @@ namespace Slate.Client.UI
 
         private void OnEnterGameStateDownloadingDISCO()
         {
-            _gameStateMachine.Fire(GameTrigger.DiscoDownloadSucceeded);
+
+            var viewModel = new ContactingAuthServerViewModel(_authService, () => _gameStateMachine.FireAsync(GameTrigger.DiscoDownloadSucceeded));
+            Task.Run(viewModel.OnNavigatedTo);
+            _uiSystem.Add(nameof(ContactingAuthServerView), ContactingAuthServerView.CreateView(viewModel));
+        }
+
+        private void OnExitGameStateDownloadingDISCO()
+        {
+             TaskDispatcher.FireAndForget(async () => await
+                _uiSystem.Get(nameof(ContactingAuthServerView)).Element
+                    .FadeOutAsync(remove: true)
+            );
         }
 
         private void OnEnterGameStateReadyToLogin()
@@ -129,7 +141,6 @@ namespace Slate.Client.UI
                 Username = "atomicblom",
                 Password = "password"
             };
-            Task.Run(loginViewModel.OnNavigatedTo);
             _uiSystem.Add(nameof(LoginView), LoginView.CreateView(loginViewModel));
         }
 
@@ -166,7 +177,7 @@ namespace Slate.Client.UI
         private async Task OnEnterGameStateSelectingCharacter()
         {
             _characterService = _gameScopeContainer.Resolve<ICharacterService>();
-            var characterListViewModel = new CharacterListViewModel(_characterService, () => _gameStateMachine.FireAsync(GameTrigger.CharacterSelected));
+            var characterListViewModel = new CharacterListViewModel(_characterService.Value, () => _gameStateMachine.FireAsync(GameTrigger.CharacterSelected));
             _uiSystem.Add(nameof(CharacterListView), CharacterListView.CreateView(characterListViewModel));
             await Task.Run(characterListViewModel.OnNavigatedTo);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CastIron.Engine;
 using CastIron.Engine.Debugging;
 using CastIron.Engine.Graphics.Camera;
 using CastIron.Engine.Input;
@@ -19,6 +20,7 @@ namespace Slate.Client
     [Register(typeof(Camera), Scope.SingleInstance, typeof(ICamera), typeof(IGameComponent))]
     [Register(typeof(DebugMovementComponent), Scope.SingleInstance, typeof(IGameComponent))]
     [Register(typeof(Metrics), Scope.SingleInstance, typeof(IGameComponent))]
+    [Register(typeof(TaskDispatcher), Scope.SingleInstance, typeof(IGameComponent))]
     [Register(typeof(GameLifecycle))]
     public partial class Container : 
         IContainer<GameScopeContainer>, 

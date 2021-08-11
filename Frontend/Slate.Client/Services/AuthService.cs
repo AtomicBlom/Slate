@@ -65,7 +65,7 @@ namespace Slate.Client.Services
 
         public string? AuthToken { get; }
 
-        public async Task<string?> DiscoverAuthServer()
+        public async Task<(bool Succeeded, string? ErrorMessage)> DiscoverAuthServer()
         {
             _logger.Information("Getting Auth Server discovery document from {AuthServer}", _authServer);
             try
@@ -78,12 +78,12 @@ namespace Slate.Client.Services
 
                 _disco = disco;
                 _logger.Information("discovery document Successfully retrieved");
-                return null;
+                return (true, null);
             }
             catch (Exception e)
             {
                 _logger.Error(e, "Error retreiving discovery document");
-                return e.Message;
+                return (false, e.Message);
             }
         }
     }

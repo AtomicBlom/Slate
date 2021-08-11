@@ -74,16 +74,6 @@ namespace Slate.Client.ViewModel.MainMenu
             }
         }
 
-        private bool CanLogin() => true; /*_disco != null && 
-                                             !string.IsNullOrWhiteSpace(Username) && 
-                                             !string.IsNullOrWhiteSpace(Password);*/
-
-        
-
-        public async Task OnNavigatedTo()
-        {
-            await _authService.DiscoverAuthServer();
-            RaisePropertyChanged(nameof(LoginCommand));
-        }
+        private bool CanLogin() => !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password);
     }
 }

@@ -23,6 +23,7 @@ namespace Slate.Client.UI.Elements
             easing ??= Easings.InCubic;
 
             var startOpacity = element.DrawAlpha;
+            await TaskDispatcher.NextUpdate;
             var sw = Stopwatch.StartNew();
             await Task.Run(async () =>
             {
@@ -42,11 +43,16 @@ namespace Slate.Client.UI.Elements
                 {
                     if (element.Parent == null)
                     {
-                        element.Root.System.Remove(element.Root.Name);
+                        TaskDispatcher.FireOnUIAndForget(() => {
+                            element.Root.System.Remove(element.Root.Name);
+                        });
                     }
                     else
                     {
-                        element.Parent.RemoveChild(element);
+                        TaskDispatcher.FireOnUIAndForget(() =>
+                        {
+                            element.Parent.RemoveChild(element);
+                        });
                     }
                 }
             });

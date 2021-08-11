@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using CastIron.Engine;
 using CastIron.Engine.Graphics.Camera;
 using Microsoft.Xna.Framework;
@@ -13,6 +14,7 @@ using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Serilog;
+using Serilog.Core;
 using Slate.Client.UI;
 using Slate.Client.UI.Views;
 using StrongInject;
@@ -50,11 +52,9 @@ namespace Slate.Client
             _graphics.PreparingDeviceSettings += Graphics_OnPreparingDeviceSettings;
 
             IsMouseVisible = true;
-
-            ConfigureLogging(options);
         }
 
-        private (ILogger logger, IUserLogEnricher UserLogEnricher) ConfigureLogging(Options options)
+        private (Logger logger, IUserLogEnricher UserLogEnricher) ConfigureLogging(Options options)
         {
             var slateLocalDir =
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Slate");
@@ -89,6 +89,15 @@ namespace Slate.Client
         protected override void LoadContent()
         {
             var (log, userLogEnricher) = ConfigureLogging(_options);
+            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            {
+                log.Fatal(args.ExceptionObject as Exception, "Unhandled Exception");
+                Log.CloseAndFlush();
+            };
+            TaskScheduler.UnobservedTaskException += (sender, args) =>
+            {
+                log.Error(args.Exception, "Unobserved Exception");
+            };
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _uiSystem = new UiSystem(this, new UntexturedStyle(_spriteBatch));

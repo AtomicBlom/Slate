@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
@@ -9,6 +12,7 @@ namespace CastIron.Engine
     {
         private static TaskCompletionSource<GameTime> thisUpdateSource = new();
         public static Task<GameTime> NextUpdate = thisUpdateSource.Task;
+        private static ConcurrentQueue<Action> _mainThreadActions = new();
 
         public override void Update(GameTime gameTime)
         {
@@ -16,6 +20,42 @@ namespace CastIron.Engine
             thisUpdateSource = new();
             NextUpdate = thisUpdateSource.Task;
             thisUpdate.SetResult(gameTime);
+
+            while (_mainThreadActions.Any() && _mainThreadActions.TryDequeue(out var action))
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    // LOG THIS
+                }
+            }
+        }
+
+        public static void FireOnUIAndForget(Action action)
+        {
+            _mainThreadActions.Enqueue(() => action());
+        }
+
+        public static Task FireOnUIAndForgetAsync(Action action)
+        {
+            var tcs = new TaskCompletionSource();
+
+            _mainThreadActions.Enqueue(() =>
+            {
+                try
+                {
+                    action();
+                    tcs.SetResult();
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            });
+            return tcs.Task;
         }
 
         public static async void FireAndForget(Func<Task> task)
