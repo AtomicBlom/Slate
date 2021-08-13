@@ -39,9 +39,6 @@ namespace Slate.Client
         MoveUpDownAxis,
         PitchAxis,
         YawAxis,
-        NewLevel,
-        FocusRoom,
-        UnFocusRoom,
         RollAxis
     }
 
@@ -88,10 +85,6 @@ namespace Slate.Client
                     debugBindings.LockMouseToScreenCenter();
                     debugBindings.DefineButtonBinding(DebugControls.ExitDebugMode)
                         .KeyBinding(Keys.OemTilde).WithAlt();
-                    debugBindings.DefineButtonBinding(DebugControls.NewLevel)
-                        .KeyBinding(Keys.P);
-                    debugBindings.DefineButtonBinding(DebugControls.FocusRoom).KeyBinding(Keys.F);
-                    debugBindings.DefineButtonBinding(DebugControls.UnFocusRoom).KeyBinding(Keys.G);
                     debugBindings.DefineAxisBinding(DebugControls.MoveForwardBackAxis)
                         .ScaledTo(moveSpeed)
                         .KeyBinding(Keys.W, 1.0f).KeyBinding(Keys.S, -1.0f)

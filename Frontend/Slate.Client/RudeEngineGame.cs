@@ -46,9 +46,11 @@ namespace Slate.Client
             _graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = 1366,
-                PreferredBackBufferHeight = 768
+                PreferredBackBufferHeight = 768,
+                SynchronizeWithVerticalRetrace = false
             };
-            
+            IsFixedTimeStep = false;
+
             _graphics.PreparingDeviceSettings += Graphics_OnPreparingDeviceSettings;
 
             IsMouseVisible = true;

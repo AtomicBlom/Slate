@@ -55,7 +55,7 @@
 		<PackageReference Include="stateless" Version="5.11.0" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.38.0" />
 		<PackageReference Include="StrongInject" Version="1.2.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Dependencies\MLEM\MLEM.Ui\MLEM.Ui.csproj" />
