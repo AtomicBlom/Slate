@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CastIron.Engine;
 using MLEM.Ui;
+using Myra.Graphics2D.UI;
 using Serilog;
 using Slate.Client.Services;
 using Slate.Client.UI.Elements;
@@ -42,7 +43,7 @@ namespace Slate.Client.UI
 
     internal class GameLifecycle
     {
-        private readonly UiSystem _uiSystem;
+        private readonly Desktop _uiSystem;
         private readonly IAuthService _authService;
         private readonly Func<GameScopeContainer> _gameScopeFactory;
         private readonly ILogger _logger;
@@ -54,7 +55,7 @@ namespace Slate.Client.UI
         private Owned<GameConnection> _gameConnection;
         private Owned<ICharacterService> _characterService;
 
-        public GameLifecycle(UiSystem uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory, ILogger logger)
+        public GameLifecycle(Desktop uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory, ILogger logger)
         {
             _uiSystem = uiSystem;
             _authService = authService;

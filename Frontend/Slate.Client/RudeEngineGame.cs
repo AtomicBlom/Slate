@@ -13,6 +13,8 @@ using MLEM.Ui;
 using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
+using Myra;
+using Myra.Graphics2D.UI;
 using Serilog;
 using Serilog.Core;
 using Slate.Client.UI;
@@ -37,6 +39,8 @@ namespace Slate.Client
         private Container _container;
         private readonly Options _options;
         private ChaseCamera _followCamera;
+        private Desktop _desktop;
+
 
         public RudeEngineGame(Options options)
         {
@@ -90,6 +94,8 @@ namespace Slate.Client
 
         protected override void LoadContent()
         {
+            MyraEnvironment.Game = this;
+
             var (log, userLogEnricher) = ConfigureLogging(_options);
             AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             {
@@ -103,7 +109,7 @@ namespace Slate.Client
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _uiSystem = new UiSystem(this, new UntexturedStyle(_spriteBatch));
-            _container = new Container(this, _options, _uiSystem, log, userLogEnricher);
+            _container = new Container(this, _options, _desktop, log, userLogEnricher);
 
             var gameComponents = _container.Resolve<IGameComponent[]>();
             foreach (var gameComponent in gameComponents.Value)
@@ -136,6 +142,8 @@ namespace Slate.Client
             };
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem.Style = uiStyle;
+
+            _desktop.Root = new Grid();
 
         }
 
@@ -206,6 +214,8 @@ namespace Slate.Client
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);
             
             _uiSystem.Draw(gameTime, _spriteBatch);
+
+            _desktop.Render();
 
             base.Draw(gameTime);
         }

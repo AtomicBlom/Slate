@@ -6,6 +6,7 @@ using CastIron.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MLEM.Ui;
+using Myra.Graphics2D.UI;
 using Serilog;
 using Serilog.Core;
 using Slate.Client.Services;
@@ -31,11 +32,11 @@ namespace Slate.Client
     {
         private readonly Game _game;
         private readonly Options _options;
-        private readonly UiSystem _uiSystem;
+        private readonly Desktop _uiSystem;
         private readonly ILogger _logger;
         private readonly IUserLogEnricher _userLogEnricher;
 
-        public Container(Game game, Options options, UiSystem uiSystem, ILogger logger, IUserLogEnricher userLogEnricher)
+        public Container(Game game, Options options, Desktop uiSystem, ILogger logger, IUserLogEnricher userLogEnricher)
         {
             _game = game;
             _options = options;
@@ -46,7 +47,7 @@ namespace Slate.Client
         }
 
         [Instance] private Game Game => _game;
-        [Instance] private UiSystem UI => _uiSystem;
+        [Instance] private Desktop UI => _uiSystem;
         [Instance] private Options StartupOptions => _options;
         [Instance] private GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
         [Instance] private ILogger Logger => _logger;

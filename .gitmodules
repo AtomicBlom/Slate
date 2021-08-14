@@ -4,3 +4,6 @@
 [submodule "Dependencies/MLEM"]
 	path = Dependencies/MLEM
 	url = https://github.com/AtomicBlom/MLEM.git
+[submodule "Dependencies/Myra"]
+	path = Dependencies/Myra
+	url = https://github.com/AtomicBlom/Myra.git
