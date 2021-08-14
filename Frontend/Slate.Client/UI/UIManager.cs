@@ -4,7 +4,7 @@ using StrongInject;
 
 namespace Slate.Client.UI
 {
-    public class UIManager
+    public class UIManager : IUIManager
     {
         private readonly Desktop _desktop;
 
@@ -13,11 +13,12 @@ namespace Slate.Client.UI
             _desktop = desktop;
         }
 
-        public void ShowScreen<TView, TViewModel, TContainer>(TContainer container, TView viewFactory)
-            where TView : IViewFactory<TViewModel>
+        public void ShowScreen<TView, TViewModel, TContainer>(TContainer container, TView viewFactory, Action<TViewModel>? configureViewModel = null)
+            where TView : ViewFactory<TViewModel>
             where TContainer : IContainer<TViewModel>
         {
             var viewModel = container.Resolve();
+            configureViewModel?.Invoke(viewModel.Value);
             var view = viewFactory.CreateView(viewModel.Value);
             view.Disposing += ViewOnDisposing;
             view.UserData.Add("ScreenName", typeof(TView).FullName);
@@ -39,8 +40,14 @@ namespace Slate.Client.UI
         }
     }
 
-    public interface IViewFactory<T>
+    public interface IUIManager
     {
-        Widget CreateView(T viewModel);
+        public void ShowScreen<TView, TViewModel>(IContainer<TViewModel> container, TView viewFactory)
+            where TView : ViewFactory<TViewModel>;
+    }
+
+    public abstract class ViewFactory<T>
+    {
+        public abstract Widget CreateView(T viewModel);
     }
 }

@@ -43,8 +43,9 @@ namespace Slate.Client.UI
 
     internal class GameLifecycle
     {
-        private readonly Desktop _uiSystem;
+        private readonly IUIManager _uiManager;
         private readonly IAuthService _authService;
+        private readonly Container _container;
         private readonly Func<GameScopeContainer> _gameScopeFactory;
         private readonly ILogger _logger;
         private readonly StateMachine<GameState, GameTrigger> _gameStateMachine = new(GameState.BeforeUI);
@@ -55,10 +56,11 @@ namespace Slate.Client.UI
         private Owned<GameConnection> _gameConnection;
         private Owned<ICharacterService> _characterService;
 
-        public GameLifecycle(Desktop uiSystem, IAuthService authService, Func<GameScopeContainer> gameScopeFactory, ILogger logger)
+        public GameLifecycle(IUIManager uiManager, IAuthService authService, Container container, Func<GameScopeContainer> gameScopeFactory, ILogger logger)
         {
-            _uiSystem = uiSystem;
+            _uiManager = uiManager;
             _authService = authService;
+            _container = container;
             _gameScopeFactory = gameScopeFactory;
             _logger = logger;
 
@@ -102,6 +104,7 @@ namespace Slate.Client.UI
 
         private void OnEnterGameStateIntroCards()
         {
+            _uiManager.ShowScreen(_container, new IntroCardsView2());
             var viewModel = new IntroCardsViewModel
             {
                 NextCommand = new RelayCommand(() => _gameStateMachine.Fire(GameTrigger.AssetsStartedLoading))

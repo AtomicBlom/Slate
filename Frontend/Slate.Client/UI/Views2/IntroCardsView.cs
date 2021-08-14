@@ -7,9 +7,9 @@ using Slate.Client.UI.Elements;
 
 namespace Slate.Client.UI.Views
 {
-    class IntroCardsView2
+    class IntroCardsView2 : ViewFactory<IntroCardsViewModel>
     {
-        public static Widget CreateView(IntroCardsViewModel viewModel)
+        public override Widget CreateView(IntroCardsViewModel viewModel)
         {
             var cards = new Widget[]
             {

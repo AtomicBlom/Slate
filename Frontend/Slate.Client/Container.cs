@@ -11,6 +11,7 @@ using Serilog;
 using Serilog.Core;
 using Slate.Client.Services;
 using Slate.Client.UI;
+using Slate.Client.ViewModel.MainMenu;
 using Slate.Client.ViewModel.Services;
 using StrongInject;
 
@@ -23,12 +24,14 @@ namespace Slate.Client
     [Register(typeof(Metrics), Scope.SingleInstance, typeof(IGameComponent))]
     [Register(typeof(TaskDispatcher), Scope.SingleInstance, typeof(IGameComponent))]
     [Register(typeof(GameLifecycle))]
+    [Register(typeof(IntroCardsViewModel))]
     public partial class Container : 
         IContainer<GameScopeContainer>, 
         IContainer<IGameComponent[]>, 
         IContainer<GameLifecycle>,
         IContainer<IProvideAuthToken>,
-        IContainer<ICamera>
+        IContainer<ICamera>,
+        IContainer<IntroCardsViewModel>
     {
         private readonly Game _game;
         private readonly Options _options;
