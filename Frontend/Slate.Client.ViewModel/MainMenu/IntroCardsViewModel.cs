@@ -1,21 +1,24 @@
-﻿using BinaryVibrance.INPCSourceGenerator;
-using Slate.Client.UI.MVVM;
+﻿using Slate.Events.InMemory;
 
 namespace Slate.Client.ViewModel.MainMenu
 {
-    public partial class IntroCardsViewModel
+    public class IntroCardsViewModel
     {
-        [ImplementNotifyPropertyChanged(PropertyAccess.GetterPrivate)]
-        private RelayCommand? _nextCommand;
+        private readonly IEventAggregator _eventAggregator;
 
+        public IntroCardsViewModel(IEventAggregator eventAggregator)
+        {
+            _eventAggregator = eventAggregator;
+        }
+        
         public void Finish()
         {
-            NextCommand?.Execute(null);
+            _eventAggregator.Publish(GameTrigger.AssetsStartedLoading);
         }
 
         public void Skip()
         {
-            NextCommand?.Execute(null);
+            _eventAggregator.Publish(GameTrigger.AssetsStartedLoading);
         }
     }
 }

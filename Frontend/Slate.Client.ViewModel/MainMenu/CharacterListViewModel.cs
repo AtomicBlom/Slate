@@ -5,6 +5,7 @@ using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
 using Slate.Client.UI.MVVM;
 using Slate.Client.ViewModel.Services;
+using Slate.Events.InMemory;
 
 namespace Slate.Client.ViewModel.MainMenu
 {
@@ -12,7 +13,7 @@ namespace Slate.Client.ViewModel.MainMenu
 	public partial class CharacterListViewModel
     {
         private readonly ICharacterService _characterService;
-        private readonly Action _characterSelectedAction;
+        private readonly IEventAggregator _eventAggregator;
 
         [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)] 
         private IEnumerable<GameCharacter> _characters = new List<GameCharacter>();
@@ -36,10 +37,10 @@ namespace Slate.Client.ViewModel.MainMenu
         public ICommand PlayAsCharacterCommand => _playAsCharacterCommand;
 
 
-        public CharacterListViewModel(ICharacterService characterService, Action characterSelectedAction)
+        public CharacterListViewModel(ICharacterService characterService, IEventAggregator eventAggregator)
         {
             _characterService = characterService;
-            _characterSelectedAction = characterSelectedAction;
+            _eventAggregator = eventAggregator;
 
             _playAsCharacterCommand = new RelayCommand(Execute, CanExecute);
         }
@@ -47,7 +48,7 @@ namespace Slate.Client.ViewModel.MainMenu
         void Execute()
         {
             _characterService.PlayAsCharacter(SelectedCharacter!.Id);
-            _characterSelectedAction();
+            _eventAggregator.Publish(GameTrigger.CharacterSelected);
         }
 
         bool CanExecute() => CanEnterGame;

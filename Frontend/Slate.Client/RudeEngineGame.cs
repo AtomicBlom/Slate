@@ -95,6 +95,8 @@ namespace Slate.Client
         protected override void LoadContent()
         {
             MyraEnvironment.Game = this;
+            _desktop = new Desktop();
+            _desktop.Root = new Grid();
 
             var (log, userLogEnricher) = ConfigureLogging(_options);
             AppDomain.CurrentDomain.UnhandledException += (_, args) =>
@@ -143,8 +145,6 @@ namespace Slate.Client
             uiStyle.Font = new GenericSpriteFont(font);
             _uiSystem.Style = uiStyle;
 
-            _desktop.Root = new Grid();
-
         }
 
         protected override void UnloadContent()
@@ -187,7 +187,6 @@ namespace Slate.Client
             
             _characterModel.Armature.SetAnimationFrame((0, 0.5f, 0.5f), (1, 0.5f, 0.5f));
             _characterModel.WorldMatrix = _camera.World * _cells[13].WorldMatrix * Matrix.CreateTranslation(Vector3.Up * 1);
-            //_box.WorldMatrix = _cells[13].WorldMatrix + Matrix.CreateTranslation(Vector3.Up * 25);
             _followCamera.FollowDistance = 5.0f;
             _followCamera.VerticalOffset = 5.0f;
             _followCamera.TargetLocation = _characterModel.WorldMatrix.Translation;
@@ -207,8 +206,6 @@ namespace Slate.Client
             };
             dc._View = _camera.View;
             dc._Projection = _camera.Projection;
-            //dc.SetCamera(_camera.View);
-            //dc.SetProjectionMatrix(_camera.Projection);
 
             dc.DrawSceneInstances(_lightsAndFog, _cells);
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);

@@ -38,7 +38,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             var file = CompilationUnit()
                 .WithUsings(
                     MakeUsingList(
-                        Using("MLEM.Ui.Elements")
+                        Using("Myra.Graphics2D.UI")
                             .WithLeadingTrivia(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword), true)))),
                         Using("BinaryVibrance.MLEM.Binding"),
                         Using("System"),
@@ -69,10 +69,10 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                   ?? throw new Exception("Could not locate PropertyBinding<,> in workspace, it should have been added by adding this analyzer.");
             var viewModelBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.ViewModelBinding`2")
                                    ?? throw new Exception("Could not locate ViewModelBinding<,> in workspace, it should have been added by adding this analyzer.");
-            var element = _context.Compilation.GetTypeByMetadataName("MLEM.Ui.Elements.Element")
-                ?? throw new Exception("Could not locate MLEM.Ui.Elements.Element, is Mlem.Ui referenced?");
+            var widget = _context.Compilation.GetTypeByMetadataName("Myra.Graphics2D.UI.Widget")
+                ?? throw new Exception("Could not locate Myra.Graphics2D.UI.Widget, is Myra referenced?");
             
-            var tElementGenericTypeIdentifier = IdentifierName("TElement");
+            var tElementGenericTypeIdentifier = IdentifierName("TWidget");
 
             //Create the method definition
             var viewModelBindingParameter = "viewModelBinding";
@@ -87,7 +87,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                 )
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
                     .WithTypeParameterList(
-                        MakeTypeParameterList(TypeParameter(Identifier("TElement")))
+                        MakeTypeParameterList(TypeParameter(Identifier("TWidget")))
                         )
                     .WithParameterList(
                         MakeParameterList(
@@ -108,7 +108,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                             TypeParameterConstraintClause(tElementGenericTypeIdentifier)
                                 .WithConstraints(
                                     MakeTypeParameterConstraintList(
-                                        TypeConstraint(IdentifierName(element.Name))
+                                        TypeConstraint(IdentifierName(widget.Name))
                                         )
                                     )
                             ))
@@ -150,13 +150,13 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                    ?? throw new Exception("Could not locate ViewModelBinding<,> in workspace, it should have been added by adding this analyzer.");
             var converterInterfaceBinding = _context.Compilation.GetTypeByMetadataName("BinaryVibrance.MLEM.Binding.IConverter`2")
                                    ?? throw new Exception("Could not locate IConverter<,> in workspace, it should have been added by adding this analyzer.");
-            var element = _context.Compilation.GetTypeByMetadataName("MLEM.Ui.Elements.Element")
-                ?? throw new Exception("Could not locate MLEM.Ui.Elements.Element, is Mlem.Ui referenced?");
+            var widget = _context.Compilation.GetTypeByMetadataName("Myra.Graphics2D.UI.Widget")
+                         ?? throw new Exception("Could not locate Myra.Graphics2D.UI.Widget, is Myra referenced?");
 
             var propertyChangedInterface = _context.Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)
                           ?? throw new Exception("Could not locate INotifyPropertyChanged, wut?");
 
-            var tElementGenericTypeIdentifier = IdentifierName("TElement");
+            var tElementGenericTypeIdentifier = IdentifierName("TWidget");
 
             var canNotify = classSymbol.AllInterfaces.Any(t => t.Equals(propertyChangedInterface, SymbolEqualityComparer.Default));
 
@@ -176,7 +176,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
                     .WithTypeParameterList(
                         MakeTypeParameterList(
-                            TypeParameter(Identifier("TElement")),
+                            TypeParameter(Identifier("TWidget")),
                             TypeParameter(Identifier("TOut"))
                             )
                         )
@@ -209,7 +209,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                             TypeParameterConstraintClause(tElementGenericTypeIdentifier)
                                 .WithConstraints(
                                     MakeTypeParameterConstraintList(
-                                        TypeConstraint(IdentifierName(element.Name))
+                                        TypeConstraint(IdentifierName(widget.Name))
                                         )
                                     )
                             ));
@@ -228,7 +228,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                     new SyntaxNodeOrToken[]
                                     {
                                         SingleVariableDesignation(
-                                            Identifier("element")),
+                                            Identifier("widget")),
                                         Token(SyntaxKind.CommaToken),
                                         SingleVariableDesignation(
                                             Identifier("viewModel"))
@@ -237,7 +237,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
 
             var propertyBindingConstructorArguments = new List<ArgumentSyntax>
             {
-                Argument(IdentifierName("element"))
+                Argument(IdentifierName("widget"))
             };
             
             if (!propertySymbol.IsWriteOnly)
@@ -334,7 +334,7 @@ namespace BinaryVibrance.MLEM.Binding.Generator
                                                         .WithTypeArgumentList(
                                                             MakeTypeArgumentList(
                                                                 IdentifierName("TOut"),
-                                                                IdentifierName("TElement")
+                                                                IdentifierName("TWidget")
                                                                 )
                                                             ))
                                                 .WithArgumentList(
@@ -363,18 +363,20 @@ namespace BinaryVibrance.MLEM.Binding.Generator
             {
                 (body, onDisposedMethodBody) = AddDisposedEvent(
                     body, onDisposedMethodBody,
-                    IdentifierName("element"),
-                    IdentifierName("OnDisposed"),
-                    IdentifierName("OnDisposed"));
+                    IdentifierName("widget"),
+                    IdentifierName("Disposing"),
+                    IdentifierName("OnDisposing"));
 
                 body = body.AddStatements(LocalFunctionStatement(
                         PredefinedType(
                             Token(SyntaxKind.VoidKeyword)),
-                        Identifier("OnDisposed"))
+                        Identifier("OnDisposing"))
                     .WithParameterList(
                         MakeParameterList(
-                            Parameter(Identifier("_"))
-                                .WithType(IdentifierName("Element"))
+                            Parameter(Identifier("sender"))
+                                .WithType(NullableType(PredefinedType(Token(SyntaxKind.ObjectKeyword)))),
+                            Parameter(Identifier("e"))
+                                .WithType(IdentifierName("EventArgs"))
                             ))
                     .WithBody(onDisposedMethodBody));
             }

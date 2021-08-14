@@ -4,25 +4,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using CastIron.Engine;
 using MLEM.Misc;
-using MLEM.Ui.Elements;
+using Myra.Graphics2D.UI;
 
 namespace Slate.Client.UI.Elements
 {
-    public static class ElementAnimationExtensions
+    public static class WidgetAnimationExtensions
     {
-        public static async Task FadeOutAsync(this Element element, TimeSpan? duration = null, Easings.Easing? easing = null, bool remove = false, bool disable = true, CancellationToken? cancellationToken = null)
+        public static async Task FadeOutAsync(this Widget element, TimeSpan? duration = null, Easings.Easing? easing = null, bool disable = true, CancellationToken? cancellationToken = null)
         {
             if (disable)
             {
-                element.CanBeMoused = false;
-                element.CanBePressed = false;
-                element.CanBeSelected = false;
+                element.Enabled = false;
             }
 
             var time = duration ?? TimeSpan.FromMilliseconds(500);
             easing ??= Easings.InCubic;
 
-            var startOpacity = element.DrawAlpha;
+            var startOpacity = element.Opacity;
             await TaskDispatcher.NextUpdate;
             var sw = Stopwatch.StartNew();
             await Task.Run(async () =>
@@ -35,42 +33,23 @@ namespace Slate.Client.UI.Elements
                     var easedProgress = easing(progress);
                     var opacity = startOpacity * easedProgress;
 
-                    element.DrawAlpha = opacity;
+                    element.Opacity = opacity;
                     await TaskDispatcher.NextUpdate;
-                }
-
-                if (remove)
-                {
-                    if (element.Parent == null)
-                    {
-                        TaskDispatcher.FireOnUIAndForget(() => {
-                            element.Root.System.Remove(element.Root.Name);
-                        });
-                    }
-                    else
-                    {
-                        TaskDispatcher.FireOnUIAndForget(() =>
-                        {
-                            element.Parent.RemoveChild(element);
-                        });
-                    }
                 }
             });
         }
 
-        public static async Task FadeInAsync(this Element element, TimeSpan? duration = null, Easings.Easing? easing = null, bool disable = true, CancellationToken? cancellationToken = null)
+        public static async Task FadeInAsync(this Widget element, TimeSpan? duration = null, Easings.Easing? easing = null, bool disable = true, CancellationToken? cancellationToken = null)
         {
             if (disable)
             {
-                element.CanBeMoused = false;
-                element.CanBePressed = false;
-                element.CanBeSelected = false;
+                element.Enabled = false;
             }
 
             var time = duration ?? TimeSpan.FromMilliseconds(500);
             easing ??= Easings.InCubic;
 
-            var startOpacity = element.DrawAlpha;
+            var startOpacity = element.Opacity;
             var sw = Stopwatch.StartNew();
             await Task.Run(async () =>
             {
@@ -82,7 +61,7 @@ namespace Slate.Client.UI.Elements
                     var easedProgress = easing(progress);
                     var opacity = startOpacity * easedProgress;
 
-                    element.DrawAlpha = opacity;
+                    element.Opacity = opacity;
                     await TaskDispatcher.NextUpdate;
                 }
             });

@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using BinaryVibrance.MLEM.Binding;
 using Myra.Graphics2D;
-using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Slate.Client.UI.MVVM.Binding;
 using Slate.Client.ViewModel.MainMenu;
 using Slate.Client.ViewModel.Services;
 
 namespace Slate.Client.UI.Views
 {
-	public class CharacterListView2
+	public class CharacterListView : IViewFactory<CharacterListViewModel>
 	{
-		public static Widget CreateView(CharacterListViewModel viewModel)
+		public Widget CreateView(CharacterListViewModel viewModel)
         {
-            return new ReloadablePanel2(p => RebuildView(p, viewModel));
+            return new ReloadablePanel(p => RebuildView(p, viewModel));
         }
 
         private Widget ChildTemplate(CharacterListViewModel viewModel, GameCharacter gameCharacter)
@@ -29,14 +26,14 @@ namespace Slate.Client.UI.Views
                         GridRowSpan = 2,
                         VerticalAlignment = VerticalAlignment.Center
                     }
-                    //Bind(viewModel).SelectedCharacter().ToRadioButton(gameCharacter)
+                    .Bind(viewModel).SelectedCharacter().ToRadioButton(gameCharacter)
                     ,
                     new Label
                     {
                         GridColumn = 1,
                         Text = "Character name goes here"
                     }
-                    //.Bind(gameCharacter).Name().ToText()
+                    .Bind(gameCharacter).Name().ToLabel()
                     ,
                     new Label
                     {
@@ -44,11 +41,11 @@ namespace Slate.Client.UI.Views
                         GridRow = 1,
                         Text = "Character ID goes here"
                     }
-                    //.Bind(gameCharacter).Id(new ToStringConverter<Guid>()).ToParagraph()
+                    .Bind(gameCharacter).Id(new ToStringConverter<Guid>()).ToLabel()
                 );
         }
 
-		private static void RebuildView(Panel panel, CharacterListViewModel viewModel)
+		private void RebuildView(Panel panel, CharacterListViewModel viewModel)
         {
             panel.AddChildren(
                 new Grid
@@ -67,11 +64,11 @@ namespace Slate.Client.UI.Views
                                 {
 
                                 }
-                                //.Bind(viewModel).Characters().ToChildTemplate(character => ChildTemplate(viewModel, character))
+                                .Bind(viewModel).Characters().ToChildTemplate(character => ChildTemplate(viewModel, character))
                             ),
 
                         new TextButton { Text = "Select Character" }
-                            //.Bind(viewModel).PlayAsCharacterCommand().ToPressedEvent()
+                            .Bind(viewModel).PlayAsCharacterCommand().ToPressedEvent()
                     )
                 );
 		}

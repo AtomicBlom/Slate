@@ -13,6 +13,7 @@ using Slate.Client.Services;
 using Slate.Client.UI;
 using Slate.Client.ViewModel.MainMenu;
 using Slate.Client.ViewModel.Services;
+using Slate.Events.InMemory;
 using StrongInject;
 
 namespace Slate.Client
@@ -24,14 +25,21 @@ namespace Slate.Client
     [Register(typeof(Metrics), Scope.SingleInstance, typeof(IGameComponent))]
     [Register(typeof(TaskDispatcher), Scope.SingleInstance, typeof(IGameComponent))]
     [Register(typeof(GameLifecycle))]
+    [Register(typeof(UIManager), Scope.InstancePerDependency, typeof(IUIManager))]
+    [Register(typeof(EventAggregator), Scope.SingleInstance, typeof(IEventAggregator))]
     [Register(typeof(IntroCardsViewModel))]
+    [Register(typeof(ContactingAuthServerViewModel))]
+    [Register(typeof(LoginViewModel))]
     public partial class Container : 
         IContainer<GameScopeContainer>, 
         IContainer<IGameComponent[]>, 
         IContainer<GameLifecycle>,
+        IContainer<IEventAggregator>,
         IContainer<IProvideAuthToken>,
         IContainer<ICamera>,
-        IContainer<IntroCardsViewModel>
+        IContainer<IntroCardsViewModel>, 
+        IContainer<ContactingAuthServerViewModel>, 
+        IContainer<LoginViewModel>
     {
         private readonly Game _game;
         private readonly Options _options;
@@ -54,6 +62,7 @@ namespace Slate.Client
         [Instance] private Options StartupOptions => _options;
         [Instance] private GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
         [Instance] private ILogger Logger => _logger;
+        [Instance] private Container TheLocalContainer => this;
         [Instance] private IUserLogEnricher userLogEnricher => _userLogEnricher;
 
         [Instance(StrongInject.Options.AsImplementedInterfaces)]

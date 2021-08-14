@@ -1,56 +1,18 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using BinaryVibrance.MLEM.Binding;
 using Slate.Client.ViewModel.MainMenu;
-using BinaryVibrance.MLEM.Binding;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
-using Slate.Client.UI.MVVM.Binding;
 
 namespace Slate.Client.UI.Views
 {
-    internal class ReloadablePanel2 : Panel
+    internal class LoginView : IViewFactory<LoginViewModel>
     {
-        private readonly Action<Panel> _build;
-
-        public ReloadablePanel2(Action<Panel> build)
+        public Widget CreateView(LoginViewModel viewModel)
         {
-            _build = build;
-            build(this);
+            return new ReloadablePanel(p => RebuildView(p, viewModel));
         }
 
-        public void Rebuild()
-        {
-            while (ChildrenCount > 0)
-            {
-                RemoveChild(GetChild(0));
-            }
-
-            _build(this);
-        }
-    }
-
-    internal static class WidgetExtensions
-    {
-        public static T AddChildren<T>(this T widget, params Widget[] children) where T : IMultipleItemsContainer
-        {
-            foreach (var child in children)
-            {
-                widget.AddChild(child);
-            }
-
-            return widget;
-        }
-    }
-
-
-    internal class LoginView2
-    {
-        public static Widget CreateView(LoginViewModel viewModel)
-        {
-            return new ReloadablePanel2(p => RebuildView(p, viewModel));
-        }
-
-        private static void RebuildView(Panel panel, LoginViewModel viewModel)
+        private void RebuildView(Panel panel, LoginViewModel viewModel)
         {
             panel.Padding = new Thickness(32);
             panel.AddChildren(
@@ -64,14 +26,14 @@ namespace Slate.Client.UI.Views
                         new Label { Text = "Username:", GridColumn = 0, GridRow = 0 },
                         new Label { Text = "Password:", GridColumn = 0, GridRow = 1 },
                         new TextBox { GridColumn = 1, GridRow = 0 }
-                            //.Bind(viewModel).Username().ToText()
+                            .Bind(viewModel).Username().ToTextBox()
                         ,
                         new TextBox
                         {
                             GridColumn = 1, GridRow = 1,
                             PasswordField = true
                         }
-                        //.Bind(viewModel).Password().ToText()
+                        .Bind(viewModel).Password().ToTextBox()
                         ,
                         new TextButton
                         {
@@ -79,7 +41,16 @@ namespace Slate.Client.UI.Views
                             HorizontalAlignment = HorizontalAlignment.Center,
                             Text = "Login"
                         }
-                        //.Bind(viewModel).LoginCommand().ToPressedEvent()
+                        .Bind(viewModel).LoginCommand().ToPressedEvent()
+                        ,
+                        new Label
+                        {
+                            GridColumn = 0, GridRow = 3, GridColumnSpan = 2,
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            TextAlign = TextAlign.Center,
+                            MaxWidth = 800
+                        }
+                            .Bind(viewModel).ErrorMessage().ToLabel()
                     )
             );
         }

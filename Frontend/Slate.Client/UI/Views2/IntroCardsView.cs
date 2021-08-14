@@ -7,14 +7,14 @@ using Slate.Client.UI.Elements;
 
 namespace Slate.Client.UI.Views
 {
-    class IntroCardsView2 : ViewFactory<IntroCardsViewModel>
+    class IntroCardsView : IViewFactory<IntroCardsViewModel>
     {
-        public override Widget CreateView(IntroCardsViewModel viewModel)
+        public Widget CreateView(IntroCardsViewModel viewModel)
         {
             var cards = new Widget[]
             {
-                new Label { Text = "Steve wuz 'ere 2021 games", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
-                new Label { Text = "Concept and Graphics by Rosethethorn", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center}
+                //new Label { Text = "Steve wuz 'ere 2021 games", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
+                //new Label { Text = "Concept and Graphics by Rosethethorn", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center}
             };
 
             var cts = new CancellationTokenSource();
@@ -38,8 +38,8 @@ namespace Slate.Client.UI.Views
                     panel.AddChild(card);
                     await card.FadeInAsync(TimeSpan.FromSeconds(1), cancellationToken: cts.Token);
                     await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
-
-                    await card.FadeOutAsync(TimeSpan.FromSeconds(1), remove:true);
+                    await card.FadeOutAsync(TimeSpan.FromSeconds(1));
+                    panel.RemoveChild(card);
                     if (cts.Token.IsCancellationRequested)
                     {
                         break;

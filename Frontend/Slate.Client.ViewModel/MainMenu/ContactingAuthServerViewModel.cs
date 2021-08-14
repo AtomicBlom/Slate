@@ -2,22 +2,23 @@
 using System.Threading.Tasks;
 using BinaryVibrance.INPCSourceGenerator;
 using Slate.Client.ViewModel.Services;
+using Slate.Events.InMemory;
 
 namespace Slate.Client.ViewModel.MainMenu
 {
-    public partial class ContactingAuthServerViewModel
+    public partial class ContactingAuthServerViewModel : INavigateTo
     {
         private readonly IAuthService _authService;
-        private readonly Action _discoDiscoveredAction;
+        private readonly IEventAggregator _eventAggregator;
         private int _attempts = 0;
 
         [ImplementNotifyPropertyChanged(PropertyAccess.SetterPrivate)]
         private string _errorMessage = string.Empty;
 
-        public ContactingAuthServerViewModel(IAuthService authService, Action discoDiscoveredAction)
+        public ContactingAuthServerViewModel(IAuthService authService, IEventAggregator eventAggregator)
         {
             _authService = authService;
-            _discoDiscoveredAction = discoDiscoveredAction;
+            _eventAggregator = eventAggregator;
         }
 
         public async Task OnNavigatedTo()
@@ -35,7 +36,7 @@ namespace Slate.Client.ViewModel.MainMenu
                 }
             }
 
-            _discoDiscoveredAction();
+            _eventAggregator.Publish(GameTrigger.DiscoDownloadSucceeded);
         }
     }
 }

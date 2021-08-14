@@ -1,19 +1,19 @@
 ﻿#nullable enable
 using System;
-using MLEM.Ui.Elements;
+using Myra.Graphics2D.UI;
 
 namespace BinaryVibrance.MLEM.Binding
 {
-    public record ViewModelBinding<TElement, TViewModel>(TElement Element, TViewModel ViewModel)
-        where TElement : Element;
+    public record ViewModelBinding<TWidget, TViewModel>(TWidget Widget, TViewModel ViewModel)
+        where TWidget : Widget;
 
     public static partial class ElementBindingExtensions
     {
-        public static ViewModelBinding<TElement, TViewModel> Bind<TElement, TViewModel>(this TElement element,
+        public static ViewModelBinding<TWidget, TViewModel> Bind<TWidget, TViewModel>(this TWidget widget,
             TViewModel viewModel)
-            where TElement : Element
+            where TWidget : Widget
         {
-            return new ViewModelBinding<TElement, TViewModel>(element, viewModel);
+            return new ViewModelBinding<TWidget, TViewModel>(widget, viewModel);
         }
     }
 

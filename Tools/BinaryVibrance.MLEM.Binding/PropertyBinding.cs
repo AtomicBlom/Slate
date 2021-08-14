@@ -1,21 +1,21 @@
 ﻿#nullable enable
 using System;
-using MLEM.Ui.Elements;
+using Myra.Graphics2D.UI;
 
 namespace BinaryVibrance.MLEM.Binding
 {
-    public class PropertyBinding<TNativePropertyType, TElement>
-        where TElement : Element
+    public class PropertyBinding<TNativePropertyType, TWidget>
+        where TWidget : Widget
     {
-        public TElement Element { get; }
+        public TWidget Widget { get; }
         public Func<TNativePropertyType> ViewModelGetter { get; }
         public Action<TNativePropertyType>? ViewModelSetter { get; }
 
         public event EventHandler<TNativePropertyType>? ViewModelPropertyChanged;
 
-        public PropertyBinding(TElement element, Func<TNativePropertyType> viewModelGetter, Action<TNativePropertyType>? viewModelSetter = null)
+        public PropertyBinding(TWidget widget, Func<TNativePropertyType> viewModelGetter, Action<TNativePropertyType>? viewModelSetter = null)
         {
-            Element = element;
+            Widget = widget;
             ViewModelGetter = viewModelGetter;
             ViewModelSetter = viewModelSetter;
         }

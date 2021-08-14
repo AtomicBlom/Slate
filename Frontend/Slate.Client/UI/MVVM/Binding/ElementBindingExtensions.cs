@@ -1,58 +1,35 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Input;
-using MLEM.Ui.Elements;
+using Myra.Graphics2D.UI;
+using Myra.Utility;
+using Slate.Client.UI.Views;
 
 namespace BinaryVibrance.MLEM.Binding
 {
     public static partial class ElementBindingExtensions
     {
-        public static TElement ToText<TElement>(this PropertyBinding<string, TElement> propertyBinding)
-            where TElement : TextField
+        public static TWidget ToTextBox<TWidget>(this PropertyBinding<string, TWidget> propertyBinding)
+            where TWidget : TextBox
         {
-            var element = propertyBinding.Element;
+            var element = propertyBinding.Widget;
 
-            element.OnDisposed += OnDisposed;
-            element.OnTextChange += OnTextChange;
-            propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
-
-            element.SetText(propertyBinding.ViewModelGetter());
-
-            void OnDisposed(Element _)
-            {
-                element.OnDisposed -= OnDisposed;
-                element.OnTextChange -= OnTextChange;
-                propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
-            }
-
-            void OnTextChange(TextField field, string text)
-            {
-                propertyBinding.ViewModelSetter?.Invoke(text);
-            }
-
-            void ElementOnViewModelPropertyChanged(object? sender, string e)
-            {
-                element.SetText(e);
-            }
-
-            return element;
-        }
-
-        public static TElement ToParagraph<TElement>(this PropertyBinding<string, TElement> propertyBinding)
-            where TElement : Paragraph
-        {
-            var element = propertyBinding.Element;
-
-            element.OnDisposed += OnDisposed;
+            element.Disposing += OnDisposed;
+            element.TextChanged += OnTextChange;
             propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
 
             element.Text = propertyBinding.ViewModelGetter();
 
-            void OnDisposed(Element _)
+            void OnDisposed(object? sender, EventArgs args)
             {
-                element.OnDisposed -= OnDisposed;
+                element.Disposing -= OnDisposed;
+                element.TextChanged -= OnTextChange;
                 propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
+            }
+
+            void OnTextChange(object? sender, ValueChangedEventArgs<string> args)
+            {
+                propertyBinding.ViewModelSetter?.Invoke(args.NewValue);
             }
 
             void ElementOnViewModelPropertyChanged(object? sender, string e)
@@ -63,25 +40,49 @@ namespace BinaryVibrance.MLEM.Binding
             return element;
         }
 
-        public static TElement ToPressedEvent<TElement>(this PropertyBinding<ICommand, TElement> propertyBinding, Func<object>? resolveParameter = null)
-            where TElement : Element
+        public static TWidget ToLabel<TWidget>(this PropertyBinding<string, TWidget> propertyBinding)
+            where TWidget : Label
         {
-            var element = propertyBinding.Element;
+            var widget = propertyBinding.Widget;
+
+            widget.Disposing += OnDisposed;
+            propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
+
+            widget.Text = propertyBinding.ViewModelGetter();
+
+            void OnDisposed(object? sender, EventArgs args)
+            {
+                widget.Disposing -= OnDisposed;
+                propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
+            }
+
+            void ElementOnViewModelPropertyChanged(object? sender, string e)
+            {
+                widget.Text = e;
+            }
+
+            return widget;
+        }
+
+        public static TWidget ToPressedEvent<TWidget>(this PropertyBinding<ICommand, TWidget> propertyBinding, Func<object>? resolveParameter = null)
+            where TWidget : Widget
+        {
+            var widget = propertyBinding.Widget;
             var command = propertyBinding.ViewModelGetter();
 
-            element.OnDisposed += OnDisposed;
-            element.OnPressed += OnPressed;
+            widget.Disposing += OnDisposed;
+            widget.TouchUp += OnPressed;
             command.CanExecuteChanged += CommandOnCanExecuteChanged;
-            element.CanBePressed = command.CanExecute(resolveParameter?.Invoke());
-            
-            void OnDisposed(Element _)
+            widget.Enabled = command.CanExecute(resolveParameter?.Invoke());
+
+            void OnDisposed(object? sender, EventArgs args)
             {
-                element.OnDisposed -= OnDisposed;
-                element.OnPressed -= OnPressed;
+                widget.Disposing -= OnDisposed;
+                widget.TouchUp -= OnPressed;
                 command.CanExecuteChanged -= CommandOnCanExecuteChanged;
             }
 
-            void OnPressed(Element _)
+            void OnPressed(object? sender, EventArgs args)
             {
                 var parameter = resolveParameter?.Invoke();
                 if (command.CanExecute(parameter))
@@ -92,31 +93,67 @@ namespace BinaryVibrance.MLEM.Binding
 
             void CommandOnCanExecuteChanged(object? sender, EventArgs e)
             {
-                element.CanBePressed = command.CanExecute(resolveParameter?.Invoke());
+                widget.Enabled = command.CanExecute(resolveParameter?.Invoke());
             }
 
-            return element;
+            return widget;
         }
 
-        public static TElement ToChildren<TElement, TChildType>(this PropertyBinding<IEnumerable<TChildType>, TElement> propertyBinding, Func<TChildType, Element> createChildAction)
-            where TElement : Element
+        public static TElement ToRadioButton<TElement, TValue>(this PropertyBinding<TValue, TElement> propertyBinding, TValue matchingValue)
+            where TElement : RadioButton
         {
-            var element = propertyBinding.Element;
+            var widget = propertyBinding.Widget;
 
-            element.OnDisposed += OnDisposed;
+            widget.Disposing += OnDisposed;
+            widget.PressedChanged += OnSelectedChanged;
+            propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
+
+            void OnDisposed(object? sender, EventArgs args)
+            {
+                widget.Disposing -= OnDisposed;
+                widget.PressedChanged -= OnSelectedChanged;
+                propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
+
+            }
+
+            void OnSelectedChanged(object? sender, EventArgs eventArgs)
+            {
+                if (widget.IsPressed)
+                {
+                    propertyBinding?.ViewModelSetter(matchingValue);
+                }
+            }
+
+            void ElementOnViewModelPropertyChanged(object? sender, TValue e)
+            {
+                if (Equals(e, matchingValue))
+                {
+                    widget.IsPressed = true;
+                }
+            }
+
+            return widget;
+        }
+
+        public static TElement ToChildTemplate<TElement, TChildType>(this PropertyBinding<IEnumerable<TChildType>, TElement> propertyBinding, Func<TChildType, Widget> createChildAction)
+            where TElement : Container, IMultipleItemsContainer
+        {
+            var element = propertyBinding.Widget;
+
+            element.Disposing += OnDisposed;
             propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
             
             ElementOnViewModelPropertyChanged(null, propertyBinding.ViewModelGetter());
 
-            void OnDisposed(Element _)
+            void OnDisposed(object? sender, EventArgs args)
             {
-                element.OnDisposed -= OnDisposed;
+                element.Disposing -= OnDisposed;
                 propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
             }
 
             void ElementOnViewModelPropertyChanged(object? sender, IEnumerable<TChildType> e)
             {
-                element.RemoveChildren();
+                element.RemoveAllChildren();
                 foreach (var child in e)
                 {
                     element.AddChild(createChildAction(child));

@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BinaryVibrance.MLEM.Binding;
+using Microsoft.Xna.Framework;
 using Myra.Graphics2D;
 using Slate.Client.ViewModel.MainMenu;
 using Myra.Graphics2D.UI;
 
 namespace Slate.Client.UI.Views
 {
-    internal class ContactingAuthServerView2
+    internal class ContactingAuthServerView : IViewFactory<ContactingAuthServerViewModel>
     {
-        public static Widget CreateView(ContactingAuthServerViewModel viewModel)
+        public Widget CreateView(ContactingAuthServerViewModel viewModel)
         {
-            return new ReloadablePanel2(p => RebuildView(p, viewModel));
+            return new ReloadablePanel(p => RebuildView(p, viewModel));
         }
 
         private static void RebuildView(Panel panel, ContactingAuthServerViewModel viewModel)
@@ -23,7 +24,7 @@ namespace Slate.Client.UI.Views
                     .AddChildren(
                         new Label { Text = "Contacting Auth Server...", HorizontalAlignment = HorizontalAlignment.Center },
                         new Label { Text = string.Empty, HorizontalAlignment = HorizontalAlignment.Center }
-                            //.Bind(viewModel).ErrorMessage().ToParagraph()
+                            .Bind(viewModel).ErrorMessage().ToLabel()
                         )
 
             );

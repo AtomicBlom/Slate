@@ -4,13 +4,14 @@ using System.Windows.Input;
 using BinaryVibrance.INPCSourceGenerator;
 using Slate.Client.UI.MVVM;
 using Slate.Client.ViewModel.Services;
+using Slate.Events.InMemory;
 
 namespace Slate.Client.ViewModel.MainMenu
 {
     public partial class LoginViewModel
     {
         private readonly IAuthService _authService;
-        private readonly Action _loggedInAction;
+        private readonly IEventAggregator _eventAggregator;
 
         private string _username = string.Empty;
         private string _password = string.Empty;
@@ -20,10 +21,10 @@ namespace Slate.Client.ViewModel.MainMenu
         [ImplementNotifyPropertyChanged(ExposedType = typeof(ICommand))]
         private readonly RelayCommand _loginCommand;
 
-        public LoginViewModel(IAuthService authService, Action loggedInAction)
+        public LoginViewModel(IAuthService authService, IEventAggregator eventAggregator)
         {
             _authService = authService;
-            _loggedInAction = loggedInAction;
+            _eventAggregator = eventAggregator;
             _loginCommand = new RelayCommand(OnLogin, CanLogin);
         }
 
@@ -47,7 +48,7 @@ namespace Slate.Client.ViewModel.MainMenu
 
         private void AuthServiceOnLoggedIn()
         {
-            _loggedInAction?.Invoke();
+            _eventAggregator.Publish(GameTrigger.PlayerLoggedIn);
         }
 
         public string Username

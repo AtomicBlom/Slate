@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
@@ -62,6 +63,7 @@
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Pipeline.GLTF\MonoScene.Pipeline.GLTF.csproj" />
 		<ProjectReference Include="..\..\Dependencies\MonoScene\src\MonoScene.Runtime.Scene3D\MonoScene.Runtime.Scene3D.csproj" />
 		<ProjectReference Include="..\..\Dependencies\Myra\src\Myra\Myra.MonoGame.csproj" />
+		<ProjectReference Include="..\..\Shared\Slate.EventAggregator\Slate.Events.InMemory.csproj" />
 		<ProjectReference Include="..\..\Shared\Slate.Networking.External.Protocol\Slate.Networking.External.Protocol.csproj" />
 		<ProjectReference Include="..\..\Tools\BinaryVibrance.MLEM.Binding\BinaryVibrance.MLEM.Binding.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="..\CastIron.Engine\CastIron.Engine.Graphics.3D\CastIron.Engine.Graphics.3D.csproj" />

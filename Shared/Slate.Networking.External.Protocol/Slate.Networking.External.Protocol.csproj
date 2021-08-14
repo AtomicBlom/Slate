@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFramework>net6.0</TargetFramework>
-	  <ProtoBufNet_Debug>True</ProtoBufNet_Debug>
-	  
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ProtoBufNet_Debug>True</ProtoBufNet_Debug>
+		<LangVersion>preview</LangVersion>
+
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="protobuf-net" Version="3.0.101" />
 		<PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Slate.Networking.Shared.Protocol\Slate.Networking.Shared.Protocol.csproj" />
+		<ProjectReference Include="..\Slate.Networking.Shared.Protocol\Slate.Networking.Shared.Protocol.csproj" />
 	</ItemGroup>
 </Project>
