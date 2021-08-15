@@ -10,7 +10,7 @@ using Slate.Events.InMemory;
 namespace Slate.Client.ViewModel.MainMenu
 {
     
-	public partial class CharacterListViewModel
+	public partial class CharacterListViewModel : INavigateTo
     {
         private readonly ICharacterService _characterService;
         private readonly IEventAggregator _eventAggregator;

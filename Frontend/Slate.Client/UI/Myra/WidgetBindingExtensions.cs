@@ -7,7 +7,7 @@ using Slate.Client.UI.Views;
 
 namespace BinaryVibrance.MLEM.Binding
 {
-    public static partial class ElementBindingExtensions
+    public static partial class WidgetBindingExtensions
     {
         public static TWidget ToTextBox<TWidget>(this PropertyBinding<string, TWidget> propertyBinding)
             where TWidget : TextBox
@@ -42,6 +42,30 @@ namespace BinaryVibrance.MLEM.Binding
 
         public static TWidget ToLabel<TWidget>(this PropertyBinding<string, TWidget> propertyBinding)
             where TWidget : Label
+        {
+            var widget = propertyBinding.Widget;
+
+            widget.Disposing += OnDisposed;
+            propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
+
+            widget.Text = propertyBinding.ViewModelGetter();
+
+            void OnDisposed(object? sender, EventArgs args)
+            {
+                widget.Disposing -= OnDisposed;
+                propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
+            }
+
+            void ElementOnViewModelPropertyChanged(object? sender, string e)
+            {
+                widget.Text = e;
+            }
+
+            return widget;
+        }
+
+        public static TWidget ToRadioButtonText<TWidget>(this PropertyBinding<string, TWidget> propertyBinding)
+            where TWidget : RadioButton
         {
             var widget = propertyBinding.Widget;
 
@@ -126,10 +150,7 @@ namespace BinaryVibrance.MLEM.Binding
 
             void ElementOnViewModelPropertyChanged(object? sender, TValue e)
             {
-                if (Equals(e, matchingValue))
-                {
-                    widget.IsPressed = true;
-                }
+                widget.IsPressed = EqualityComparer<TValue>.Default.Equals(e, matchingValue);
             }
 
             return widget;

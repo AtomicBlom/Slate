@@ -15,10 +15,11 @@ namespace Slate.Client.UI.Views
         private void RebuildView(Panel panel, LoginViewModel viewModel)
         {
             panel.Padding = new Thickness(32);
+            panel.HorizontalAlignment = HorizontalAlignment.Center;
+            panel.VerticalAlignment = VerticalAlignment.Center;
             panel.AddChildren(
                 new Grid
                     {
-                        ShowGridLines = true,
                         ColumnsProportions = { new(), new() },
                         RowsProportions = { new(), new(), new() },
                     }

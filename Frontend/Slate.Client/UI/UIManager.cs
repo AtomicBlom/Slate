@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CastIron.Engine;
 using Myra.Graphics2D.UI;
+using Serilog;
 using Slate.Client.UI.Elements;
 using Slate.Client.ViewModel.MainMenu;
 using StrongInject;
@@ -12,37 +13,47 @@ namespace Slate.Client.UI
     public class UIManager : IUIManager
     {
         private readonly Desktop _desktop;
+        private readonly ILogger _logger;
 
-        public UIManager(Desktop desktop)
+        public UIManager(Desktop desktop, ILogger logger)
         {
             _desktop = desktop;
+            _logger = logger;
         }
 
         public void ShowScreen<TViewModel>(IContainer<TViewModel> container, IViewFactory<TViewModel> viewFactory, Action<TViewModel>? configureViewModel = null)
         {
-            var viewModel = container.Resolve();
-            configureViewModel?.Invoke(viewModel.Value);
-            if (viewModel.Value is INavigateTo navigable)
+            try
             {
-                TaskDispatcher.FireAndForget(async () => await navigable.OnNavigatedTo());
+                var viewModel = container.Resolve();
+                configureViewModel?.Invoke(viewModel.Value);
+                var view = viewFactory.CreateView(viewModel.Value);
+                view.Disposing += ViewOnDisposing;
+                view.UserData.Add("ScreenName", viewFactory.GetType().FullName);
+                if (_desktop.Root is IMultipleItemsContainer screenContainer)
+                {
+                    screenContainer.AddChild(view);
+                }
+                else
+                {
+                    _desktop.Root?.Dispose();
+                    _desktop.Root = view;
+                }
+
+                if (viewModel.Value is INavigateTo navigable)
+                {
+                    TaskDispatcher.FireAndForget(async () => await navigable.OnNavigatedTo());
+                }
+
+                void ViewOnDisposing(object? sender, EventArgs e)
+                {
+                    view.Disposing -= ViewOnDisposing;
+                    viewModel.Dispose();
+                }
             }
-            var view = viewFactory.CreateView(viewModel.Value);
-            view.Disposing += ViewOnDisposing;
-            view.UserData.Add("ScreenName", viewFactory.GetType().FullName);
-            if (_desktop.Root is IMultipleItemsContainer screenContainer)
+            catch (Exception e)
             {
-                screenContainer.AddChild(view);
-            }
-            else
-            {
-                _desktop.Root?.Dispose();
-                _desktop.Root = view;
-            }
-        
-            void ViewOnDisposing(object? sender, EventArgs e)
-            {
-                view.Disposing -= ViewOnDisposing;
-                viewModel.Dispose();
+                _logger.Error(e, "Error showing screen");
             }
         }
 

@@ -16,9 +16,17 @@ namespace Slate.Client.UI.Views
 
         public static T RemoveAllChildren<T>(this T widget) where T : Myra.Graphics2D.UI.Container
         {
-            while (widget.ChildrenCount > 0)
+            if (widget is StackPanel sp)
             {
-                widget.RemoveChild(widget.GetChild(0));
+                sp.Widgets.Clear();
+            }
+            else
+            {
+                while (widget.ChildrenCount > 0)
+                {
+                    var child = widget.GetChild(0);
+                    widget.RemoveChild(child);
+                }
             }
 
             return widget;

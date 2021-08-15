@@ -39,7 +39,7 @@ namespace Slate.Client
         private Container _container;
         private readonly Options _options;
         private ChaseCamera _followCamera;
-        private Desktop _desktop;
+        private static Desktop _desktop;
 
 
         public RudeEngineGame(Options options)
@@ -161,9 +161,12 @@ namespace Slate.Client
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.F3))
             {
-                foreach (var reloadablePanel in _uiSystem.GetRootElements().Select(re => re.Element).OfType<ReloadablePanel>())
+                if (_desktop?.Root is IMultipleItemsContainer container)
                 {
-                    reloadablePanel.Rebuild();
+                    foreach (var reloadablePanel in container.Widgets.OfType<ReloadablePanel>())
+                    {
+                        reloadablePanel.Rebuild();
+                    }
                 }
             }
             

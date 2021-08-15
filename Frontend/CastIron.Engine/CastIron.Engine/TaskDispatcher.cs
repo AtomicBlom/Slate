@@ -63,7 +63,7 @@ namespace CastIron.Engine
             if (task == null) throw new ArgumentNullException(nameof(task));
             try
             {
-                await task();
+                await Task.Run(async () => await task());
             }
             catch (AggregateException e) when (e.InnerExceptions.Count == 1)
             {

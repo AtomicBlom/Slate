@@ -16,33 +16,14 @@ namespace Slate.Client.UI.Views
 
         private Widget ChildTemplate(CharacterListViewModel viewModel, GameCharacter gameCharacter)
         {
-            return new Grid
-                {
-                    RowsProportions = { new(), new() }
-                }
-                .AddChildren(
+            return
                     new RadioButton
                     {
-                        GridRowSpan = 2,
                         VerticalAlignment = VerticalAlignment.Center
                     }
                     .Bind(viewModel).SelectedCharacter().ToRadioButton(gameCharacter)
-                    ,
-                    new Label
-                    {
-                        GridColumn = 1,
-                        Text = "Character name goes here"
-                    }
-                    .Bind(gameCharacter).Name().ToLabel()
-                    ,
-                    new Label
-                    {
-                        GridColumn = 1,
-                        GridRow = 1,
-                        Text = "Character ID goes here"
-                    }
-                    .Bind(gameCharacter).Id(new ToStringConverter<Guid>()).ToLabel()
-                );
+                    .Bind(gameCharacter).Name().ToRadioButtonText()
+                    ;
         }
 
 		private void RebuildView(Panel panel, CharacterListViewModel viewModel)
@@ -51,6 +32,7 @@ namespace Slate.Client.UI.Views
                 new Grid
                     {
                         ColumnsProportions = { new(), new() },
+                        ShowGridLines = true
                     }
                     .AddChildren(
                         new Panel
@@ -60,14 +42,20 @@ namespace Slate.Client.UI.Views
                             Padding = new Thickness(8)
                         }
                             .AddChild(
-                                new VerticalStackPanel()
+                                new VerticalStackPanel
                                 {
 
                                 }
                                 .Bind(viewModel).Characters().ToChildTemplate(character => ChildTemplate(viewModel, character))
                             ),
 
-                        new TextButton { Text = "Select Character" }
+                        new TextButton
+                            {
+                                GridColumn = 1,
+                                HorizontalAlignment = HorizontalAlignment.Right,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                Text = "Select Character"
+                            }
                             .Bind(viewModel).PlayAsCharacterCommand().ToPressedEvent()
                     )
                 );
