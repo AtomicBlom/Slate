@@ -7,10 +7,6 @@ using CastIron.Engine.Graphics.Camera;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MLEM.Font;
-using MLEM.Textures;
-using MLEM.Ui;
-using MLEM.Ui.Style;
 using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Myra;
@@ -30,7 +26,6 @@ namespace Slate.Client
         private readonly ModelInstance[] _cells = new ModelInstance[5 * 5];
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch = null!;
-        private UiSystem _uiSystem = null!;
         private GameLifecycle _gameLifecycle = null!;
         private DeviceModelCollection _testModel = null!;
         private ICamera _camera = null!;
@@ -110,7 +105,6 @@ namespace Slate.Client
             };
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _uiSystem = new UiSystem(this, new UntexturedStyle(_spriteBatch));
             _container = new Container(this, _options, _desktop, log, userLogEnricher);
 
             var gameComponents = _container.Resolve<IGameComponent[]>();
@@ -132,18 +126,6 @@ namespace Slate.Client
             this.LoadComponentContent(Content);
 
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
-            var uiTexture = Content.Load<Texture2D>("UI/MockUI");
-            var uiStyle = new UntexturedStyle(_spriteBatch)
-            {
-                Font = new GenericSpriteFont(font),
-                TextFieldTexture = new NinePatch(new TextureRegion(uiTexture, 128, 216, 128, 32), 8),
-                PanelTexture = new NinePatch(new TextureRegion(uiTexture, 384, 128, 128, 128), 20),
-                ButtonTexture = new NinePatch(new TextureRegion(uiTexture, 128, 128, 128, 32), 8),
-                RadioTexture = new NinePatch(new TextureRegion(uiTexture, 128, 172, 32, 32), 0),
-                RadioCheckmark = new TextureRegion(uiTexture, 192, 172, 32, 32)
-            };
-            uiStyle.Font = new GenericSpriteFont(font);
-            _uiSystem.Style = uiStyle;
 
         }
 
@@ -169,8 +151,6 @@ namespace Slate.Client
                     }
                 }
             }
-            
-            _uiSystem.Update(gameTime);
 
             for (int z = 0; z < 5; ++z)
             {
@@ -199,8 +179,6 @@ namespace Slate.Client
 
         protected override void Draw(GameTime gameTime)
         {
-            _uiSystem.DrawEarly(gameTime, _spriteBatch);
-
             GraphicsDevice.Clear(Color.CornflowerBlue);
             
             var dc = new ModelDrawingContext(this.GraphicsDevice)
@@ -213,8 +191,6 @@ namespace Slate.Client
             dc.DrawSceneInstances(_lightsAndFog, _cells);
             dc.DrawSceneInstances(_lightsAndFog, _characterModel, _box);
             
-            _uiSystem.Draw(gameTime, _spriteBatch);
-
             _desktop.Render();
 
             base.Draw(gameTime);

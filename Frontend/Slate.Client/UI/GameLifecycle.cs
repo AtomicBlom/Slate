@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CastIron.Engine;
-using MLEM.Ui;
-using Myra.Graphics2D.UI;
 using Serilog;
 using Slate.Client.Services;
-using Slate.Client.UI.Elements;
-using Slate.Client.UI.MVVM;
 using Slate.Client.UI.Views;
 using Slate.Client.ViewModel.MainMenu;
-using Slate.Client.ViewModel.Services;
 using Slate.Events.InMemory;
 using Stateless;
 using StrongInject;

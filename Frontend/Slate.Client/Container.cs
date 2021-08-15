@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using CastIron.Engine;
+﻿using CastIron.Engine;
 using CastIron.Engine.Debugging;
 using CastIron.Engine.Graphics.Camera;
 using CastIron.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MLEM.Ui;
 using Myra.Graphics2D.UI;
 using Serilog;
-using Serilog.Core;
 using Slate.Client.Services;
 using Slate.Client.UI;
 using Slate.Client.ViewModel.MainMenu;
