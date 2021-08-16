@@ -1,4 +1,4 @@
-<Project StylesheetPath="../../FrontEnd/Slate.Client/Content/UI/default_ui_skin.xmms">
+<Project StylesheetPath="../../FrontEnd/Slate.Client/Content/UI/UI.xmms">
   <Project.ExportOptions Namespace="Myra.Samples.AllWidgets" Class="AllWidgets" OutputPath="C:\Projects\Myra\samples\Myra.Samples.AllWidgets" />
   <VerticalStackPanel Spacing="8">
     <VerticalStackPanel.Proportions>
@@ -73,6 +73,15 @@
             <MenuItem Text="Quit" />
           </VerticalMenu>
           <Label Text="Tree" GridRow="12" />
+          <RadioButton Text="RadioButton A" GridRow="13"/>
+          <RadioButton Text="RadioButton B" GridRow="14"/>
+          <Window Title="Test" DragDirection="None" Width="150" Height="50" GridRow="15" >
+            
+          </Window>
+          
+          <Panel GridRow="16" Background="#5BC6FAFF" Width="150" Height="50" >
+            
+          </Panel>
         </Grid>
       </ScrollViewer>
       <VerticalSplitPane>

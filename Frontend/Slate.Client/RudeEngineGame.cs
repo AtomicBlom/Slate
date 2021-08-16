@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AssetManagementBase;
 using CastIron.Engine;
 using CastIron.Engine.Graphics.Camera;
 using Microsoft.Xna.Framework;
@@ -11,6 +12,7 @@ using MonoScene.Graphics;
 using MonoScene.Graphics.Pipeline;
 using Myra;
 using Myra.Graphics2D.UI;
+using Myra.Graphics2D.UI.Styles;
 using Serilog;
 using Serilog.Core;
 using Slate.Client.UI;
@@ -35,6 +37,9 @@ namespace Slate.Client
         private readonly Options _options;
         private ChaseCamera _followCamera;
         private static Desktop _desktop;
+
+        private static readonly AssetManager _assetManager = new(new ResourceAssetResolver(typeof(RudeEngineGame).Assembly, "Client.Content.UI"));
+
 
 
         public RudeEngineGame(Options options)
@@ -90,6 +95,8 @@ namespace Slate.Client
         protected override void LoadContent()
         {
             MyraEnvironment.Game = this;
+            Stylesheet.Current = _assetManager.Load<Stylesheet>("UI.xmms");
+
             _desktop = new Desktop();
             _desktop.Root = new Grid();
 

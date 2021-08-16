@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Stylesheet TextureRegionAtlas="default_ui_skin.xmat">
-  <Fonts UsedSpace="0, 0, 1024, 160">
+<Stylesheet TextureRegionAtlas="UI.xmat">
+  <Fonts UsedSpace="0, 0, 1024, 200">
     <Font Id="default-font" File="Inter-Regular.ttf" Size="20"/>
   </Fonts>
   <LabelStyles>
@@ -131,9 +131,9 @@
     </VerticalMenuStyle>
   </VerticalMenuStyles>
   <WindowStyles>
-    <WindowStyle Background="window" Padding="5">
+    <WindowStyle Background="Panel" Padding="19,19,22,22">
       <TitleStyle Font="default-font" TextColor="white" />
-      <CloseButtonStyle OverBackground="button-over" Padding="5, 0" PressedBackground="button-red">
+      <CloseButtonStyle OverBackground="button-over" Padding="0, 0" PressedBackground="button-red">
         <ImageStyle Image="icon-close" />
       </CloseButtonStyle>
     </WindowStyle>

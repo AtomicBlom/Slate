@@ -21,6 +21,10 @@
 	<ItemGroup>
 		<None Remove="Content\**\*.glb" />
 		<None Remove="Content\**\*.gltf" />
+		<None Remove="Content\UI\Inter-Regular.ttf" />
+		<None Remove="Content\UI\UI.png" />
+		<None Remove="Content\UI\UI.xmat" />
+		<None Remove="Content\UI\UI.xmms" />
 		<None Remove="Icon.ico" />
 		<None Remove="Icon.bmp" />
 	</ItemGroup>
@@ -33,6 +37,10 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+		<EmbeddedResource Include="Content\UI\Inter-Regular.ttf" />
+		<EmbeddedResource Include="Content\UI\UI.png" />
+		<EmbeddedResource Include="Content\UI\UI.xmat" />
+		<EmbeddedResource Include="Content\UI\UI.xmms" />
 		<EmbeddedResource Include="Icon.ico" />
 		<EmbeddedResource Include="Icon.bmp" />
 	</ItemGroup>
@@ -43,6 +51,7 @@
 		<TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="AssetManagementBase" Version="0.5.3" />
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
 		<PackageReference Include="MLEM" Version="5.0.0" />
