@@ -40,7 +40,7 @@ namespace BinaryVibrance.MLEM.Binding
             return element;
         }
 
-        public static TWidget ToLabel<TWidget>(this PropertyBinding<string, TWidget> propertyBinding)
+        public static TWidget ToLabel<TWidget>(this PropertyBinding<string?, TWidget> propertyBinding)
             where TWidget : Label
         {
             var widget = propertyBinding.Widget;
@@ -48,7 +48,7 @@ namespace BinaryVibrance.MLEM.Binding
             widget.Disposing += OnDisposed;
             propertyBinding.ViewModelPropertyChanged += ElementOnViewModelPropertyChanged;
 
-            widget.Text = propertyBinding.ViewModelGetter();
+            widget.Text = propertyBinding.ViewModelGetter() ?? string.Empty;
 
             void OnDisposed(object? sender, EventArgs args)
             {
@@ -56,9 +56,9 @@ namespace BinaryVibrance.MLEM.Binding
                 propertyBinding.ViewModelPropertyChanged -= ElementOnViewModelPropertyChanged;
             }
 
-            void ElementOnViewModelPropertyChanged(object? sender, string e)
+            void ElementOnViewModelPropertyChanged(object? sender, string? e)
             {
-                widget.Text = e;
+                widget.Text = e ?? string.Empty;
             }
 
             return widget;

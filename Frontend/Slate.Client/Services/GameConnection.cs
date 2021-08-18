@@ -28,12 +28,21 @@ namespace Slate.Client.Services
 
         public async Task<(bool WasSuccessful, string? ErrorMessage)> Connect()
         {
+            var handler = new SocketsHttpHandler
+            {
+                PooledConnectionIdleTimeout = TimeSpan.MaxValue,
+                KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+                KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+                EnableMultipleHttp2Connections = true
+            };
+
             _channel = GrpcChannel.ForAddress($"http://{_serverHost}:{_serverPort}", new GrpcChannelOptions()
             {
                 HttpClient = new HttpClient
                 {
                     DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", _authService.AuthToken)}
-                }
+                },
+                HttpHandler = handler
             });
             
             var auth = _channel.CreateGrpcService<IAuthorizationService>();

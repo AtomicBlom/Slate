@@ -1,6 +1,8 @@
 ﻿using System;
 using BinaryVibrance.MLEM.Binding;
+using Microsoft.Xna.Framework;
 using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using Slate.Client.ViewModel.MainMenu;
 using Slate.Client.ViewModel.Services;
@@ -28,33 +30,31 @@ namespace Slate.Client.UI.Views
 
 		private void RebuildView(Panel panel, CharacterListViewModel viewModel)
         {
+            panel.HorizontalAlignment = HorizontalAlignment.Stretch;
+            panel.BorderThickness = new Thickness(1);
+            var characterListWindow = new Window("static-panel")
+            {
+                Width = 200,
+                Margin = new Thickness(16),
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Content = new VerticalStackPanel { }
+                    .Bind(viewModel).Characters().ToChildTemplate(character => ChildTemplate(viewModel, character))
+            };
+            characterListWindow.CloseButton.Visible = false;
             panel.AddChildren(
                 new Grid
                     {
-                        ColumnsProportions = { new(), new() },
-                        ShowGridLines = true
+                        ColumnsProportions = { new(ProportionType.Auto), new( ProportionType.Fill) },
                     }
                     .AddChildren(
-                        new Panel
-                        {
-                            //FIXME: 9patch the background
-                            //Background = new NinePatchRegion()
-                            Padding = new Thickness(8)
-                        }
-                            .AddChild(
-                                new VerticalStackPanel
-                                {
-
-                                }
-                                .Bind(viewModel).Characters().ToChildTemplate(character => ChildTemplate(viewModel, character))
-                            ),
-
+                        characterListWindow,
                         new TextButton
                             {
                                 GridColumn = 1,
                                 HorizontalAlignment = HorizontalAlignment.Right,
                                 VerticalAlignment = VerticalAlignment.Bottom,
-                                Text = "Select Character"
+                                Text = "Select Character",
+                                Margin = new Thickness(16)
                             }
                             .Bind(viewModel).PlayAsCharacterCommand().ToPressedEvent()
                     )

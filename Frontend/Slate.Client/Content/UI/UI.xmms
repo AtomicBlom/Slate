@@ -7,16 +7,13 @@
     <LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
   </LabelStyles>
   <TextBoxStyles>
-    <TextBoxStyle Background="textfield" TextColor="white" DisabledTextColor="gray" Font="default-font" Cursor="cursor" Selection="selection" />
+    <TextBoxStyle Background="textfield" TextColor="white" DisabledTextColor="gray" Font="default-font" Cursor="cursor" Selection="selection" Padding="6, 4, 6, 6" Margin="4" />
   </TextBoxStyles>
   <ScrollViewerStyles>
     <ScrollViewerStyle HorizontalScrollBackground="scroll-horizontal" HorizontalScrollKnob="scroll-knob-horizontal" VerticalScrollBackground="scroll" VerticalScrollKnob="scroll-knob-vertical" />
   </ScrollViewerStyles>
   <ButtonStyles>
-    <ButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down">
-      <LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
-    </ButtonStyle>
-    <ButtonStyle Id="blue" Background="button-blue" OverBackground="button-blue-down" PressedBackground="button-blue-down">
+    <ButtonStyle Background="button" OverBackground="button" PressedBackground="button" Padding="7, 4, 7, 7">
       <LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
     </ButtonStyle>
   </ButtonStyles>
@@ -29,7 +26,7 @@
   <RadioButtonStyles>
     <RadioButtonStyle>
       <LabelStyle Font="default-font" TextColor="white" />
-      <ImageStyle Image="vis-radio-tick-disabled" PressedImage="vis-radio-tick" />
+      <ImageStyle Image="radio-off" PressedImage="radio-on" Padding="0,0,8,8" />
     </RadioButtonStyle>
   </RadioButtonStyles>
   <SpinButtonStyles>
@@ -131,11 +128,17 @@
     </VerticalMenuStyle>
   </VerticalMenuStyles>
   <WindowStyles>
-    <WindowStyle Background="Panel" Padding="19,19,22,22">
+    <WindowStyle Background="Panel" Padding="27,19,30,7">
       <TitleStyle Font="default-font" TextColor="white" />
       <CloseButtonStyle OverBackground="button-over" Padding="0, 0" PressedBackground="button-red">
         <ImageStyle Image="icon-close" />
       </CloseButtonStyle>
     </WindowStyle>
+	  <WindowStyle Id="static-panel" Background="Panel" Padding="27,0,30,7" DragDirection="None">
+		  <TitleStyle Font="default-font" TextColor="white" />
+		  <CloseButtonStyle OverBackground="button-over" Padding="0, 0" PressedBackground="button-red" Visible="false">
+			  <ImageStyle Image="icon-close" />
+		  </CloseButtonStyle>
+	  </WindowStyle>
   </WindowStyles>
 </Stylesheet>
